@@ -117,10 +117,10 @@ void D2hhmumuFitter::fit_Data(){
   RooDataHist* data_binned = data_small->binnedClone();
 
   D2hhmumuModel myModel;
-  RooAbsPdf *my_signal = myModel.Signal(D0_M,deltaM,
-                   D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta,
-                   deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta
-                   );
+  myModel.Signal(D0_M,deltaM,
+                 D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta,
+                 deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta
+                 );
 
 
   //background models
