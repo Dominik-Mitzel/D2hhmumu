@@ -1,5 +1,5 @@
 #include "D2hhmumuFitter.h"
-
+#include "RooAddPdf.h"
 using namespace std;
 using namespace RooFit ;
 
@@ -37,31 +37,30 @@ void fit_MC(){
   RooDataSet* data = new RooDataSet("data", "data", tree, RooArgSet(D0_M,deltaM));
   RooDataSet* data_small = (RooDataSet*) data->reduce(SelectVars(RooArgSet(D0_M)));
   RooDataHist* data_binned = data_small->binnedClone();
- ///Define fit model                                                                                                                                                                         
-  ///----------------------- delta M                                                                                                                                                                 
-  RooRealVar deltaM_xi("deltaM_xi","deltaM_xi",145,144,146);
-  RooRealVar deltaM_lambda("deltaM_lambda","deltaM_lambda",0.3,0.1,2);
-  RooRealVar deltaM_gamma("deltaM_gamma","deltaM_gamma",0.,-2,2);
-  RooRealVar deltaM_delta("deltaM_delta","deltaM_delta",0.3,0.,10);
+ ///Define fit model                                                                                                                                 
+  RooRealVar deltaM_xi("deltaM_xi","deltaM_xi",1.45437e+02,144,146);
+  RooRealVar deltaM_lambda("deltaM_lambda","deltaM_lambda",5.35039e-01,0.1,2);
+  RooRealVar deltaM_gamma("deltaM_gamma","deltaM_gamma",1.00164e-01,-2,2);
+  RooRealVar deltaM_delta("deltaM_delta","deltaM_delta",1.07829e+00,0.,10);
 
-  RooJohnsonSU deltaM_Johnson("deltaM_J","Johnson SU distribution",deltaM,deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta);
+  RooRealVar D0_M_xi("D0_M_xi","D0_M_xi",1.86560e+03,1860,1870);
+  RooRealVar D0_M_lambda("D0_M_lambda","D0_M_lambda",8.54839e+00,0.1,20);
+  RooRealVar D0_M_gamma("D0_M_gamma","D0_M_gamma",-5.42758e-02,-2,2);
+  RooRealVar D0_M_delta("D0_M_delta","D0_M_delta",6.09288e-01,0.,10);
 
-  // mD0
+  D2hhmumuModel myMCModel;
+  myMCModel.Signal(D0_M,deltaM,
+		   D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta,
+		   deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta
+		   );
 
-  RooRealVar D0_M_xi("D0_M_xi","D0_M_xi",1865,1860,1870);
-  RooRealVar D0_M_lambda("D0_M_lambda","D0_M_lambda",7,0.1,20);
-  RooRealVar D0_M_gamma("D0_M_gamma","D0_M_gamma",0.,-2,2);
-  RooRealVar D0_M_delta("D0_M_delta","D0_M_delta",0.3,0.,10);
+  std::string components="Signal";
+  myMCModel.Model(components);
 
-  RooJohnsonSU D0_M_Johnson("D0_M_J","Johnson SU distribution",D0_M,D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta);
- 
-  //2D fit function
-
- RooProdPdf signal_model("signal_model","signal_model",RooArgSet(D0_M_Johnson,deltaM_Johnson));
 
   RooFitResult *result;
   //result = Gauss2.fitTo(*data_binned,Save(kTRUE));                                                                                                                                          
-  result = signal_model.fitTo(*data,Save(kTRUE),NumCPU(3));
+  result = myMCModel.GetWorkspace().pdf("D2hhmumuModel")->fitTo(*data,Save(kTRUE),NumCPU(3));
   
   ///Plot                                                                                                                                                                                     
   ///----------                                                                                                                                                                               
@@ -73,7 +72,7 @@ void fit_MC(){
   frame_m->SetTitle("");
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
 
-  signal_model.plotOn(frame_m,LineColor(kRed),LineStyle(kDashed),LineWidth(1));
+  myMCModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,LineColor(kRed),LineWidth(1));
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
   frame_m->Draw();
   
@@ -83,7 +82,7 @@ void fit_MC(){
   frame_m2->SetTitle("");
   data->plotOn(frame_m2,Name("data"),MarkerSize(0.5),Binning(50));
 
-  signal_model.plotOn(frame_m2,LineColor(kRed),LineWidth(1));
+  myMCModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m2,LineColor(kRed),LineWidth(1));
   data->plotOn(frame_m2,Name("data"),MarkerSize(0.5),Binning(50));
   frame_m2->Draw();
 
@@ -126,99 +125,69 @@ void fit_Data(){
   RooDataSet* data_small = (RooDataSet*) data->reduce(SelectVars(RooArgSet(D0_M)));
   RooDataHist* data_binned = data_small->binnedClone();
 
-  ///Define fit model                                                                                                                                                                         
-  ///----------------------- delta M                                                                                                                                                                 
-  RooRealVar deltaM_xi("deltaM_xi","deltaM_xi",145,144,146);
-  RooRealVar deltaM_lambda("deltaM_lambda","deltaM_lambda",0.3,0.1,2);
-  RooRealVar deltaM_gamma("deltaM_gamma","deltaM_gamma",0.,-2,2);
-  RooRealVar deltaM_delta("deltaM_delta","deltaM_delta",0.3,0.,10);
 
-  RooJohnsonSU deltaM_Johnson("deltaM_J","Johnson SU distribution",deltaM,deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta);
+  RooRealVar deltaM_xi("deltaM_xi","deltaM_xi",1.45437e+02,144,146);
+  RooRealVar deltaM_lambda("deltaM_lambda","deltaM_lambda",5.35039e-01,0.1,2);
+  RooRealVar deltaM_gamma("deltaM_gamma","deltaM_gamma",1.00164e-01,-2,2);
+  RooRealVar deltaM_delta("deltaM_delta","deltaM_delta",1.07829e+00,0.,10);
 
-  /// mD0
+  RooRealVar D0_M_xi("D0_M_xi","D0_M_xi",1.86560e+03,1860,1870);
+  RooRealVar D0_M_lambda("D0_M_lambda","D0_M_lambda",8.54839e+00,0.1,20);
+  RooRealVar D0_M_gamma("D0_M_gamma","D0_M_gamma",-5.42758e-02,-2,2);
+  RooRealVar D0_M_delta("D0_M_delta","D0_M_delta",6.09288e-01,0.,10);
 
-  RooRealVar D0_M_xi("D0_M_xi","D0_M_xi",1865,1860,1870);
-  RooRealVar D0_M_lambda("D0_M_lambda","D0_M_lambda",7,0.1,20);
-  RooRealVar D0_M_gamma("D0_M_gamma","D0_M_gamma",0.,-2,2);
-  RooRealVar D0_M_delta("D0_M_delta","D0_M_delta",0.3,0.,10);
-
-  RooJohnsonSU D0_M_Johnson("D0_M_J","Johnson SU distribution",D0_M,D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta);
+  D2hhmumuModel myModel;
+  RooAbsPdf *my_signal = myModel.Signal(D0_M,deltaM,
+                   D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta,
+                   deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta
+                   );
 
 
   //background models
 
   //purely combinatorial
   RooRealVar deltaM_threshold("deltaM_threshold","deltaM_threshold",139.57018);
-  RooRealVar deltaM_alpha("deltaM_alpha","deltaM_alpha",2.1799e-02,0,10.);
+  RooRealVar deltaM_alpha("deltaM_alpha","deltaM_alpha",3.9761e+00,0,10.);
 
-  RooThreshold deltaM_combinatorial("deltaM_combinatorial","deltaM combinatorial",deltaM,deltaM_threshold,deltaM_alpha);
+  RooRealVar D0_M_chebyA("D0_M_chebyA","D0_M_chebyA",-3.5906e-02,-1,1);
+  RooRealVar D0_M_chebyB("D0_M_chebyB","D0_M_chebyB",-1.7004e-02,-1,1);
+  RooRealVar D0_M_chebyC("D0_M_chebyC","D0_M_chebyC",-1.7882e-02,-1,1);
+
+
+  myModel.CombinatoricBackground(D0_M,deltaM,
+				 D0_M_chebyA,D0_M_chebyB,D0_M_chebyC,
+				 deltaM_threshold,deltaM_alpha
+				 );
+
 
   //randompi
-  RooRealVar deltaM_alpha_randompi("deltaM_alpha_randompi","deltaM_alpha random pi",2.1799e-02,0,10.);
-  RooThreshold deltaM_randompi("deltaM_randompi","deltaM randompi",deltaM,deltaM_threshold,deltaM_alpha_randompi);
-
-  RooJohnsonSU D0_M_Johnson_randompi("D0_M_J_randompi","Johnson SU distribution",D0_M,D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta);
-
-
-  RooRealVar D0_M_chebyA("D0_M_chebyA","D0_M_chebyA",0,-1,1);
-  RooRealVar D0_M_chebyB("D0_M_chebyB","D0_M_chebyB",0,-1,1);
-  RooRealVar D0_M_chebyC("D0_M_chebyC","D0_M_chebyC",0,-1,1);
-
-  RooChebychev D0_M_combinatorial("D0_M_combinatorial","D0_M_combinatorial",D0_M,RooArgList(D0_M_chebyA,D0_M_chebyB,D0_M_chebyC));
-  RooRealVar f_D0_M_sig("f_sig","fraction of CB in D0 mass signal",0.1,0.,1.);
-  RooRealVar f_D0_M_sig2("f_sig2","fraction of CB in D0 mass signal",0.1,0.,1.);
-
+  myModel.RandomPionBackground(D0_M,deltaM,
+			       D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta,
+			       deltaM_threshold,deltaM_alpha
+                               );
 
   //peaking , in mD0 jsut a Gaussian... to be improved!
 
-  RooRealVar mean1("mu1", "mean1", 1840,1835.,1845.);                                                                                                           
-  RooRealVar sigma1("sigma_{1}", "sigma1", 5.45,3.,25.);                                                                                                        
-  RooGaussian Gauss1("Gauss1", "Gauss1", D0_M, mean1, sigma1);  
- 
-  RooJohnsonSU deltaM_Johnson_D2hhhh("deltaM_J_D2hhhh","Johnson SU distribution",deltaM,deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta);
+  RooRealVar mean1("mu1", "mean1", 1.8350e3,1835.,1845.);                                                                                             
+  RooRealVar sigma1("sigma_{1}", "sigma1", 1.4187e+01,3.,25.);                                                                                      
 
-  RooAddPdf total_D0_M("PDF_D0_M_sig","signal PDF in D0_M",RooArgSet(D0_M_combinatorial,D0_M_Johnson,Gauss1),RooArgSet(f_D0_M_sig,f_D0_M_sig2));
+  myModel.D2hhhhBackground(D0_M,deltaM,
+			   mean1,sigma1,
+			   deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta
+			   );
 
-  //total pdf
-
-  RooRealVar f_deltaM_sig("f_sig","fraction of CB in D0 mass signal",0.1,0.,1.);                                                                                
-  RooAddPdf PDF_deltaM_sig("PDF_deltaM_sig","signal PDF in deltaM",RooArgSet(deltaM_combinatorial,deltaM_Johnson),f_deltaM_sig);   
-  
-
-
-  ///signal model                                                                                                                                                                         
-  ///-------------------------                                                                                                                                                                
-  RooProdPdf signal_model("signal_model","signal_model",RooArgSet(D0_M_Johnson,deltaM_Johnson));
-  RooProdPdf combinatorial_model("combinatorial_model","model",RooArgSet(D0_M_combinatorial,deltaM_combinatorial));
-  RooProdPdf randompi_model("randompi_model","model",RooArgSet(D0_M_Johnson_randompi,deltaM_randompi));
-  RooProdPdf D2hhhh_model("D2hhhh_model","model",RooArgSet(Gauss1,deltaM_Johnson_D2hhhh));
-  
-  RooRealVar nSignal("nSignal","number of signal events",5000,0,20e3);
-  RooExtendPdf eSignalPDF("eSignalPDF","extended signal PDF 2D",signal_model,nSignal);
-
-  RooRealVar f1("f1","fraction of CB in D0 mass signal",0.1,0.,1.);
-  RooRealVar f2("f2","fraction of CB in D0 mass signal",0.1,0.,1.);
-  RooRealVar f3("f3","fraction of CB in D0 mass signal",0.1,0.,1.);
-
-  RooRealVar nBkg("nBkg","number of bkg events",5000, 0,20e3);
-  RooAddPdf bkg_model("bkg_model","total bkg pdf",RooArgSet(combinatorial_model,randompi_model,D2hhhh_model),RooArgSet(f1,f2));
-  RooExtendPdf eBKGPDF("eBKGPDF","extended bkg PDF 2D",bkg_model,nBkg);
-
-  //RooAddPdf total_bkg("total","total pdf",RooArgSet(combinatorial_model,randompi_model,D2hhhh_model),RooArgSet(f1,f2));
-  ///RooAddPdf total("total","total pdf",RooArgSet(signal_model,combinatorial_model,randompi_model,D2hhhh_model),RooArgSet(f1,f2,f3));
-  RooAddPdf total("total","total pdf",RooArgSet(eSignalPDF,eBKGPDF));
-
+  myModel.D2hhhhRandomPionBackground(D0_M,deltaM,
+                           mean1,sigma1,
+			   deltaM_threshold,deltaM_alpha
+                           );
 
   ///Fit                                                                                                                                                                                     
-  // RooFitResult *result;                                                                                                                                                                    
-  //if(binned) result = pdf->fitTo(*data_binned,Save(kTRUE),Extended());                                                                                                                      
-  //else result = pdf->fitTo(*data,Save(kTRUE),Extended(),NumCPU(3));                                                                                                                         
+  std::string components="Signal CombinatoricBkg RandomPionBkg D2hhhhBkg D2hhhhRandomPionBkg";
+  RooAbsPdf* finalPDF = myModel.Model(components);
 
   RooFitResult *result;
-  //result = Gauss2.fitTo(*data_binned,Save(kTRUE));                                                                                                                                          
-  result = total.fitTo(*data,Save(kTRUE),NumCPU(3));
-  //result = PDF_D0_M_sig.fitTo(*data_small,Save(kTRUE),NumCPU(3));                                                                                                          
-
+  //result = myModel.GetWorkspace().pdf("D2hhmumuModel")->fitTo(*data,Save(kTRUE),Extended(kTRUE),NumCPU(3));                                                           
+  result = finalPDF->fitTo(*data,Save(kTRUE),Extended(kTRUE),NumCPU(3));
 
   cout << "result is --------------- "<<endl;
   result->Print();
@@ -226,35 +195,51 @@ void fit_Data(){
   ///Plot                                                                                                                                                                                     
   ///----------                                                                                                                                                                               
   TCanvas* c1= new TCanvas("");
-  c1->Divide(2);
+  c1->Divide(2,2);
   c1->cd(1);
   
   RooPlot* frame_m= D0_M.frame();
   frame_m->SetTitle("");
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
-  total.plotOn(frame_m,LineColor(kRed),LineStyle(kDashed),LineWidth(1));
-   total.plotOn(frame_m,Components(combinatorial_model),LineColor(kBlue),LineStyle(kDashed),LineWidth(1));
-   total.plotOn(frame_m,Components(randompi_model),LineColor(kCyan),LineStyle(kDashed),LineWidth(1));
-   total.plotOn(frame_m,Components(D2hhhh_model),LineColor(kGreen),LineStyle(kDashed),LineWidth(1));
-   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
+  myModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel.GetWorkspace().pdf("Signal")),LineColor(kRed),LineStyle(kDashed),LineWidth(1));
+  myModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel.GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(1));
+  myModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel.GetWorkspace().pdf("RandomPionBkg")),LineColor(kCyan),LineStyle(kDashed),LineWidth(1));
+  myModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel.GetWorkspace().pdf("D2hhhhBkg")),LineColor(kYellow),LineStyle(kDashed),LineWidth(1));
+  myModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel.GetWorkspace().pdf("D2hhhhRandomPionBkg")),LineColor(kGreen),LineStyle(kDashed),LineWidth(1));
+  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(1)); 
+  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
   frame_m->Draw();
-  
   
   c1->cd(2);
   RooPlot* frame_m2= deltaM.frame();
   frame_m2->SetTitle("");
   data->plotOn(frame_m2,Name("data"),MarkerSize(0.5),Binning(50));
-  total.plotOn(frame_m2,LineColor(kRed),LineWidth(1));
-   total.plotOn(frame_m2,Components(combinatorial_model),LineColor(kBlue),LineStyle(kDashed),LineWidth(1));
-   total.plotOn(frame_m2,Components(randompi_model),LineColor(kCyan),LineStyle(kDashed),LineWidth(1));
-   total.plotOn(frame_m2,Components(D2hhhh_model),LineColor(kGreen),LineStyle(kDashed),LineWidth(1));
-   data->plotOn(frame_m2,Name("data"),MarkerSize(0.5),Binning(50));
+  myModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m2,Components(*myModel.GetWorkspace().pdf("Signal")),LineColor(kRed),LineStyle(kDashed),LineWidth(1));
+  myModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m2,Components(*myModel.GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(1));
+  myModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m2,Components(*myModel.GetWorkspace().pdf("RandomPionBkg")),LineColor(kCyan),LineStyle(kDashed),LineWidth(1));
+  myModel.GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m2,Components(*myModel.GetWorkspace().pdf("D2hhhhBkg")),LineColor(kYellow),LineStyle(kDashed),LineWidth(1)); 
+  finalPDF->plotOn(frame_m2,LineColor(kBlack),LineWidth(1)); 
+  data->plotOn(frame_m2,Name("data"),MarkerSize(0.5),Binning(50));
   frame_m2->Draw();
   
+  RooHist* hpull = frame_m->pullHist() ;
+  RooPlot* frame_m3 = D0_M.frame(Title("Pull Distribution")) ;
+  frame_m3->addPlotable(hpull,"P") ;
+  c1->cd(3);
+  frame_m3->Draw();
+
+  RooHist* hpull2 = frame_m2->pullHist() ;
+  RooPlot* frame_m4 = deltaM.frame(Title("Pull Distribution")) ;
+  frame_m4->addPlotable(hpull2,"P") ;
+  c1->cd(4);
+  frame_m4->Draw();
+
 std::cout<<"nentries"<<tree->GetEntries()<<std::endl;	
   c1->Draw();
   c1->Print("massFit2.eps");
 }
+
+
 /*
 function graveyard 
 

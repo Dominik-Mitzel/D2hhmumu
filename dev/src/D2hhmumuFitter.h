@@ -48,7 +48,7 @@
 #include "RooProdPdf.h"
 #include "RooJohnsonSU.h"
 #include "RooThreshold.h"
-
+#include "D2hhmumuModel.h"
 
 void fit_MC();
 void fit_Data();

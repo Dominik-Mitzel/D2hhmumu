@@ -144,8 +144,8 @@ int main() {
   //calculateSweights("../Data_MC_Comparison/D2Kpimumu_BDT_selected.root");
   //data_MC_comparison();
   // checkLuminosity();      
+  //fit_MC();
   fit_Data();
-
   return 0;
 
 }
