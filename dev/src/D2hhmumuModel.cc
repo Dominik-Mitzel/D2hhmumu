@@ -62,7 +62,6 @@ RooAbsPdf* D2hhmumuModel::RandomPionBackground(RooRealVar m, RooRealVar dm,
 				RooRealVar dmThreshold, RooRealVar dmAlpha
 				)
 {
- 
   if (m_ws.pdf("RandomPionBkg") == 0) {
     RooJohnsonSU RandomPionM_JSU("RandomPion_JSU", "Random Pion D^{0} JSU", m, mMeanJSU, mWidthJSU,mDeltaJSU,mGammaJSU);
     RooThreshold RandomPionBkgDm("RandomPionBkgDm", "Random Pion Background (#Deltam)", dm, dmThreshold, dmAlpha);
@@ -74,6 +73,25 @@ RooAbsPdf* D2hhmumuModel::RandomPionBackground(RooRealVar m, RooRealVar dm,
   return m_ws.pdf("RandomPionBkg");
 }
 
+RooAbsPdf* D2hhmumuModel::D2hhhhBackground(RooRealVar m, RooRealVar dm,
+					   RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mDeltaJSU, RooRealVar mGammaJSU,
+					   RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmDeltaJSU, RooRealVar dmGammaJSU
+					   )
+{
+
+  if (m_ws.pdf("D2hhhhBkg") == 0) {
+    RooJohnsonSU D2hhhhBackgroundM("D2hhhhBackgroundM", "D^{0} misidentified D2hhhhh", m, mMeanJSU, mWidthJSU,mDeltaJSU,mGammaJSU);
+    RooJohnsonSU D2hhhhBackgroundDm_JSU("D2hhhhBackgroundDm_JSU", "misidentified D2hhhhh (#Deltam)", dm, dmMeanJSU, dmWidthJSU,dmDeltaJSU,dmGammaJSU);
+    RooProdPdf D2hhhhBkg("D2hhhhBkg", "misidentified D2hhhhh background", RooArgList(D2hhhhBackgroundM,D2hhhhBackgroundDm_JSU));
+    m_ws.import(D2hhhhBkg);
+    RooRealVar nD2hhhhBkg("nD2hhhhBkg", "misidentified D2hhmumu background events", 500, 0., 100000.);
+    m_ws.import(nD2hhhhBkg);
+  }
+  return m_ws.pdf("D2hhhhBkg");
+}
+
+
+/*
 RooAbsPdf* D2hhmumuModel::D2hhhhBackground(RooRealVar m, RooRealVar dm,
 			    RooRealVar mMeanGauss, RooRealVar mSigmaGauss,
 			    RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmDeltaJSU, RooRealVar dmGammaJSU
@@ -90,6 +108,7 @@ RooAbsPdf* D2hhmumuModel::D2hhhhBackground(RooRealVar m, RooRealVar dm,
   }
   return m_ws.pdf("D2hhhhBkg");
 }
+*/
 
 
 RooAbsPdf* D2hhmumuModel::D2hhhhRandomPionBackground(RooRealVar m, RooRealVar dm,

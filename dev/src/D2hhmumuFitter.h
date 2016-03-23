@@ -85,20 +85,35 @@ class D2hhmumuFitter {
   RooRealVar D0_M_chebyA;
   RooRealVar D0_M_chebyB;
   RooRealVar D0_M_chebyC;
+
+  RooRealVar D0_M_xi_bkg;
+  RooRealVar D0_M_lambda_bkg;
+  RooRealVar D0_M_gamma_bkg;
+  RooRealVar D0_M_delta_bkg;
  
   RooRealVar mean1;
   RooRealVar sigma1;
-  
-  void setKpimumuStartParameters(); //to be implemented, especially when there will be other channles..
+
   
   //functions
   //                                                                                                                                                                            
   //************************                                                                                                                                                    
   
+
+  void initializeModel();
+  D2hhmumuModel* myModel;
   void setStyle();
+
+  void setKpimumuStartParameters(); //to be implemented, especially when there will be other channles..    
+  void setKKmumuStartParameters(); //to be implemented, especially when there will be other channles..                                                                        
+  void setpipimumuStartParameters(); //to be implemented, especially when there will be other channles..                                                                      
+
   void fit_MC();
   void fit_Data();
-
+  void fit_PIDinverted_Data();
+  void toyStudy();
+  
+  
 };
  
 #endif

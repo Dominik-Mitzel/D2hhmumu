@@ -35,10 +35,19 @@ class D2hhmumuModel
 				  RooRealVar dmThreshold, RooRealVar dmAlpha
 				  );
 
+  /*
   RooAbsPdf* D2hhhhBackground(RooRealVar m, RooRealVar dm,
 			      RooRealVar mMeanGauss, RooRealVar mSigmaGauss,
 			      RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmDeltaJSU, RooRealVar dmGammaJSU
 			      );
+			      
+  */
+
+  RooAbsPdf* D2hhhhBackground(RooRealVar m, RooRealVar dm,
+			      RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mDeltaJSU, RooRealVar mGammaJSU,
+			      RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmDeltaJSU, RooRealVar dmGammaJSU
+			      );
+
 			      
   RooAbsPdf* D2hhhhRandomPionBackground(RooRealVar m, RooRealVar dm,
                               RooRealVar mMeanGauss, RooRealVar mSigmaGauss,

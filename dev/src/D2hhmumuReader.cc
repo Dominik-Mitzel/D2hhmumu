@@ -163,27 +163,42 @@ void D2hhmumuReader::createMCtrainingSample(TString name) {
 
   //Create a new file + a clone of old tree in new file
   TFile *newfile = new TFile(name,"recreate");
-  TTree *newtree = fChain->CloneTree(0);
-  
+  TTree *newtree_even = fChain->CloneTree(0);
+  TTree *newtree_odd = fChain->CloneTree(0);
+  newtree_odd->SetName("DecayTree_odd");
+  newtree_even->SetName("DecayTree_even ");
+
+
   double Slowpi_cosh,mu0_cosh,D_cosh, deltaM;
   double D_Conemult,Dst_Conemult,D_Coneptasy,Dst_Coneptasy;
   double mHH; 
 
-  newtree->Branch("Slowpi_cosh",&Slowpi_cosh);
-  newtree->Branch("D_cosh", & D_cosh);
-  newtree->Branch("mu0_cosh",&mu0_cosh);
-  newtree->Branch("deltaM",&deltaM);
-  newtree->Branch("D_Conemult",&D_Conemult);
-  newtree->Branch("Dst_Conemult",&Dst_Conemult);
-  newtree->Branch("D_Coneptasy",&D_Coneptasy);
-  newtree->Branch("Dst_Coneptasy",&Dst_Coneptasy);
-  newtree->Branch("mHH", & mHH);
+  newtree_even->Branch("Slowpi_cosh",&Slowpi_cosh);
+  newtree_even->Branch("D_cosh", & D_cosh);
+  newtree_even->Branch("mu0_cosh",&mu0_cosh);
+  newtree_even->Branch("deltaM",&deltaM);
+  newtree_even->Branch("D_Conemult",&D_Conemult);
+  newtree_even->Branch("Dst_Conemult",&Dst_Conemult);
+  newtree_even->Branch("D_Coneptasy",&D_Coneptasy);
+  newtree_even->Branch("Dst_Coneptasy",&Dst_Coneptasy);
+  newtree_even->Branch("mHH", & mHH);
+
+  newtree_odd->Branch("Slowpi_cosh",&Slowpi_cosh);
+  newtree_odd->Branch("D_cosh", & D_cosh);
+  newtree_odd->Branch("mu0_cosh",&mu0_cosh);
+  newtree_odd->Branch("deltaM",&deltaM);
+  newtree_odd->Branch("D_Conemult",&D_Conemult);
+  newtree_odd->Branch("Dst_Conemult",&Dst_Conemult);
+  newtree_odd->Branch("D_Coneptasy",&D_Coneptasy);
+  newtree_odd->Branch("Dst_Coneptasy",&Dst_Coneptasy);
+  newtree_odd->Branch("mHH", & mHH);
+
 
   for (Long64_t i=0;i<nentries; i++) {
      fChain->GetEntry(i);
      //aply trigger selection criteria and MC truth matching 
       if(!MCTruthmatched()) continue;
-      if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected() )continue;    
+      if(!isL0Selected() || !isHlt1Selected()) continue;// || !isHlt2Selected() )continue;    
       
       initializeMomenta();
       Slowpi_cosh=slowpi_helicityAngle();
@@ -196,13 +211,16 @@ void D2hhmumuReader::createMCtrainingSample(TString name) {
       Dst_Coneptasy = Dst_ptasy_1_50;
       mHH = (pH1+pH0).M();
 
-     newtree->Fill();
+      if(eventNumber%2==0) newtree_even->Fill(); 
+      else newtree_odd->Fill();
    }
    
-   std::cout<<"Created MC taining sample "<< name <<" with "<<newtree->GetEntries()<<" entries "<<std::endl;
+  std::cout<<"Created MC taining samples "<< name <<" with "<<newtree_even->GetEntries()<<" entries (even sample) and "<< newtree_odd->GetEntries() <<"(odd.)"<<std::endl;
 
    //newtree->Print();
-   newtree->AutoSave();
+   newtree_even->AutoSave();
+   newtree_odd->AutoSave();
+ 
    delete newfile;
 
 } 
@@ -221,45 +239,48 @@ void D2hhmumuReader::createSubsample(TString name, double percentage) {//specify
    //Create a new file + a clone of old tree in new file
    TFile *newfile = new TFile(name,"recreate");
    TDirectory *f_sideband = newfile->mkdir("sideband");
-   TTree *newtree = fChain->CloneTree(0);
-   TDirectory *f_data = newfile->mkdir("data");
-   TTree *newtree2 = fChain->CloneTree(0);
+   TTree *newtree_data_odd = fChain->CloneTree(0);
+   TTree *newtree_data_even = fChain->CloneTree(0);
+   newtree_data_odd->SetName("DecayTree_odd");
+   newtree_data_even->SetName("DecayTree_even");
 
-   bool isSideband;
-   newtree->Branch("isBkgSideband",&isSideband);
+   TDirectory *f_data = newfile->mkdir("data");
+   TTree *newtree_bkg_even = fChain->CloneTree(0);
+   TTree *newtree_bkg_odd = fChain->CloneTree(0);
+   newtree_bkg_odd->SetName("DecayTree_odd");
+   newtree_bkg_even->SetName("DecayTree_even");
+
 
    double Slowpi_cosh,mu0_cosh, D_cosh, deltaM,nVeloTracks;
    double D_Conemult,Dst_Conemult,D_Coneptasy,Dst_Coneptasy;
    Int_t nTracks_data,nPVs_data,nSPDHits;
    double mHH;
-
-   newtree->Branch("Slowpi_cosh",&Slowpi_cosh);
-   newtree->Branch("D_cosh", & D_cosh);
-   newtree->Branch("mu0_cosh",&mu0_cosh);
-   newtree->Branch("deltaM",&deltaM);
-   newtree->Branch("D_Conemult",&D_Conemult);
-   newtree->Branch("Dst_Conemult",&Dst_Conemult);
-   newtree->Branch("D_Coneptasy",&D_Coneptasy);
-   newtree->Branch("Dst_Coneptasy",&Dst_Coneptasy);   
-   newtree->Branch("nSPDHits",&nSPDHits);
-   newtree->Branch("nVeloTracks",&nVeloTracks);
-   newtree->Branch("nTracks_data",&nTracks_data);
-   newtree->Branch("mHH", & mHH);
+   bool isSideband;
 
 
+   std::vector<TTree*> trees; 
+   trees.push_back(newtree_data_odd);
+   trees.push_back(newtree_data_even);
+   trees.push_back(newtree_bkg_odd);
+   trees.push_back(newtree_bkg_even);
 
-   newtree2->Branch("Slowpi_cosh",&Slowpi_cosh);
-   newtree2->Branch("D_cosh", & D_cosh);
-   newtree2->Branch("mu0_cosh",&mu0_cosh);
-   newtree2->Branch("deltaM",&deltaM);
-   newtree2->Branch("D_Conemult",&D_Conemult);
-   newtree2->Branch("Dst_Conemult",&Dst_Conemult);
-   newtree2->Branch("D_Coneptasy",&D_Coneptasy);
-   newtree2->Branch("Dst_Coneptasy",&Dst_Coneptasy);
-   newtree2->Branch("nSPDHits",&nSPDHits);
-   newtree2->Branch("nVeloTracks",&nVeloTracks);
-   newtree2->Branch("nTracks_data",&nTracks_data);
-   newtree2->Branch("mHH", & mHH);
+   for (std::vector<TTree*>::iterator it = trees.begin() ; it != trees.end(); ++it) {
+     
+     (*it)->Branch("isBkgSideband",&isSideband);
+     (*it)->Branch("Slowpi_cosh",&Slowpi_cosh);
+     (*it)->Branch("D_cosh", & D_cosh);
+     (*it)->Branch("mu0_cosh",&mu0_cosh);
+     (*it)->Branch("deltaM",&deltaM);
+     (*it)->Branch("D_Conemult",&D_Conemult);
+     (*it)->Branch("Dst_Conemult",&Dst_Conemult);
+     (*it)->Branch("D_Coneptasy",&D_Coneptasy);
+     (*it)->Branch("Dst_Coneptasy",&Dst_Coneptasy);   
+     (*it)->Branch("nSPDHits",&nSPDHits);
+     (*it)->Branch("nVeloTracks",&nVeloTracks);
+     (*it)->Branch("nTracks_data",&nTracks_data);
+     (*it)->Branch("mHH", & mHH);
+
+   }
 
    for (Long64_t i=0;i<nentries; i++) {
      
@@ -283,24 +304,34 @@ void D2hhmumuReader::createSubsample(TString name, double percentage) {//specify
       nTracks_data=(int)nTracks;
       nPVs_data=(int)nPVs;
       mHH = (pH1+pH0).M();
+        
+      if(eventNumber%2!=0){ //odd events
 
-      if (generator->Rndm()<percentage/100) { //define region used for BDT training
-	if(!isBkgSideband()) continue; //here take only sideband events from the random subsample, get rid of rest
-	else newtree->Fill(); 
+	trees[0]->Fill(); //odd data
+	if(generator->Rndm()<percentage/100 && isBkgSideband()) trees[2]->Fill();
       }
-      else newtree2->Fill(); 
+	
+      if(eventNumber%2==0){ //even events
+
+	trees[1]->Fill(); //even data
+	if(generator->Rndm()<percentage/100 && isBkgSideband()) trees[3]->Fill();
+      }
+	  
    }
    
-   std::cout<<"Created random subsample "<< name <<" with "<<newtree->GetEntries()<<" entries "<<std::endl;
+   //   std::cout<<"Created random subsample "<< name <<" with "<<newtree->GetEntries()<<" entries "<<std::endl;
+
+ 
+  //   newtree->AutoSave();
+   f_data->cd();
+   trees[0]->Write();
+   trees[1]->Write();
 
    //newtree->Print();
    f_sideband->cd();
-   newtree->Write();
-   //   newtree->AutoSave();
-   f_data->cd();
-   //newtree2->AutoSave();
-   newtree2->Write();
-
+   trees[2]->Write();
+   trees[3]->Write();
+  
    delete newfile;
 
 }
@@ -2814,7 +2845,8 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("mu0_MINIP",1); 
   fChain->SetBranchStatus("mu0_MINIPCHI2",1);
   fChain->SetBranchStatus("mu0_NShared",1);
- 
+  fChain->SetBranchStatus("mu0_MuonNShared",1);
+
   fChain->SetBranchStatus("mu1_isMuon",1);
   fChain->SetBranchStatus("mu1_isMuonLoose",1);
   fChain->SetBranchStatus("mu1_IP_ORIVX",1);
@@ -2824,7 +2856,8 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("mu1_MINIP",1); 
   fChain->SetBranchStatus("mu1_MINIPCHI2",1);
   fChain->SetBranchStatus("mu1_NShared",1);
- 
+  fChain->SetBranchStatus("mu1_MuonNShared",1);
+
   fChain->SetBranchStatus("h1_isMuon",1);
   fChain->SetBranchStatus("h1_isMuonLoose",1);
   fChain->SetBranchStatus("h1_IP_ORIVX",1);
@@ -2857,6 +2890,7 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("h1_TRACK_CHI2NDOF",1);
   fChain->SetBranchStatus("h0_TRACK_CHI2NDOF",1);
   fChain->SetBranchStatus("Slowpi_TRACK_CHI2NDOF",1);
+  fChain->SetBranchStatus("eventNumber",1);
 
   Notify();
   
