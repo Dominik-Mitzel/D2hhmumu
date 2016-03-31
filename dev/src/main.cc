@@ -5,8 +5,11 @@
 #include "D2KKmumuReader.h"
 #include "D2pipimumuReader.h"
 #include "D2KpimumuReader.h"
+#include "D2KKpipiReader.h"
+#include "D2KpipipiReader.h"
 #include "D2hhmumuFitter.h"
 #include "sWeights.h"
+#include "TMVA_applications.h"
 
 using namespace std;
 
@@ -115,10 +118,10 @@ void D2KKpipiMC(){
   }
  
 
-  D2KKmumuReader* KK_MC_Reader = new D2KKmumuReader(Tree_MC_D2KKpipi);
+  D2KKpipiReader* KK_MC_Reader = new D2KKpipiReader(Tree_MC_D2KKpipi);
   KK_MC_Reader->InitMC();
                                                                                                                                                                             
-  KK_MC_Reader->createMCtrainingSample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_filteredt_MCSample.root");
+  KK_MC_Reader->addMisIdMasses("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_filteredt_MCSample1.root");
  
 
 }
@@ -135,10 +138,10 @@ void D2KpipipiMC(){
   }
 
 
-  D2KpimumuReader* Kpi_MC_Reader = new D2KpimumuReader(Tree_MC_D2Kpipipi);
+  D2KpipipiReader* Kpi_MC_Reader = new D2KpipipiReader(Tree_MC_D2Kpipipi);
   Kpi_MC_Reader->InitMC();
                                                                                                                                                                          
-  Kpi_MC_Reader->createMCtrainingSample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_filteredt_MCSample.root");
+  Kpi_MC_Reader->addMisIdMasses("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_filteredt_MCSample1.root");
 
 
 }
@@ -187,9 +190,9 @@ int main() {
   //D2KKmumuMC();                                                                                                                                                         
   //D2KKmumuData();                                                                                                                                                   
   //D2KKpipiMC();                                                                                                                                                        
-  D2KpipipiMC();                                                                                                                                                          
+  //D2KpipipiMC();                                                                                                                                                          
 
-                      
+  //sweights part                     
   //calculateSweights("../Data_MC_Comparison/D2Kpimumu_BDT_selected.root");
   //data_MC_comparison();
   // checkLuminosity();      
@@ -200,6 +203,10 @@ int main() {
   //myFitter.fit_Data();
   //myFitter.fit_PIDinverted_Data();
   //myFitter.toyStudy();
+
+  //TMVA
+  //D2KKmumuCrosstraining();
+  D2KKmumuCrossapplication();
 
   return 0;
 

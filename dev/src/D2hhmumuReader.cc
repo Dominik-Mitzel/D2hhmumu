@@ -198,7 +198,7 @@ void D2hhmumuReader::createMCtrainingSample(TString name) {
      fChain->GetEntry(i);
      //aply trigger selection criteria and MC truth matching 
       if(!MCTruthmatched()) continue;
-      if(!isL0Selected() || !isHlt1Selected()) continue;// || !isHlt2Selected() )continue;    
+      if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected() )continue;    
       
       initializeMomenta();
       Slowpi_cosh=slowpi_helicityAngle();

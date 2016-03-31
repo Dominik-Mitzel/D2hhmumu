@@ -1,5 +1,5 @@
 PROGNAME = ../bin/minimal_test
-SOURCEFILES = main.cc sWeights.cc D2hhmumuReader.cc D2KKmumuReader.cc D2KpimumuReader.cc D2pipimumuReader.cc D2hhmumuFitter.cc RooJohnsonSU.cc RooThreshold.cc D2hhmumuModel.cc
+SOURCEFILES = main.cc sWeights.cc D2hhmumuReader.cc D2KKmumuReader.cc D2KpimumuReader.cc D2pipimumuReader.cc D2hhmumuFitter.cc RooJohnsonSU.cc RooThreshold.cc D2hhmumuModel.cc D2KKpipiReader.cc D2KpipipiReader.cc TMVA_applications.cc
 OBJS    = $(patsubst %.cc, %.o,$(SOURCEFILES))
 
 ROOTCFLAGS   := $(shell root-config --cflags)
@@ -15,7 +15,7 @@ CFLAGS       += $(ROOTCFLAGS) -std=c++0x
 LIBS         += -lMinuit -L /opt/root/lib \
 			        -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix \
 	   		        -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic \
-				        -lSpectrum -lRooFit -lHtml -l RooStats 
+				        -lSpectrum -lRooFit -lHtml -l RooStats -lTMVA
 
 %.o: %.cc
 	        g++ ${CFLAGS} -c  -g -o $@ $<
