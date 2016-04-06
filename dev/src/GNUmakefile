@@ -1,5 +1,5 @@
 PROGNAME = ../bin/minimal_test
-SOURCEFILES = main.cc sWeights.cc D2hhmumuReader.cc D2KKmumuReader.cc D2KpimumuReader.cc D2pipimumuReader.cc D2hhmumuFitter.cc RooJohnsonSU.cc RooThreshold.cc D2hhmumuModel.cc D2KKpipiReader.cc D2KpipipiReader.cc TMVA_applications.cc
+SOURCEFILES = main.cc sWeights.cc D2hhmumuReader.cc D2KKmumuReader.cc D2KpimumuReader.cc D2pipimumuReader.cc D2hhmumuFitter.cc RooJohnsonSU.cc RooThreshold.cc D2hhmumuModel.cc D2KKpipiReader.cc D2KpipipiReader.cc TMVA_applications.cc optimizeSelection.cc
 OBJS    = $(patsubst %.cc, %.o,$(SOURCEFILES))
 
 ROOTCFLAGS   := $(shell root-config --cflags)

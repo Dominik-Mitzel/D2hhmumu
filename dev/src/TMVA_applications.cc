@@ -24,7 +24,7 @@ void Classification_D2KKmumu(int part) {
     signalTree_test="DecayTree_odd";
     bkgTree_test="sideband/DecayTree_odd";
 
-    targetFile = "training_D2KKmumu_evenTrained.root";
+    targetFile = "/work/mitzel/D2hhmumu/dev/rootFiles/training_D2KKmumu_evenTrained.root";
   }
 
   if(part==2) {
@@ -34,7 +34,7 @@ void Classification_D2KKmumu(int part) {
     signalTree_test="DecayTree_even";
     bkgTree_test="sideband/DecayTree_even";
 
-    targetFile = "training_D2KKmumu_oddTrained.root";
+    targetFile = "/work/mitzel/D2hhmumu/dev/rootFiles/training_D2KKmumu_oddTrained.root";
   }
 
 
@@ -87,8 +87,8 @@ void Classification_D2KKmumu(int part) {
 
 
 
-  TCut cutsS=" Slowpi_ProbNNghost<0.5 && h0_ProbNNghost<0.5 && h1_ProbNNghost<0.5 && mu0_ProbNNghost <0.5 && mu1_ProbNNghost<0.5";//"D_DiMuon_Mass>525";                                    
-  TCut cutsB="Slowpi_ProbNNghost<0.5 && h0_ProbNNghost<0.5 && h1_ProbNNghost<0.5 && mu0_ProbNNghost <0.5 && mu1_ProbNNghost<0.5";//"D_DiMuon_Mass>525";                                     
+  TCut cutsS=" Slowpi_ProbNNghost<0.5 && h0_ProbNNghost<0.5 && h1_ProbNNghost<0.5 && mu0_ProbNNghost <0.5 && mu1_ProbNNghost<0.5";//"D_DiMuon_Mass>525";        
+  TCut cutsB="Slowpi_ProbNNghost<0.5 && h0_ProbNNghost<0.5 && h1_ProbNNghost<0.5 && mu0_ProbNNghost <0.5 && mu1_ProbNNghost<0.5 ";//"D_DiMuon_Mass>525";                                     
 
 
   factory->AddSignalTree(signal_train,1.0,TMVA::Types::kTraining);
@@ -398,18 +398,23 @@ void D2KKmumuCrossapplication(){
   myChain2->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2KKmumu_BDT_even.root");
   myChain2->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2KKmumu_BDT.root");
   */
-
+  
+  /*
   //MC                                                                                                                                                                                
-
+ 
   Application_D2KKmumu("DecayTree_odd","D2KKmumu_highStat_MCtrainingSample.root","MC_D2KKmumu_BDT_odd.root",1);
   Application_D2KKmumu("DecayTree_even","D2KKmumu_highStat_MCtrainingSample.root","MC_D2KKmumu_BDT_even.root",2);
 
   TChain* myChain3= new TChain("BDT_Tree");
   myChain3->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT_odd.root");
   myChain3->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT_even.root");
-  myChain3->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_2KKmumu_BDT.root");
+  myChain3->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT.root");
+  */
+
+
 
   /*
+ 
   //normalization mode 
   Application_D2KKmumu("data/DecayTree_odd","D2Kpimumu_PreselectedSubsample.root","D2Kpimumu_D2KKmumuBDT_odd.root",1);
   Application_D2KKmumu("data/DecayTree_even","D2Kpimumu_PreselectedSubsample.root","D2Kpimumu_D2KKmumuBDT_even.root",2);
@@ -418,9 +423,39 @@ void D2KKmumuCrossapplication(){
   myChain4->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT_odd.root");
   myChain4->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT_even.root");
   myChain4->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT.root");
-
-  std::cout << "==> TMVAClassificationApplication is done!"  << std::endl;
   */
-}
+  
+  //sideband                                                                                                                                                                          
+
+  Application_D2KKmumu("sideband/DecayTree_odd","D2Kpimumu_PreselectedSubsample.root","sideband_D2Kpimumu_D2KKmumuBDT_odd.root",1);
+  Application_D2KKmumu("sideband/DecayTree_even","D2Kpimumu_PreselectedSubsample.root","sideband_D2Kpimumu_D2KKmumuBDT_even.root",2);
+  TChain* myChain7= new TChain("BDT_Tree");
+  myChain7->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT_odd.root");
+  myChain7->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT_even.root");
+  myChain7->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT.root");
+  
+
+
+  /*
+  
+  //mis ID bkg MC 
+  Application_D2KKmumu("DecayTree_odd","D2KKpipi_filteredt_MCSample.root","D2KKpipi_filtered_D2KKmumuBDT_odd.root",1); 
+  Application_D2KKmumu("DecayTree_even","D2KKpipi_filteredt_MCSample.root","D2KKpipi_filtered_D2KKmumuBDT_even.root",2);
+  TChain* myChain5= new TChain("BDT_Tree");                                                                                                                                                  
+  myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_filtered_D2KKmumuBDT_odd.root");                                                                                 
+  myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_filtered_D2KKmumuBDT_even.root");                                                                              
+  myChain5->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_filtered_D2KKmumuBDT.root");  
+
+  //mis ID bkg MC 
+  Application_D2KKmumu("DecayTree_odd","D2KKpipi_filteredt_MCSample.root","D2Kpipipi_filtered_D2KKmumuBDT_odd.root",1); 
+  Application_D2KKmumu("DecayTree_even","D2Kpipipi_filteredt_MCSample.root","D2Kpipipi_filtered_D2KKmumuBDT_even.root",2);
+  TChain* myChain6= new TChain("BDT_Tree");                                                                                                                                                  
+  myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_filtered_D2KKmumuBDT_odd.root");                                                                                
+  myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_filtered_D2KKmumuBDT_even.root");                                                                              
+  myChain6->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_filtered_D2KKmumuBDT.root");  
+
+  */
+  std::cout << "==> TMVAClassificationApplication is done!"  << std::endl;
+ }
 
 

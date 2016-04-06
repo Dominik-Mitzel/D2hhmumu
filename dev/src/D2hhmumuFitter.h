@@ -86,6 +86,12 @@ class D2hhmumuFitter {
   RooRealVar D0_M_chebyB;
   RooRealVar D0_M_chebyC;
 
+
+  RooRealVar deltaM_xi_bkg;
+  RooRealVar deltaM_lambda_bkg;
+  RooRealVar deltaM_gamma_bkg;
+  RooRealVar deltaM_delta_bkg;
+
   RooRealVar D0_M_xi_bkg;
   RooRealVar D0_M_lambda_bkg;
   RooRealVar D0_M_gamma_bkg;
@@ -100,17 +106,31 @@ class D2hhmumuFitter {
   //************************                                                                                                                                                    
   
 
-  void initializeModel();
-  D2hhmumuModel* myModel;
+  D2hhmumuModel*  initializeModel();
   void setStyle();
+
+  TString pathToSignalData;
+  TString pathToNormData;
+  TString pathToSignalMC;
+  TString pathToInvData;
+  TString pathToSidebandData;
+
+  void setPathToSignalMC(TString path);
+  void setPathToSignalData(TString path);
+  void setPathToNormData(TString path);
+  void setPathToInvData(TString path);
+  void setPathToSidebandData(TString path);
+
 
   void setKpimumuStartParameters(); //to be implemented, especially when there will be other channles..    
   void setKKmumuStartParameters(); //to be implemented, especially when there will be other channles..                                                                        
   void setpipimumuStartParameters(); //to be implemented, especially when there will be other channles..                                                                      
 
-  void fit_MC();
-  void fit_Data();
-  void fit_PIDinverted_Data();
+  double getMisIDbkgExp(TString cut,TString namePlot);
+  double getCombBkg(TString cut,TString namePlot);
+  void fit_MC(bool fixShape);
+  void fit_PIDinverted_Data(bool fixShape);
+  void fit_Data(TString cut);
   void toyStudy();
   
   

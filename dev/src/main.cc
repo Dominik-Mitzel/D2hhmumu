@@ -10,6 +10,7 @@
 #include "D2hhmumuFitter.h"
 #include "sWeights.h"
 #include "TMVA_applications.h"
+#include "optimizeSelection.h"
 
 using namespace std;
 
@@ -181,9 +182,20 @@ void D2pipimumuMC(){
 
 int main() {
 
+
+
+  ////////////////////////////////////
+  //                                //
+  //  create preselected samples    //
+  //  split by run numbers          //
+  //  create TMVA trainign samples  //
+  //                                //
+  ////////////////////////////////////
+
+
+
   //D2pipimumuMC();                                                                                                                                                                          
   //D2pipimumuData();                                                                                                                                                                         
-  
   //D2KpimumuMC();                                                                                                                                                                           
   //D2KpimumuData();
 
@@ -192,22 +204,56 @@ int main() {
   //D2KKpipiMC();                                                                                                                                                        
   //D2KpipipiMC();                                                                                                                                                          
 
+
+  ////////////////////////////////////                                                                                                                                                         //                                //                                                                                                                                                         // data MC comparison with        //
+  //   sweights                     //                                                                                                                                
+  //                                //
+  ////////////////////////////////////
+
   //sweights part                     
   //calculateSweights("../Data_MC_Comparison/D2Kpimumu_BDT_selected.root");
   //data_MC_comparison();
   // checkLuminosity();      
-  //fit_MC();
+
+
+  ////////////////////////////////////
+  //                                //
+  // Fitter                         //
+  //                                //
+  ////////////////////////////////////
+
   
   //Fit part
-  //D2hhmumuFitter myFitter;
-  //myFitter.fit_Data();
-  //myFitter.fit_PIDinverted_Data();
-  //myFitter.toyStudy();
+  D2hhmumuFitter myFitter;
+  //myFitter.setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT.root");
+  myFitter.fit_MC(true);
+  myFitter.fit_PIDinverted_Data(true);
+  myFitter.setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT.root");
+  myFitter.fit_Data("BDT>0.7 && mu0_ProbNNmu>0.5 && mu1_ProbNNmu>0.5"); 
+ //myFitter.getCombBkg("BDT>0.6 && mu0_ProbNNmu>0.4 && mu1_ProbNNmu>0.4","");
+ //myFitter.toyStudy();
+
+
+  ////////////////////////////////////
+  //                                //
+  //  TMVA training and application //
+  //                                //
+  ////////////////////////////////////
+
 
   //TMVA
   //D2KKmumuCrosstraining();
-  D2KKmumuCrossapplication();
+  //D2KKmumuCrossapplication();
 
-  return 0;
+
+  ////////////////////////////////////
+  //                                //
+  //  Selection optimisation        //
+  //                                //
+  ////////////////////////////////////
+
+  // optimizeSelection();
+
+   return 0;
 
 }

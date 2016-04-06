@@ -43,11 +43,11 @@ RooAbsPdf* D2hhmumuModel::Signal(RooRealVar m, RooRealVar dm,
 
 
 RooAbsPdf* D2hhmumuModel::CombinatoricBackground(RooRealVar m, RooRealVar dm,
-				      RooRealVar mChebyA,RooRealVar mChebyB ,RooRealVar mChebyC ,
+				      RooRealVar mChebyA,RooRealVar mChebyB ,
 				      RooRealVar dmThreshold, RooRealVar dmAlpha)
 {
   if (m_ws.pdf("CombinatoricBkg") == 0) {
-    RooChebychev CombinatoricBkgM("CombinatoricBkgM", "Combinatoric Background (M)", m, RooArgList(mChebyA,mChebyB,mChebyC));
+    RooChebychev CombinatoricBkgM("CombinatoricBkgM", "Combinatoric Background (M)", m, RooArgList(mChebyA,mChebyB));
     RooThreshold CombinatoricBkgDm("CombinatoricBkgDm", "Combinatoric Background (#Deltam)", dm, dmThreshold, dmAlpha);
     RooProdPdf CombinatoricBkg("CombinatoricBkg", "Combinatoric Background", RooArgList(CombinatoricBkgM, CombinatoricBkgDm));
     m_ws.import(CombinatoricBkg);
