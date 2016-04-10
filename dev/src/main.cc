@@ -141,12 +141,38 @@ void D2KpipipiMC(){
 
   D2KpipipiReader* Kpi_MC_Reader = new D2KpipipiReader(Tree_MC_D2Kpipipi);
   Kpi_MC_Reader->InitMC();
-                                                                                                                                                                         
-  Kpi_MC_Reader->addMisIdMasses("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_filteredt_MCSample1.root");
-
+  Kpi_MC_Reader->createMCtrainingSample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_MCtrainingSample.root");                                                           
 
 }
 
+
+void D2KpipipiData(){
+
+  TChain* Tree_D2Kpipipi = new TChain("DstD2KPiPiPi/DecayTree");
+
+  for (int i=0; i<20000; ++i) {
+    Tree_D2Kpipipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/D2hhhh/magUp/2012Data_D2hhhh_%i.root",i));
+    Tree_D2Kpipipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/D2hhhh/magDw/2012Data_D2hhhh_%i.root",i));
+  }
+
+
+  D2KpipipiReader* Kpipipi_Reader = new D2KpipipiReader(Tree_D2Kpipipi);
+  Kpipipi_Reader->createSubsample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_PreselectedSubsample.root",10);
+}
+
+
+void D2KKpipiData(){
+
+  TChain* Tree_D2KKpipi = new TChain("DstD2KKPiPi/DecayTree");
+
+  for (int i=0; i<2000; ++i) {
+    Tree_D2KKpipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/D2hhhh/magUp/2012Data_D2hhhh_%i.root",i));
+    //Tree_D2KKpipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/D2hhhh/magDw/2012Data_D2hhhh_%i.root",i));
+  }
+
+  D2KKpipiReader* KKpipi_Reader = new D2KKpipiReader(Tree_D2KKpipi);
+  KKpipi_Reader->createSubsample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_PreselectedSubsample.root",10);
+}
 
 
 void D2KpimumuMC(){
@@ -183,6 +209,8 @@ void D2pipimumuMC(){
 int main() {
 
 
+  time_t startTime = time(0);
+
 
   ////////////////////////////////////
   //                                //
@@ -202,7 +230,9 @@ int main() {
   //D2KKmumuMC();                                                                                                                                                         
   //D2KKmumuData();                                                                                                                                                   
   //D2KKpipiMC();                                                                                                                                                        
-  //D2KpipipiMC();                                                                                                                                                          
+  D2KpipipiMC();                                                                                                                                                          
+  //D2KKpipiData();                                                                                                                                                        
+  D2KpipipiData();                                                                                                                                                          
 
 
   ////////////////////////////////////                                                                                                                                                         //                                //                                                                                                                                                         // data MC comparison with        //
@@ -224,12 +254,12 @@ int main() {
 
   
   //Fit part
-  D2hhmumuFitter myFitter;
+  //D2hhmumuFitter myFitter;
   //myFitter.setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT.root");
-  myFitter.fit_MC(true);
-  myFitter.fit_PIDinverted_Data(true);
-  myFitter.setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT.root");
-  myFitter.fit_Data("BDT>0.7 && mu0_ProbNNmu>0.5 && mu1_ProbNNmu>0.5"); 
+  //myFitter.fit_MC(true);
+  //myFitter.fit_PIDinverted_Data(true);
+  //myFitter.setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT.root");
+  //myFitter.fit_Data("BDT>0.7 && mu0_ProbNNmu>0.5 && mu1_ProbNNmu>0.5"); 
  //myFitter.getCombBkg("BDT>0.6 && mu0_ProbNNmu>0.4 && mu1_ProbNNmu>0.4","");
  //myFitter.toyStudy();
 
@@ -253,6 +283,12 @@ int main() {
   ////////////////////////////////////
 
   // optimizeSelection();
+
+  cout << "==============================================" << endl;
+  cout << " Done " 
+       << " \n Time since start " << (time(0) - startTime)/60.0
+       << " min." << endl;
+  cout << "==============================================" << endl;
 
    return 0;
 

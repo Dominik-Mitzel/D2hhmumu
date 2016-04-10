@@ -25,10 +25,18 @@ class D2hhmumuModel
                     );
 
 
+  /*
   RooAbsPdf * CombinatoricBackground(RooRealVar m, RooRealVar dm,
 				     RooRealVar mChebyA,RooRealVar mChebyB ,RooRealVar mChebyC ,
 				     RooRealVar dmThreshold, RooRealVar dmAlpha
 				     );
+  */
+
+  RooAbsPdf * CombinatoricBackground(RooRealVar m, RooRealVar dm,                                                                                                                          
+                                     RooRealVar mChebyA,RooRealVar mChebyB ,                                                                                           
+                                     RooRealVar dmThreshold, RooRealVar dmAlpha                                                                                                            
+                                     );   
+
 
   RooAbsPdf* RandomPionBackground(RooRealVar m, RooRealVar dm,
 				  RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mDeltaJSU, RooRealVar mGammaJSU,

@@ -82,8 +82,9 @@ bool D2hhmumuReader::MCTruthmatched(){
 
 double D2hhmumuReader::DTFdm(){
   
-  initializeMomenta();
-  return  (pDTFH1+pDTFH0+pDTFMu0+pDTFMu1+pDTFPis).M()-(pDTFH1+pDTFH0+pDTFMu0+pDTFMu1).M();
+  //initializeMomenta();
+  //return  (pDTFH1+pDTFH0+pDTFMu0+pDTFMu1+pDTFPis).M()-(pDTFH1+pDTFH0+pDTFMu0+pDTFMu1).M();
+  Dst_DTF_Dstarplus_M - Dst_DTF_D0_M; //independent of type 
 }
 
 double D2hhmumuReader::dm(){
@@ -2739,6 +2740,11 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("h0_ProbNNmu",1);
   fChain->SetBranchStatus("h0_ProbNNghost",1);
 
+  fChain->SetBranchStatus("h0_ID",1);
+  fChain->SetBranchStatus("h1_ID",1);
+  fChain->SetBranchStatus("mu0_ID",1);
+  fChain->SetBranchStatus("mu1_ID",1);
+
 
   //trigger 
 
@@ -2746,6 +2752,8 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("mu1_L0MuonDecision_TOS",1);
   fChain->SetBranchStatus("mu0_L0DiMuonDecision_TOS",1);
   fChain->SetBranchStatus("mu1_L0DiMuonDecision_TOS",1);
+  fChain->SetBranchStatus("h1_L0MuonDecision_TOS",1);
+  fChain->SetBranchStatus("h1_L0DiMuonDecision_TOS",1);
   fChain->SetBranchStatus("Dst_L0Global_TIS",1);
   fChain->SetBranchStatus("D_L0Global_TIS",1);
 
@@ -2758,13 +2766,19 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("mu1_Hlt1SingleMuonNoIPDecision_TOS",1);
   fChain->SetBranchStatus("mu0_Hlt1SingleMuonHighPTDecision_TOS",1);
   fChain->SetBranchStatus("mu1_Hlt1SingleMuonHighPTDecision_TOS",1);
+  fChain->SetBranchStatus("h1_0_Hlt1TrackMuonDecision_TOS",1);
   fChain->SetBranchStatus("D_Hlt2CharmSemilepD02KKMuMuDecision_TOS",1);
   fChain->SetBranchStatus("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",1);
   fChain->SetBranchStatus("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",1);
   fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHXDst_hhXDecision_TOS",1);
   fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHXDst_LeptonhhXDecision_TOS",1);
   fChain->SetBranchStatus("D_Hlt2DiMuonDetachedDecision_TOS",1);
-
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHHHDst_4piDecision_TOS",1);	
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHHHDst_K3piDecision_TOS",1);	
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHHHDst_KKpipiDecision_TOS",1);	
+  fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_K3piDecision_TOS",1);	
+  fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_KKpipiDecision_TOS",1);	
+  fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_4piDecision_TOS",1);
   fChain->SetBranchStatus("mu1_TRACK_GhostProb",1);
   fChain->SetBranchStatus("mu0_TRACK_GhostProb",1);
   fChain->SetBranchStatus("h0_TRACK_GhostProb",1);

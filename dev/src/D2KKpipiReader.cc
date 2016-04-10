@@ -85,8 +85,8 @@ void D2KKpipiReader::initializeMomenta(){
 
 bool D2KKpipiReader::isHlt2Selected(){
 
-  // if(D_Hlt2CharmSemilepD02KKMuMuDecision_TOS==1) return true;
-  //else return false;
+  //if(D_Hlt2CharmSemilepD02KKMuMuDecision_TOS==1) return true;
+  // else return false;
   // at the moment, only HLT2 filtered MC of the D2hhhh modes is available, therefore do not cut on HLT2 
   return true;
 }
