@@ -19,13 +19,13 @@ class D2hhmumuModel
   //PDF in mD0 
   //signal PDF 
  
-  RooAbsPdf * Signal(RooRealVar m, RooRealVar dm,
+  RooAbsPdf * Signal(RooRealVar m, RooRealVar dm,RooRealVar nSignal,
                      RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mDeltaJSU, RooRealVar mGammaJSU,
                      RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmDeltaJSU, RooRealVar dmGammaJSU
                     );
 
 
-  RooAbsPdf * Signal_forLimit (RooRealVar m, RooRealVar dm,
+  RooAbsPdf * Signal_blindable (RooRealVar m, RooRealVar dm,RooRealVar nSignal_blindable, 
 			       RooRealVar EffRatio,RooRealVar nNorm, RooRealVar BFsig, RooRealVar BFnorm,
 			       RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mNuJSU, RooRealVar mTauJSU,
 			       RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmNuJSU, RooRealVar dmTauJSU);

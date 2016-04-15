@@ -26,7 +26,7 @@ D2hhmumuModel::~D2hhmumuModel()
 {
 }
 
-RooAbsPdf* D2hhmumuModel::Signal(RooRealVar m, RooRealVar dm,
+RooAbsPdf* D2hhmumuModel::Signal(RooRealVar m, RooRealVar dm,RooRealVar nSignal,
                       RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mNuJSU, RooRealVar mTauJSU,
                       RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmNuJSU, RooRealVar dmTauJSU)
 {
@@ -35,28 +35,28 @@ RooAbsPdf* D2hhmumuModel::Signal(RooRealVar m, RooRealVar dm,
     RooJohnsonSU SignalDm_JSU("SignalDm_JSU", "Signal #Deltam JSU", dm, dmMeanJSU, dmWidthJSU, dmNuJSU, dmTauJSU);         
     RooProdPdf Signal("Signal","Signal PDF",RooArgList(SignalD0_JSU,SignalDm_JSU));
     m_ws.import(Signal);
-    RooRealVar nSignal("nSignal", "Signal Events", 3000, 0., 1000000.);
+    //RooRealVar nSignal("nSignal", "Signal Events", 3000, 0., 1000000.);
     m_ws.import(nSignal);
   }
   return m_ws.pdf("Signal");
 }
 
 
-RooAbsPdf* D2hhmumuModel::Signal_forLimit(RooRealVar m, RooRealVar dm,
+RooAbsPdf* D2hhmumuModel::Signal_blindable(RooRealVar m, RooRealVar dm,RooRealVar nSignal_blindable,
 				 RooRealVar EffRatio,RooRealVar nNorm, RooRealVar BFsig, RooRealVar BFnorm,
 				 RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mNuJSU, RooRealVar mTauJSU,
 				 RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmNuJSU, RooRealVar dmTauJSU)
 {
-  if (m_ws.pdf("Signal_forLimit") == 0) {
-    RooJohnsonSU SignalD0_JSU("SignalD0_JSU_forLimit", "Signal D^{0} JSU", m, mMeanJSU, mWidthJSU,mNuJSU,mTauJSU);
-    RooJohnsonSU SignalDm_JSU("SignalDm_JSU_forLimit", "Signal #Deltam JSU", dm, dmMeanJSU, dmWidthJSU, dmNuJSU, dmTauJSU);
-    RooProdPdf Signal("Signal_forLimit","Signal PDF",RooArgList(SignalD0_JSU,SignalDm_JSU));
+  if (m_ws.pdf("Signal_blindable") == 0) {
+    RooJohnsonSU SignalD0_JSU("SignalD0_JSU_blindable", "Signal D^{0} JSU", m, mMeanJSU, mWidthJSU,mNuJSU,mTauJSU);
+    RooJohnsonSU SignalDm_JSU("SignalDm_JSU_blindable", "Signal #Deltam JSU", dm, dmMeanJSU, dmWidthJSU, dmNuJSU, dmTauJSU);
+    RooProdPdf Signal("Signal_blindable","Signal PDF",RooArgList(SignalD0_JSU,SignalDm_JSU));
     m_ws.import(Signal);
     //RooRealVar nSignal("nSignal", "Signal Events", 3000, 0., 1000000.);
-    RooFormulaVar nSignal_forLimit("nSignal_forLimit", "@0/@1*@2*@3", RooArgList(BFsig,BFnorm,nNorm,EffRatio));  
-    m_ws.import(nSignal_forLimit);
+    //RooFormulaVar nSignal_forLimit("nSignal_forLimit", "@0/@1*@2*@3", RooArgList(BFsig,BFnorm,nNorm,EffRatio));  
+    m_ws.import(nSignal_blindable);
   }
-  return m_ws.pdf("Signal_forLimit");
+  return m_ws.pdf("Signal_blindable");
 }
 
 RooAbsPdf* D2hhmumuModel::CombinatoricBackground(RooRealVar m, RooRealVar dm,

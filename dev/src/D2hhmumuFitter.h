@@ -110,7 +110,7 @@ class D2hhmumuFitter {
   //************************                                                                                                                                                    
   
 
-  D2hhmumuModel*  initializeModel(RooRealVar D0_M,RooRealVar deltaM);
+  D2hhmumuModel*  initializeModel(RooRealVar D0_M,RooRealVar deltaM,RooRealVar nSignal);
   void setStyle();
 
   TString pathToSignalData;
@@ -126,20 +126,20 @@ class D2hhmumuFitter {
   void setPathToInvData(TString path);
   void setPathToSidebandData(TString path);
 
-
   void setKpimumuStartParameters(); //to be implemented, especially when there will be other channles..    
-  void setKKmumuStartParameters(); //to be implemented, especially when there will be other channles..                                                                        
-  void setpipimumuStartParameters(); //to be implemented, especially when there will be other channles..                                                                      
+  void setKKmumuStartParameters(); //to be implemented, especially when there will be other channles..                                                    
+  void setpipimumuStartParameters(); //to be implemented, especially when there will be other channles..                                              
 
+  //used for selection optimisation
   double getMisIDbkgExp(TString cut,TString namePlot);
   double getCombBkg(TString cut,TString namePlot);
+
+  //actually the fits
   void fit_MC(TString cut, bool fixShape);
   void fit_PIDinverted_Data(bool fixShape);
   void fit_Data(TString cut);
-  void toyStudy();
   void fit_Kpipipi_misID(TString cut,bool fixShape);
-  void fit_normalization_Data(TString cut);
-  
+  void fit_normalization_Data(TString cut);  
   
 };
  

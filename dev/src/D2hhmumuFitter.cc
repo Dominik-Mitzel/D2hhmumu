@@ -2,7 +2,9 @@
 #include "RooAddPdf.h"
 #include "RooMCStudy.h"
 #include "RooStats/ModelConfig.h"
-
+#include "RooUnblindPrecision.h"
+#include "RooUnblindOffset.h"
+#include "RooCategory.h"
 using namespace std;
 using namespace RooFit ;
 
@@ -16,10 +18,11 @@ D2hhmumuFitter::D2hhmumuFitter():
 
   EffRatio("EffRatio","Efficieny ratio",1,0,3),
   nNorm("nNorm","number events normalisation channel",2500,100,10000),
+  //  nSig("nSig","number of eignal events",30,0,500),
   BFsig("BFsig","signal Branching fraction",1e-7,1e-8,1e-5),
   BFnorm("BFnorm","normalizaiton mode Branching fraction",1,0,1),
  
-  //signal                                                                                                                                                                      
+  //signal                                                                                                                                           
   deltaM_xi("deltaM_xi","deltaM_xi",1.45437e+02,144,146),
   deltaM_lambda("deltaM_lambda","deltaM_lambda",5.35039e-01,0.1,2),
   deltaM_gamma("deltaM_gamma","deltaM_gamma",1.00164e-01,-2,2),
@@ -28,13 +31,15 @@ D2hhmumuFitter::D2hhmumuFitter():
   D0_M_lambda("D0_M_lambda","D0_M_lambda",8.54839e+00,0.1,20),
   D0_M_gamma("D0_M_gamma","D0_M_gamma",-5.42758e-02,-2,40),
   D0_M_delta("D0_M_delta","D0_M_delta",6.09288e-01,0.,10),
-  //purely combinatorial background                                                                                                                                             
+
+  //purely combinatorial background                                                                                                                 
   deltaM_threshold("deltaM_threshold","deltaM_threshold",139.57018),
   deltaM_alpha("deltaM_alpha","deltaM_alpha",3.9761e+00,0,10.),
   D0_M_chebyA("D0_M_chebyA","D0_M_chebyA",-3.5906e-02,-1,1),
   D0_M_chebyB("D0_M_chebyB","D0_M_chebyB",-1.7004e-02,-1,1),
   D0_M_chebyC("D0_M_chebyC","D0_M_chebyC",-1.7882e-02,-1,1),
-  //peaking , in mD0 just a Gaussian... to be improved!                                                                                                                         
+
+  //peaking in mD0 and dM                                                                                                                        
   deltaM_xi_bkg("deltaM_xi_bkg","deltaM_xi_bkg",1.45437e+02,144,146),
   deltaM_lambda_bkg("deltaM_lambda_bkg","deltaM_lambda_bkg",5.35039e-01,0.1,2),
   deltaM_gamma_bkg("deltaM_gamma_bkg","deltaM_gamma_bkg",1.00164e-01,-2,2),
@@ -107,9 +112,10 @@ void D2hhmumuFitter::fit_MC(TString cut="",bool fixShape = true){
   //observables
   RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1820., 1940.,"MeV");
   RooRealVar deltaM("deltaM","#delta m", 142,149,"MeV");
+  RooRealVar nSignal("nSignal","#signal events ",100000,0,100000,"MeV");
 
   ///create Model with desired components
-  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM);
+  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM,nSignal);
   std::string components="Signal";
   myModel->Model(components);
   RooWorkspace m_ws = myModel->GetWorkspace(); // get workspace with  all PDFs and coefficients
@@ -200,14 +206,28 @@ void D2hhmumuFitter::fit_normalization_Data(TString cut=""){
   //observables
   RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1800., 1940.,"MeV");
   RooRealVar deltaM("deltaM","#delta m", 142,149,"MeV");
+  RooRealVar nSignal("nSignal","#signal events ",100000,0,100000,"");
 
   ///create Model with desired components
-  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM);
+  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM,nSignal);
   std::string components="Signal CombinatoricBkg RandomPionBkg D2hhhhBkg";
   myModel->Model(components);
   RooWorkspace m_ws = myModel->GetWorkspace(); // get workspace with  all PDFs and coefficients
-  RooAbsPdf* finalPDF = m_ws.pdf("D2hhmumuModel");
- 
+  
+  //RooCategory blindingstate("blindingstate","blinding state");
+  //blindingstate.defineType("unblind", 0);
+  //blindingstate.defineType("blind", 1);
+
+
+  RooRealVar nSig("nSig","number of eignal events",30,0,10000);                                                                                           
+  RooUnblindPrecision  nSignal_blind ("nSignal_blind","nSignal blind","TheBlindingString",2000.,2.0,nSig) ; 
+  m_ws.import(nSignal_blind);
+  m_ws.factory("blinding[Unblind=0, Blind=1]");
+  m_ws.cat("blinding")->setLabel("Blind");
+
+  m_ws.factory("SUM::tot(nSignal_blind*Signal,nCombinatoricBkg*CombinatoricBkg,nRandomPionBkg*RandomPionBkg,nD2hhhhBkg*D2hhhhBkg)");
+  RooAbsPdf* finalPDF = m_ws.pdf("tot");
+
   //get data to fit
   TFile* file;
   file= new TFile(pathToNormData,"OPEN");
@@ -236,10 +256,10 @@ void D2hhmumuFitter::fit_normalization_Data(TString cut=""){
 
   // write the workspace in the file
   TString fileName = "normData_model.root";
-  nNorm.setVal(m_ws.var("nSignal")->getVal());
+  //nNorm.setVal(m_ws.var("nSignal")->getVal());
   m_ws.writeToFile(fileName,true);
   cout << "model written to file " << fileName << endl;
-  cout << "signal events normalization channel :" << nNorm.getVal() << endl;
+  //cout << "signal events normalization channel :" << nNorm.getVal() << endl;
 
   ///Plot                                                                                                                                                                                     
   ///----------                                                                                                                                                                               
@@ -296,19 +316,13 @@ void D2hhmumuFitter::fit_Data(TString cut=""){
   RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1800., 1940.,"MeV");
   RooRealVar deltaM("deltaM","#delta m", 142,149,"MeV");
 
-  EffRatio.setVal(1);EffRatio.setConstant();
-  //nNorm.setVal(2500);
-  nNorm.setConstant();
-  BFnorm.setVal(4.17e-6); BFnorm.setConstant();
-  std::cout<<"norm: "<<nNorm.getVal()<<endl;
+  //RooRealVar true_Signal("true_nSignal","#signal events ",100000,0,100000,"MeV");
+  //RooUnblindPrecision nSignal("nSignal","nSignal (unblind)","TheBlindingString",-1.0,1.0,true_Signal) ;
+  RooRealVar nSignal("nSignal","#signal events ",100000,0,100000,"MeV");
 
-  //  m_ws.import(BFsig);
-  //  m_ws.import(EffRatio);
-  //m_ws.import(nNorm);
-  //m_ws.import(BFnorm);
 
   ///create Model with desired components
-  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM);
+  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM,nSignal);
   std::string components="Signal CombinatoricBkg RandomPionBkg D2hhhhBkg";
   myModel->Model(components);
   RooWorkspace m_ws = myModel->GetWorkspace(); // get workspace with  all PDFs and coefficients
@@ -392,8 +406,21 @@ void D2hhmumuFitter::fit_Data(TString cut=""){
   c1->Print("../img/massFit2.eps");
   
   //new parameterisation of PDF. Fit directly the signal BF
-  
-  m_ws.factory("expr::sig_yield('nNorm*(BFsig/BFnorm)*EffRatio',nNorm,BFsig,BFnorm,EffRatio)");
+
+  EffRatio.setVal(1);EffRatio.setConstant();
+  //nNorm.setVal(2500);
+  nNorm.setConstant();
+  BFnorm.setVal(4.17e-6); BFnorm.setConstant();
+  std::cout<<"norm: "<<nNorm.getVal()<<endl;
+
+  RooUnblindPrecision BF_unblinded("BF_unblinded","BF_unblinded","TheBlindingString",1.0,1.0,BFsig) ;                                                  
+
+  m_ws.import(nNorm);
+  m_ws.import(BFnorm);
+  m_ws.import(BF_unblinded);
+  m_ws.import(EffRatio);
+
+  m_ws.factory("expr::sig_yield('nNorm*(BF_unblinded/BFnorm)*EffRatio',nNorm,BF_unblinded,BFnorm,EffRatio)");
   m_ws.factory("SUM::tot_bidi_pdf(nCombinatoricBkg*CombinatoricBkg,sig_yield*Signal,nRandomPionBkg*RandomPionBkg,nD2hhhhBkg*D2hhhhBkg)");
 
     //add gaussian constraints to the nuissance parameters
@@ -447,6 +474,7 @@ void D2hhmumuFitter::fit_PIDinverted_Data(bool fixShape){
   ///Load file                                                                                                                                                                 
   RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1820., 1940.,"MeV");
   RooRealVar deltaM("deltaM","#delta m", 142,149,"MeV");
+  RooRealVar nSignal("nSignal","#signal events ",100000,0,100000,"MeV");
 
   TFile* file;
   file= new TFile(pathToInvData,"OPEN");
@@ -457,7 +485,7 @@ void D2hhmumuFitter::fit_PIDinverted_Data(bool fixShape){
 
   D0_M.setRange(1800,1940);
 
-  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM);
+  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM,nSignal);
 
   RooArgList list =  RooArgList( D0_M,deltaM );
   RooDataSet* data = new RooDataSet("data", "data", tree, RooArgSet(D0_M,deltaM));
@@ -534,6 +562,7 @@ void D2hhmumuFitter::fit_Kpipipi_misID(TString cut="",bool fixShape=false){
 
   RooRealVar D0_M("misID_mD_OS", "m(h h #mu #mu)", 1820., 1940.,"MeV");
   RooRealVar deltaM("deltaM","#delta m", 142,149,"MeV");
+  RooRealVar nSignal("nSignal","#signal events ",100000,0,100000,"MeV");
                                        
 
   TFile* file;
@@ -560,7 +589,7 @@ void D2hhmumuFitter::fit_Kpipipi_misID(TString cut="",bool fixShape=false){
   RooDataHist* data_binned = data_small->binnedClone();
 
   ///Fit                                                                                                          
-  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM);
+  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM,nSignal);
 
   std::string components="D2hhhhBkg CombinatoricBkg";
   RooAbsPdf* finalPDF = myModel->Model(components);
@@ -652,6 +681,7 @@ double D2hhmumuFitter::getMisIDbkgExp(TString cut, TString namePlot){
 
   RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1820., 1940.,"MeV");
   RooRealVar deltaM("deltaM","#delta m", 142,149,"MeV");
+  RooRealVar nSignal("nSignal","#signal events ",100000,0,100000,"MeV");
 
 
   TFile* file;
@@ -671,7 +701,7 @@ double D2hhmumuFitter::getMisIDbkgExp(TString cut, TString namePlot){
   cout <<cutTree->GetEntries() <<endl;
 
   ///Fit                                                                                                                                                                                   
-  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM);
+  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM,nSignal);
   std::string components="Signal CombinatoricBkg D2hhhhBkg";
   RooAbsPdf* finalPDF = myModel->Model(components);
 
@@ -716,6 +746,7 @@ double D2hhmumuFitter::getCombBkg(TString cut,TString namePlot){
 
   RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1820., 1940.,"MeV");
   RooRealVar deltaM("deltaM","#delta m", 142,149,"MeV");
+  RooRealVar nSignal("nSignal","#signal events ",100000,0,100000,"MeV");
 
   TFile* file;
   //file= new TFile(pathToSidebandData,"OPEN");
@@ -740,7 +771,7 @@ double D2hhmumuFitter::getCombBkg(TString cut,TString namePlot){
 
   ///Fit               
 
-  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM);
+  D2hhmumuModel* myModel = initializeModel(D0_M,deltaM,nSignal);
   //std::string components="Signal CombinatoricBkg  D2hhhhBkg ";
   
   std::string components="CombinatoricBkg ";                                                                                                         
@@ -810,8 +841,7 @@ double D2hhmumuFitter::getCombBkg(TString cut,TString namePlot){
 
 
 
-D2hhmumuModel* D2hhmumuFitter::initializeModel(RooRealVar D0_M,RooRealVar deltaM){
-//RooWorkspace  D2hhmumuFitter::initializeModel(RooRealVar D0_M,RooRealVar deltaM){
+D2hhmumuModel* D2hhmumuFitter::initializeModel(RooRealVar D0_M,RooRealVar deltaM,RooRealVar nSignal){
   
   //funcition is called by the constructor and initializes a model defined in D2hhmumuModel.h
   // all the variables used in the fit are also initialized by the constructor and can be set indivudially
@@ -822,17 +852,18 @@ D2hhmumuModel* D2hhmumuFitter::initializeModel(RooRealVar D0_M,RooRealVar deltaM
 
    D2hhmumuModel* myModel= new D2hhmumuModel();
 
-   myModel->Signal(D0_M,deltaM,
+   myModel->Signal(D0_M,deltaM,nSignal,
                  D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta,
                  deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta
                  );
 
+   /*
    myModel->Signal_forLimit(D0_M,deltaM,
 		   EffRatio,nNorm,BFsig,BFnorm,
 		   D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta,
 		   deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta
 		   );
-
+   */
   //background models
 
   myModel->CombinatoricBackground(D0_M,deltaM,
@@ -847,86 +878,26 @@ D2hhmumuModel* D2hhmumuFitter::initializeModel(RooRealVar D0_M,RooRealVar deltaM
 			       deltaM_threshold,deltaM_alpha
                                );
 
-  //peaking , in mD0 just a Gaussian... to be improved!
 
-  /*
-  myModel->D2hhhhBackground(D0_M,deltaM,
-			   mean1,sigma1,
-			   deltaM_xi,deltaM_lambda,deltaM_gamma,deltaM_delta
-			   );
-  */
 
   myModel->D2hhhhBackground(D0_M,deltaM,
 			    D0_M_xi_bkg,D0_M_lambda_bkg,D0_M_gamma_bkg,D0_M_delta_bkg,
 			    deltaM_xi_bkg,deltaM_lambda_bkg,deltaM_gamma_bkg,deltaM_delta_bkg
 			    );
 
-
+  /*
+    
   myModel->D2hhhhRandomPionBackground(D0_M,deltaM,
                            mean1,sigma1,
 			   deltaM_threshold,deltaM_alpha
                            );
 
-
+  */
 
   std::cout<<"...done"<<std::endl;
   return myModel;
 
 }
 
-void D2hhmumuFitter::toyStudy() {
-
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1820., 1940.,"MeV");
-  RooRealVar deltaM("deltaM","#delta m", 142,149,"MeV");
-
-  D2hhmumuModel* myModel=initializeModel(D0_M,deltaM);
-  std::string components="Signal CombinatoricBkg RandomPionBkg D2hhhhBkg D2hhhhRandomPionBkg";
-  RooAbsPdf* finalPDF = myModel->Model(components);
-
-  RooMCStudy* mcstudy = new RooMCStudy(*finalPDF,RooArgSet(D0_M,deltaM),Binned(kTRUE),Silence(),Extended(),
-				       FitOptions(Save(kTRUE),PrintEvalErrors(0))) ;
-
-
-  mcstudy->generateAndFit(10);
-
-  // E x p l o r e   r e s u l t s   o f   s t u d y 
-  // ------------------------------------------------
-
-  // Make plots of the distributions of mean, the error on mean and the pull of mean
-  //RooPlot* frame1 = mcstudy->plotParam(mean,Bins(40)) ;
-  //RooPlot* frame2 = mcstudy->plotError(mean,Bins(40)) ;
-  //RooPlot* frame3 = mcstudy->plotPull(mean,Bins(40),FitGauss(kTRUE)) ;
-
-  // Plot distribution of minimized likelihood
-  RooPlot* frame4 = mcstudy->plotNLL(Bins(40)) ;
-
-  // Make some histograms from the parameter dataset
-  //TH1* hh_cor_a0_s1f = mcstudy->fitParDataSet().createHistogram("hh",a1,YVar(sig1frac)) ;
-  //TH1* hh_cor_a0_a1  = mcstudy->fitParDataSet().createHistogram("hh",a0,YVar(a1)) ;
-
-  // Access some of the saved fit results from individual toys
-  TH2* corrHist000 = mcstudy->fitResult(0)->correlationHist("c000") ;
-  TH2* corrHist127 = mcstudy->fitResult(3)->correlationHist("c127") ;
-  TH2* corrHist953 = mcstudy->fitResult(6)->correlationHist("c953") ;
-
-  // Draw all plots on a canvas
-  gStyle->SetPalette(1) ;
-  gStyle->SetOptStat(0) ;
-  TCanvas* c = new TCanvas("rf801_mcstudy","rf801_mcstudy",900,900) ;
-  c->Divide(3,3) ;
-  // c->cd(1) ; gPad->SetLeftMargin(0.15) ; frame1->GetYaxis()->SetTitleOffset(1.4) ; frame1->Draw() ;
-  //c->cd(2) ; gPad->SetLeftMargin(0.15) ; frame2->GetYaxis()->SetTitleOffset(1.4) ; frame2->Draw() ;
-  //c->cd(3) ; gPad->SetLeftMargin(0.15) ; frame3->GetYaxis()->SetTitleOffset(1.4) ; frame3->Draw() ;
-  c->cd(4) ; gPad->SetLeftMargin(0.15) ; frame4->GetYaxis()->SetTitleOffset(1.4) ; frame4->Draw() ;
-  //c->cd(5) ; gPad->SetLeftMargin(0.15) ; hh_cor_a0_s1f->GetYaxis()->SetTitleOffset(1.4) ; hh_cor_a0_s1f->Draw("box") ;
-  //c->cd(6) ; gPad->SetLeftMargin(0.15) ; hh_cor_a0_a1->GetYaxis()->SetTitleOffset(1.4) ; hh_cor_a0_a1->Draw("box") ;
-  c->cd(7) ; gPad->SetLeftMargin(0.15) ; corrHist000->GetYaxis()->SetTitleOffset(1.4) ; corrHist000->Draw("colz") ;
-  c->cd(8) ; gPad->SetLeftMargin(0.15) ; corrHist127->GetYaxis()->SetTitleOffset(1.4) ; corrHist127->Draw("colz") ;
-  c->cd(9) ; gPad->SetLeftMargin(0.15) ; corrHist953->GetYaxis()->SetTitleOffset(1.4) ; corrHist953->Draw("colz") ; 
-
-  c->Draw();
-  c->Print("../img/toyStudy.eps");
-
-}
 
 

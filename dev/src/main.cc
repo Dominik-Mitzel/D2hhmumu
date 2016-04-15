@@ -56,7 +56,7 @@ int main() {
   //D2pipimumuMC();      
   //D2pipimumuData();                                                                                                                                       //D2KpimumuMC();                                                                                                                                          //D2KpimumuData();
   //D2KKmumuMC();                                                                                                                                           //D2KKmumuData();                                                                                                                                         //D2KKpipiMC();                                                                                                                                           //D2KpipipiMC();                                                                                                                                          //D2KKpipiData();                                                                                                                                       
- D2KpipipiData();                                                                                                                                                          
+  //D2KpipipiData();                                                                                                                                                          
 
 
   ////////////////////////////////////                                                                                                                      //                                //                                                                                                                      // data MC comparison with        //
@@ -78,16 +78,15 @@ int main() {
   ////////////////////////////////////////
 
   //Fit part
-  //D2hhmumuFitter myFitter;
+  D2hhmumuFitter myFitter;
   //myFitter.setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT.root");
   //myFitter.fit_MC("",true);
   //myFitter.fit_PIDinverted_Data(true);
   //myFitter.getCombBkg("BDT>0.6 && mu0_ProbNNmu>0.4 && mu1_ProbNNmu>0.4","");
- //myFitter.toyStudy();
   //myFitter.fit_Kpipipi_misID("BDT>0.7 && mu1_ProbNNmu>0.5",true);
   //myFitter.setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKmumu_BDT.root");
-  //myFitter.fit_normalization_Data("BDT>0.7 && mu0_ProbNNmu>0.5 && mu1_ProbNNmu>0.5 ");
-  //myFitter.fit_Data("BDT>0.7 && mu0_ProbNNmu>0.5 && mu1_ProbNNmu>0.5 "); 
+  myFitter.fit_normalization_Data("BDT>0.7 && mu0_ProbNNmu>0.5 && mu1_ProbNNmu>0.5 ");
+  // myFitter.fit_Data("BDT>0.7 && mu0_ProbNNmu>0.5 && mu1_ProbNNmu>0.5 "); 
  
   //////////////////////////////////////
   //                                  //
@@ -99,7 +98,7 @@ int main() {
 
   //TMVA
   //D2KKmumuCrosstraining();
-  D2KKmumuCrossapplication();
+  //D2KKmumuCrossapplication();
 
 
   //////////////////////////////////////
