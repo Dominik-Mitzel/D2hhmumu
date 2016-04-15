@@ -29,6 +29,6 @@ void Classification_D2KKmumu(int part);
 void D2KKmumuCrosstraining();
 
 //BDT is applied to data, MC, data sideband and normalization channel
-void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int part);
+void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int part,bool isMC);
 void D2KKmumuCrossapplication();
 

@@ -33,9 +33,10 @@ public :
    virtual double   muon_helicityAngle();    
    virtual double   D0_helicityAngle();    
 
+
    double DTFdm();
    double dm();
-
+   bool passGhostProbCut(double cut);
    bool isBkgSideband();
    bool isInMassRange();
    bool MCTruthmatched();

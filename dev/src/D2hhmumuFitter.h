@@ -64,8 +64,6 @@ class D2hhmumuFitter {
   //
   //************************
 
-  RooRealVar D0_M;
-  RooRealVar deltaM;
   
   //signal
   RooRealVar deltaM_xi;
@@ -100,13 +98,19 @@ class D2hhmumuFitter {
   RooRealVar mean1;
   RooRealVar sigma1;
 
+  RooRealVar EffRatio;
+  RooRealVar nNorm;
+  RooRealVar BFsig;
+  RooRealVar BFnorm;
+
+
   
   //functions
   //                                                                                                                                                                            
   //************************                                                                                                                                                    
   
 
-  D2hhmumuModel*  initializeModel();
+  D2hhmumuModel*  initializeModel(RooRealVar D0_M,RooRealVar deltaM);
   void setStyle();
 
   TString pathToSignalData;
@@ -114,6 +118,7 @@ class D2hhmumuFitter {
   TString pathToSignalMC;
   TString pathToInvData;
   TString pathToSidebandData;
+  TString pathToKpipipiData;
 
   void setPathToSignalMC(TString path);
   void setPathToSignalData(TString path);
@@ -128,10 +133,12 @@ class D2hhmumuFitter {
 
   double getMisIDbkgExp(TString cut,TString namePlot);
   double getCombBkg(TString cut,TString namePlot);
-  void fit_MC(bool fixShape);
+  void fit_MC(TString cut, bool fixShape);
   void fit_PIDinverted_Data(bool fixShape);
   void fit_Data(TString cut);
   void toyStudy();
+  void fit_Kpipipi_misID(TString cut,bool fixShape);
+  void fit_normalization_Data(TString cut);
   
   
 };

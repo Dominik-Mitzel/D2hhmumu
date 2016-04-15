@@ -3,6 +3,7 @@
 
 #include "D2hhmumuReader.h"
 #include "Tools.h"
+#include "TRandom3.h"
 
 
 class D2KKpipiReader : public D2hhmumuReader {
@@ -20,6 +21,8 @@ class D2KKpipiReader : public D2hhmumuReader {
   TLorentzVector pPi0;
   TLorentzVector pPi1;
 
+  void   createSubsample(TString name, double percentage);
+  void   createMCtrainingSample(TString name);
   //get masses m(mumu) for decay in flight
   void   addMisIdMasses(TString name);
   void   set_mMuMu_misID();

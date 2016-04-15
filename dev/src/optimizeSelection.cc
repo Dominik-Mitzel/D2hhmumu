@@ -2,6 +2,14 @@
 #include "D2hhmumuFitter.h"
 #include "TEventList.h"
 #include "TPaletteAxis.h"
+#include "D2KKmumuReader.h"
+#include "D2pipimumuReader.h"
+#include "D2KpimumuReader.h"
+#include "D2KKpipiReader.h"
+#include "D2KpipipiReader.h"
+
+
+
 void optimizeSelection() {
 
   TH2* h2= new TH2D("h2_cutEfficiency","h3_cutEfficiency",15,-0.5,1.0,10,0,1);
@@ -34,7 +42,7 @@ void optimizeSelection() {
   myFitter.setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT.root");
   myFitter.setPathToInvData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/inverted_D2Kpimumu_BDT_selected.root");
 
-  myFitter.fit_MC(true); //fix MC signal shape
+  myFitter.fit_MC("",true); //fix MC signal shape
   myFitter.fit_PIDinverted_Data(true);
   double FOM;
 
@@ -142,4 +150,164 @@ double EffD2KKpipiToEffD2Kpipipi(TString cut){
   return nSelected1/nSelected2; //nKKpipi/nKpipipi
 
 }
+
+
+
+void D2KKmumuData(){
+
+
+  TChain* Tree_D2KKmumu = new TChain("DstD2KKMuMu/DecayTree");
+
+  for (int i=0; i<1600; ++i) {
+    Tree_D2KKmumu->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/magUp/2012Data_D2hhmumu_%i.root",i));
+    Tree_D2KKmumu->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/magDw/2012Data_D2hhmumu_%i.root",i));
+  }
+  
+  bool isMC= false;
+  D2KKmumuReader* KK_Reader = new D2KKmumuReader(Tree_D2KKmumu);
+  KK_Reader->createSubsample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKmumu_PreselectedSubsample1.root",40);
+  //KK_Reader->fillHistograms("../rootFiles/test.root",isMC);                                                                          
+
+}
+
+void D2pipimumuData(){
+
+  TChain* Tree_D2pipimumu = new TChain("DstD2PiPiMuMu/DecayTree");
+
+  for (int i=0; i<1600; ++i) {
+    Tree_D2pipimumu->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/magUp/2012Data_D2hhmumu_%i.root",i));
+    Tree_D2pipimumu->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/magDw/2012Data_D2hhmumu_%i.root",i));
+  }
+
+  D2pipimumuReader* pipi_Reader = new D2pipimumuReader(Tree_D2pipimumu);
+  pipi_Reader->createSubsample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2pipimumu_PreselectedSubsample.root",10);
+  //pipi_Reader->fillHistograms("../rootfiles/Data2012_Kinematical_Distrubutions_D2KK_noPreselection.root",false);                                                                           
+
+}
+
+void D2KpimumuData(){
+
+  TChain* Tree_D2Kpimumu = new TChain("DstD2KPiMuMu/DecayTree");
+
+  for (int i=0; i<1600; ++i) {
+    Tree_D2Kpimumu->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/magUp/2012Data_D2hhmumu_%i.root",i));                                                                 
+    Tree_D2Kpimumu->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/magDw/2012Data_D2hhmumu_%i.root",i));
+  }
+
+  D2KpimumuReader* Kpi_Reader = new D2KpimumuReader(Tree_D2Kpimumu);
+  Kpi_Reader->createSubsample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_PreselectedSubsample.root",10);                                  //Kpi_Reader->createValidationSubsample("D2Kpimumu_ValidationSubsample.root");
+}
+
+void D2KKmumuMC(){
+
+  TChain* Tree_MC_D2KKmumu = new TChain("MC12_DstD2KKMuMu/DecayTree");
+  Tree_MC_D2KKmumu->AddFile("/auto/data/mitzel/D2hhmumu/new/MC/D2KKmumu/highStat_magDw/MC12_DstD2KKmumu_magDw.root");                                 
+  Tree_MC_D2KKmumu->AddFile("/auto/data/mitzel/D2hhmumu/new/MC/D2KKmumu/highStat_magUp/MC12_DstD2KKmumu_magUp.root");                                       Tree_MC_D2KKmumu->AddFile("/auto/data/mitzel/D2hhmumu/new/MC/D2KKmumu/magDw/MC12_DstD2KKmumu_magDw.root");//"old one ""
+  Tree_MC_D2KKmumu->AddFile("/auto/data/mitzel/D2hhmumu/new/MC/D2KKmumu/magUp/MC12_DstD2KKmumu_magUp.root");  
+
+  //Mai June TCK                                                                                                                                                                          
+  //Tree_MC_D2KKmumu->AddFile("/auto/data/mitzel/D2hhmumu/new/MC/D2KKmumu_MaiJune/magDw/MC12_DstD2KKmumu_MaiJune_magDw.root");
+  //Tree_MC_D2KKmumu->AddFile("/auto/data/mitzel/D2hhmumu/new/MC/D2KKmumu_MaiJune/magUp/MC12_DstD2KKmumu_MaiJune_magUp.root");
+
+  D2KKmumuReader* KK_MC_Reader = new D2KKmumuReader(Tree_MC_D2KKmumu);
+  KK_MC_Reader->InitMC();
+  //KK_MC_Reader->fillHistograms("../rootfiles/MC2012_Kinematical_Distrubutions_D2KK.root",true);                                                    
+  KK_MC_Reader->createMCtrainingSample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKmumu_highStat_MCtrainingSample.root");
+  //KK_MC_Reader->studyTriggerEfficiency();                                                                                                            
+}
+
+
+void D2pipimumuMC(){
+
+  TChain* Tree_MC_D2pipimumu = new TChain("MC12_DstD2pipiMuMu/DecayTree");
+  Tree_MC_D2pipimumu->AddFile("/auto/data/mitzel/D2hhmumu/new/MC/D2pipimumu/magDw/MC12_DstD2pipimumu_magDw.root");
+  Tree_MC_D2pipimumu->AddFile("/auto/data/mitzel/D2hhmumu/new/MC/D2pipimumu/magUp/MC12_DstD2pipimumu_magUp.root");
+
+  D2pipimumuReader* pipi_MC_Reader = new D2pipimumuReader(Tree_MC_D2pipimumu);
+  pipi_MC_Reader->InitMC();
+  //pipi_MC_Reader->fillHistograms("../rootfiles/MC2012_Kinematical_Distrubutions_D2KK.root",true);                                                                                        
+  pipi_MC_Reader->createMCtrainingSample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2pipimumu_MCtrainingSample.root");
+  //pipi_MC_Reader->studyTriggerEfficiency();                                                                                                                                              
+
+}
+
+void D2KpimumuMC(){
+
+
+  TChain* Tree_MC_D2Kpimumu = new TChain("MC12_DstD2KKpipi/DecayTree");
+  Tree_MC_D2Kpimumu->AddFile("/auto/data/mitzel/D2hhmumu/new/MC/D2Kpimumu/magDw/MC12_DstD2Kpimumu_magDw.root");
+  Tree_MC_D2Kpimumu->AddFile("/auto/data/mitzel/D2hhmumu/new/MC/D2Kpimumu/magUp/MC12_DstD2Kpimumu_magUp.root");
+
+  D2KpimumuReader* Kpi_MC_Reader = new D2KpimumuReader(Tree_MC_D2Kpimumu);
+  Kpi_MC_Reader->InitMC();
+  //KK_MC_Reader->fillHistograms("../rootfiles/MC2012_Kinematical_Distrubutions_D2KK.root",true);                                                   
+  Kpi_MC_Reader->createMCtrainingSample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_MCtrainingSample.root");
+  //KK_MC_Reader->studyTriggerEfficiency();                                                                                                                                                
+}
+
+
+void D2KpipipiData(){
+
+  TChain* Tree_D2Kpipipi = new TChain("DstD2KPiPiPi/DecayTree");
+
+  for (int i=0; i<450; ++i) {
+    Tree_D2Kpipipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/newD2hhhhPIDLine/magUp/2012Data_D2hhhh_%i.root",i));
+    Tree_D2Kpipipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/newD2hhhhPIDLine/magDw/2012Data_D2hhhh_%i.root",i));
+  }
+
+
+  D2KpipipiReader* Kpipipi_Reader = new D2KpipipiReader(Tree_D2Kpipipi);
+  Kpipipi_Reader->createSubsample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_PIDline_PreselectedSubsample.root",10);
+}
+
+
+void D2KKpipiData(){
+
+  TChain* Tree_D2KKpipi = new TChain("DstD2KKPiPi/DecayTree");
+
+  for (int i=0; i<2000; ++i) {
+    Tree_D2KKpipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/D2hhhhPIDline/magUp/2012Data_D2hhhh_%i.root",i));
+    Tree_D2KKpipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/D2hhhhPIDline/magDw/2012Data_D2hhhh_%i.root",i));
+  }
+
+  D2KKpipiReader* KKpipi_Reader = new D2KKpipiReader(Tree_D2KKpipi);
+  KKpipi_Reader->createSubsample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_PIDline_PreselectedSubsample.root",10);
+}
+
+
+void D2KKpipiMC(){
+
+
+  TChain* Tree_MC_D2KKpipi = new TChain("MC12_DstD2KKpipi/DecayTree");
+
+  for (int i=0; i<50; ++i) {
+    Tree_MC_D2KKpipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/MC/D2KKpipi_filtered/magDw/MC12_DstD2KKpipi_%i.root",i));
+    Tree_MC_D2KKpipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/MC/D2KKpipi_filtered/magUp/D2KKpipi_%i.root",i));
+  }
+ 
+
+  D2KKpipiReader* KK_MC_Reader = new D2KKpipiReader(Tree_MC_D2KKpipi);
+  KK_MC_Reader->InitMC();
+  KK_MC_Reader->createMCtrainingSample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_MCtrainingSample.root");
+                                                                                                                                          
+  //KK_MC_Reader->addMisIdMasses("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_filteredt_MCSample1.root");
+
+}
+
+
+void D2KpipipiMC(){
+
+
+  TChain* Tree_MC_D2Kpipipi = new TChain("MC12_DstD2Kpipipi/DecayTree");
+
+  for (int i=0; i<50; ++i) {
+    Tree_MC_D2Kpipipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/MC/D2Kpipipi_filtered/magDw/MC12_DstD2Kpipipi_%i.root",i));
+    Tree_MC_D2Kpipipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/MC/D2Kpipipi_filtered/magUp/D2Kpipipi_%i.root",i));
+  }
+
+  D2KpipipiReader* Kpi_MC_Reader = new D2KpipipiReader(Tree_MC_D2Kpipipi);
+  Kpi_MC_Reader->InitMC();
+  Kpi_MC_Reader->createMCtrainingSample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_MCtrainingSample.root");                            
+}
+
 

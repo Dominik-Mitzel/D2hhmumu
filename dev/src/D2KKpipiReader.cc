@@ -93,6 +93,130 @@ bool D2KKpipiReader::isHlt2Selected(){
 
 
 
+void D2KKpipiReader::createSubsample(TString name, double percentage) {//specify percentage of full data sample written in sideband subsample        
+                                                                                                                                                     
+  Long64_t nentries = fChain->GetEntries();
+  std::cout<<"This programm creates ("<<percentage<<"%) subsample in mass sideband and applies trigger selection to the rest"<<std::endl;
+  std::cout<<"Found tree with "<<nentries <<" entries....start random sampling ("<<percentage<<"%)..."<<std::endl;
+
+  activateRelevantBranches();
+  fChain->GetEntry(0);
+
+  TRandom3* generator = new TRandom3(runNumber); //Seed is RunNumber of first event                                                                  
+
+  //Create a new file + a clone of old the in new file                                                                                              
+
+  TFile *newfile = new TFile(name,"recreate");
+  TDirectory *f_sideband = newfile->mkdir("sideband");
+  TTree *newtree_data_odd = fChain->CloneTree(0);
+  TTree *newtree_data_even = fChain->CloneTree(0);
+  newtree_data_odd->SetName("DecayTree_odd");
+  newtree_data_even->SetName("DecayTree_even");
+
+  TDirectory *f_data = newfile->mkdir("data");
+  TTree *newtree_bkg_even = fChain->CloneTree(0);
+  TTree *newtree_bkg_odd = fChain->CloneTree(0);
+  newtree_bkg_odd->SetName("DecayTree_odd");
+  newtree_bkg_even->SetName("DecayTree_even");
+  double Slowpi_cosh,mu0_cosh, D_cosh, deltaM,nVeloTracks;
+  double D_Conemult,Dst_Conemult,D_Coneptasy,Dst_Coneptasy;
+  Int_t nTracks_data,nPVs_data,nSPDHits;
+  double mHH;
+  bool isSideband;
+  double mKpiOS,mKpiSS,mpipiOS,mpipiSS,misID_mD_OS,misID_mD_SS,misID_dm_SS,misID_dm_OS;
+  double pKpiOS, pKpiSS, ppipiSS, ppipiOS;
+
+  std::vector<TTree*> trees;
+  trees.push_back(newtree_data_odd);
+  trees.push_back(newtree_data_even);
+  trees.push_back(newtree_bkg_odd);
+  trees.push_back(newtree_bkg_even);
+
+  for (std::vector<TTree*>::iterator it = trees.begin() ; it != trees.end(); ++it) {
+
+    (*it)->Branch("isBkgSideband",&isSideband);
+    (*it)->Branch("Slowpi_cosh",&Slowpi_cosh);
+    (*it)->Branch("D_cosh", & D_cosh);
+    (*it)->Branch("mu0_cosh",&mu0_cosh);
+    (*it)->Branch("deltaM",&deltaM);
+    (*it)->Branch("D_Conemult",&D_Conemult);
+    (*it)->Branch("Dst_Conemult",&Dst_Conemult);
+    (*it)->Branch("D_Coneptasy",&D_Coneptasy);
+    (*it)->Branch("Dst_Coneptasy",&Dst_Coneptasy);
+    (*it)->Branch("nSPDHits",&nSPDHits);
+    (*it)->Branch("nVeloTracks",&nVeloTracks);
+    (*it)->Branch("nTracks_data",&nTracks_data);
+    (*it)->Branch("mKpiOS", & mKpiOS);
+    (*it)->Branch("mpipiOS", & mpipiOS);
+    (*it)->Branch("misID_mD_OS", & misID_mD_OS);
+    (*it)->Branch("misID_dm_OS", & misID_dm_OS);
+    (*it)->Branch("pKpiOS", &pKpiOS );
+    (*it)->Branch("ppipiOS", & ppipiOS);
+
+  }
+  for (Long64_t i=0;i<nentries; i++) {
+
+    if(i%10000 == 0) std::cout<<i<<" events processed...." << std::endl;
+
+    fChain->GetEntry(i);
+    //select only events that pass the trigger seelction criteria                                                                                                                   
+    if( Dst_DTF_Dstarplus_M - Dst_DTF_D0_M < 140 ||  Dst_DTF_Dstarplus_M - Dst_DTF_D0_M > 154 ) continue;
+    if( Dst_DTF_D0_M < 1760 ||  Dst_DTF_D0_M > 1980 ) continue;
+    if(!passGhostProbCut(0.5)) continue;
+
+    //if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected()  )continue;                                                                                                       
+    initializeMomenta();
+
+    //additional variables                                                                                                                                                          
+    Slowpi_cosh=slowpi_helicityAngle();
+    D_cosh = D0_helicityAngle();
+    mu0_cosh=muon_helicityAngle();
+    deltaM = Dst_DTF_Dstarplus_M - Dst_DTF_D0_M;
+    D_Conemult = Dst_CONEMULT_D;
+    Dst_Conemult = Dst_CONEMULT_Dstar;
+    D_Coneptasy = Dst_CONEPTASYM_D;
+    Dst_Coneptasy = Dst_CONEPTASYM_Dstar;
+    nSPDHits = (int)nSpdDigits;
+
+    nVeloTracks=nVELO;
+    nTracks_data=(int)nTracks;
+    nPVs_data=(int)nPVs;
+    mHH = (pH1+pH0).M();
+
+    mKpiOS = (pDTFH0+pDTFH1).M();
+    mpipiOS =(pDTFPi0+pDTFPi1).M();
+
+    misID_mD_OS=( pDTFH1+pDTFH0+pDTFMu0+pDTFMu1).M();
+    misID_dm_OS=( pDTFH1+pDTFH0+pDTFMu0+pDTFMu1+pDTFPis).M() -  ( pDTFH1+pDTFH0+pDTFMu0+pDTFMu1).M();
+
+    pKpiOS=(pDTFH0+pDTFH1).P();
+    ppipiOS=(pDTFPi0+pDTFPi1).P();
+
+
+    if(eventNumber%2!=0){ //odd events                                                                                                                                            
+      trees[0]->Fill(); //odd data
+      if(generator->Rndm()<percentage/100 && isBkgSideband()) trees[2]->Fill();
+    }
+    if(eventNumber%2==0){ //even events                                                                                                                                           
+      trees[1]->Fill(); //even data                                                                                                                                                 
+      if(generator->Rndm()<percentage/100 && isBkgSideband()) trees[3]->Fill();
+    }
+  }
+
+  f_data->cd();
+  trees[0]->Write();
+  trees[1]->Write();
+
+  f_sideband->cd();
+  trees[2]->Write();
+  trees[3]->Write();
+
+  delete newfile;
+
+}
+
+
+
 void D2KKpipiReader::addMisIdMasses(TString name) {
 
   InitMC();
@@ -146,7 +270,8 @@ void D2KKpipiReader::addMisIdMasses(TString name) {
     D_Coneptasy = D_ptasy_1_50;
     Dst_Coneptasy = Dst_ptasy_1_50;
     mHH = (pH1+pH0).M();
-    newtree->Fill();
+ 
+   newtree->Fill();
   }
 
   std::cout<<"Created samples "<< name <<" with "<<newtree->GetEntries()<<" entries."<<std::endl;
@@ -157,3 +282,100 @@ void D2KKpipiReader::addMisIdMasses(TString name) {
 
 }
 
+void D2KKpipiReader::createMCtrainingSample(TString name) {
+
+  InitMC();
+  //activateRelevantBranches();                                                                                                                      \
+                                                                                                                                                      
+
+  Long64_t nentries = fChain->GetEntries();
+  std::cout<<"Found tree with "<<nentries <<" entries..."<<std::endl;
+
+  fChain->GetEntry(0);
+
+  //Create a new file + a clone of old tree in new file                                                                                              \
+                                                                                                                                                      
+  TFile *newfile = new TFile(name,"recreate");
+  TTree *newtree_even = fChain->CloneTree(0);
+  TTree *newtree_odd = fChain->CloneTree(0);
+  newtree_odd->SetName("DecayTree_odd");
+  newtree_even->SetName("DecayTree_even ");
+
+
+  double Slowpi_cosh,mu0_cosh,D_cosh, deltaM;
+  double D_Conemult,Dst_Conemult,D_Coneptasy,Dst_Coneptasy;
+  double mHH;
+  double mKpiOS,mKpiSS,mpipiOS,mpipiSS,misID_mD_OS,misID_mD_SS,misID_dm_SS,misID_dm_OS;
+  double pKpiOS, pKpiSS, ppipiSS, ppipiOS;
+
+  newtree_even->Branch("Slowpi_cosh",&Slowpi_cosh);
+  newtree_even->Branch("D_cosh", & D_cosh);
+  newtree_even->Branch("mu0_cosh",&mu0_cosh);
+  newtree_even->Branch("deltaM",&deltaM);
+  newtree_even->Branch("D_Conemult",&D_Conemult);
+  newtree_even->Branch("Dst_Conemult",&Dst_Conemult);
+  newtree_even->Branch("D_Coneptasy",&D_Coneptasy);
+  newtree_even->Branch("Dst_Coneptasy",&Dst_Coneptasy);
+  newtree_even->Branch("mHH", & mHH);
+  newtree_even->Branch("mKpiOS", & mKpiOS);
+  newtree_even->Branch("mpipiOS", & mpipiOS);
+  newtree_even->Branch("mpipiSS", & mpipiSS);
+  newtree_even->Branch("misID_mD_OS", & misID_mD_OS);
+  newtree_even->Branch("misID_dm_OS", & misID_dm_OS);
+  newtree_even->Branch("pKpiOS", &pKpiOS );
+  newtree_even->Branch("ppipiOS", & ppipiOS);
+
+  newtree_odd->Branch("Slowpi_cosh",&Slowpi_cosh);
+  newtree_odd->Branch("D_cosh", & D_cosh);
+  newtree_odd->Branch("mu0_cosh",&mu0_cosh);
+  newtree_odd->Branch("deltaM",&deltaM);
+  newtree_odd->Branch("D_Conemult",&D_Conemult);
+  newtree_odd->Branch("Dst_Conemult",&Dst_Conemult);
+  newtree_odd->Branch("D_Coneptasy",&D_Coneptasy);
+  newtree_odd->Branch("Dst_Coneptasy",&Dst_Coneptasy);
+  newtree_odd->Branch("mHH", & mHH);
+  newtree_odd->Branch("mKpiOS", & mKpiOS);
+  newtree_odd->Branch("mpipiOS", & mpipiOS);
+  newtree_odd->Branch("misID_mD_OS", & misID_mD_OS);
+  newtree_odd->Branch("misID_dm_OS", & misID_dm_OS);
+  newtree_odd->Branch("pKpiOS", &pKpiOS );
+  newtree_odd->Branch("ppipiOS", & ppipiOS);
+
+  //  for (Long64_t i=0;i<nentries; i++) {                                                                                                            
+  for (Long64_t i=0;i<nentries; i++) {
+    fChain->GetEntry(i);
+
+    //aply trigger selection criteria and MC truth matching                                                                                          
+    if(!MCTruthmatched()) continue;
+    if(!passGhostProbCut(0.5)) continue;
+    //    if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected() )continue;                                                                    
+
+    initializeMomenta();
+    Slowpi_cosh=slowpi_helicityAngle();
+    D_cosh = D0_helicityAngle();
+    mu0_cosh=muon_helicityAngle();
+    deltaM = Dst_DTF_Dstarplus_M - Dst_DTF_D0_M;
+    D_Conemult = D_cmult_1_50;
+    Dst_Conemult = Dst_cmult_1_50;
+    D_Coneptasy = D_ptasy_1_50;
+    Dst_Coneptasy = Dst_ptasy_1_50;
+    mHH = (pH1+pH0).M();
+    mKpiOS = (pDTFH0+pDTFH1).M();
+    mpipiOS =(pDTFPi0+pDTFPi1).M();
+    misID_mD_OS=( pDTFH1+pDTFH0+pDTFMu0+pDTFMu1).M();
+    misID_dm_OS=( pDTFH1+pDTFH0+pDTFMu0+pDTFMu1+pDTFPis).M() -  ( pDTFH1+pDTFH0+pDTFMu0+pDTFMu1).M();
+    pKpiOS=(pDTFH0+pDTFH1).P();
+    ppipiOS=(pDTFPi0+pDTFPi1).P();
+
+    if(eventNumber%2==0) newtree_even->Fill();
+    else newtree_odd->Fill();
+  }
+
+  std::cout<<"Created MC taining samples "<< name <<" with "<<newtree_even->GetEntries()<<" entries (even sample) and "<< newtree_odd->GetEntries()<<"(odd.)"<<std::endl;
+
+  newtree_even->AutoSave();
+  newtree_odd->AutoSave();
+
+  delete newfile;
+
+}

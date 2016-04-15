@@ -17,6 +17,15 @@ bool D2hhmumuReader::isBkgSideband(){
   else return false; 	 
 }
 
+
+bool D2hhmumuReader::passGhostProbCut(double cut){
+
+  if(Slowpi_ProbNNghost> cut || h1_ProbNNghost> cut ||
+     h0_ProbNNghost > cut || mu1_ProbNNghost> cut ||  mu0_ProbNNghost > cut ) false;
+
+ else return true;
+}
+
 double D2hhmumuReader::slowpi_helicityAngle() {
 
   initializeMomenta();
@@ -198,6 +207,7 @@ void D2hhmumuReader::createMCtrainingSample(TString name) {
   for (Long64_t i=0;i<nentries; i++) {
      fChain->GetEntry(i);
      //aply trigger selection criteria and MC truth matching 
+      if(!passGhostProbCut(0.5)) continue;
       if(!MCTruthmatched()) continue;
       if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected() )continue;    
       
@@ -289,7 +299,8 @@ void D2hhmumuReader::createSubsample(TString name, double percentage) {//specify
      
      fChain->GetEntry(i);
       //select only events that pass the trigger seelction criteria 
-      if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected()  )continue;   
+     if(!passGhostProbCut(0.5)) continue; 
+     if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected()  )continue;   
       
       //additional variables
       Slowpi_cosh=slowpi_helicityAngle();
@@ -798,6 +809,7 @@ void D2hhmumuReader::Init(TTree *tree)
    fChain->SetBranchAddress("Dst_Hlt2CharmHadD02HHHH_4piWideMassDecision_Dec", &Dst_Hlt2CharmHadD02HHHH_4piWideMassDecision_Dec, &b_Dst_Hlt2CharmHadD02HHHH_4piWideMassDecision_Dec);
    fChain->SetBranchAddress("Dst_Hlt2CharmHadD02HHHH_4piWideMassDecision_TIS", &Dst_Hlt2CharmHadD02HHHH_4piWideMassDecision_TIS, &b_Dst_Hlt2CharmHadD02HHHH_4piWideMassDecision_TIS);
    fChain->SetBranchAddress("Dst_Hlt2CharmHadD02HHHH_4piWideMassDecision_TOS", &Dst_Hlt2CharmHadD02HHHH_4piWideMassDecision_TOS, &b_Dst_Hlt2CharmHadD02HHHH_4piWideMassDecision_TOS);
+   /*
    fChain->SetBranchAddress("Dst_cpx_1.00", &Dst_cpx_1_00, &b_Dst_cpx_1_00);
    fChain->SetBranchAddress("Dst_cpy_1.00", &Dst_cpy_1_00, &b_Dst_cpy_1_00);
    fChain->SetBranchAddress("Dst_cpz_1.00", &Dst_cpz_1_00, &b_Dst_cpz_1_00);
@@ -902,6 +914,7 @@ void D2hhmumuReader::Init(TTree *tree)
    fChain->SetBranchAddress("Dst_pzasy_1.70", &Dst_pzasy_1_70, &b_Dst_pzasy_1_70);
    fChain->SetBranchAddress("Dst_pasy_1.70", &Dst_pasy_1_70, &b_Dst_pasy_1_70);
    fChain->SetBranchAddress("Dst_ptasy_1.70", &Dst_ptasy_1_70, &b_Dst_ptasy_1_70);
+   */
    fChain->SetBranchAddress("D_MINIP", &D_MINIP, &b_D_MINIP);
    fChain->SetBranchAddress("D_MINIPCHI2", &D_MINIPCHI2, &b_D_MINIPCHI2);
    fChain->SetBranchAddress("D_MINIPNEXTBEST", &D_MINIPNEXTBEST, &b_D_MINIPNEXTBEST);
@@ -1102,6 +1115,7 @@ void D2hhmumuReader::Init(TTree *tree)
    fChain->SetBranchAddress("D_Hlt2CharmHadD02HHHH_4piWideMassDecision_Dec", &D_Hlt2CharmHadD02HHHH_4piWideMassDecision_Dec, &b_D_Hlt2CharmHadD02HHHH_4piWideMassDecision_Dec);
    fChain->SetBranchAddress("D_Hlt2CharmHadD02HHHH_4piWideMassDecision_TIS", &D_Hlt2CharmHadD02HHHH_4piWideMassDecision_TIS, &b_D_Hlt2CharmHadD02HHHH_4piWideMassDecision_TIS);
    fChain->SetBranchAddress("D_Hlt2CharmHadD02HHHH_4piWideMassDecision_TOS", &D_Hlt2CharmHadD02HHHH_4piWideMassDecision_TOS, &b_D_Hlt2CharmHadD02HHHH_4piWideMassDecision_TOS);
+   /*
    fChain->SetBranchAddress("D_cpx_1.00", &D_cpx_1_00, &b_D_cpx_1_00);
    fChain->SetBranchAddress("D_cpy_1.00", &D_cpy_1_00, &b_D_cpy_1_00);
    fChain->SetBranchAddress("D_cpz_1.00", &D_cpz_1_00, &b_D_cpz_1_00);
@@ -1206,6 +1220,7 @@ void D2hhmumuReader::Init(TTree *tree)
    fChain->SetBranchAddress("D_pzasy_1.70", &D_pzasy_1_70, &b_D_pzasy_1_70);
    fChain->SetBranchAddress("D_pasy_1.70", &D_pasy_1_70, &b_D_pasy_1_70);
    fChain->SetBranchAddress("D_ptasy_1.70", &D_ptasy_1_70, &b_D_ptasy_1_70);
+   */
    fChain->SetBranchAddress("h0_MINIP", &h0_MINIP, &b_h0_MINIP);
    fChain->SetBranchAddress("h0_MINIPCHI2", &h0_MINIPCHI2, &b_h0_MINIPCHI2);
    fChain->SetBranchAddress("h0_MINIPNEXTBEST", &h0_MINIPNEXTBEST, &b_h0_MINIPNEXTBEST);
@@ -2913,6 +2928,34 @@ void D2hhmumuReader::activateRelevantBranches()
 
 void D2hhmumuReader::InitMC()
 {
+
+   fChain->SetBranchAddress("Dst_cpx_1.50", &Dst_cpx_1_50, &b_Dst_cpx_1_50);
+   fChain->SetBranchAddress("Dst_cpy_1.50", &Dst_cpy_1_50, &b_Dst_cpy_1_50);
+   fChain->SetBranchAddress("Dst_cpz_1.50", &Dst_cpz_1_50, &b_Dst_cpz_1_50);
+   fChain->SetBranchAddress("Dst_cpt_1.50", &Dst_cpt_1_50, &b_Dst_cpt_1_50);
+   fChain->SetBranchAddress("Dst_cp_1.50", &Dst_cp_1_50, &b_Dst_cp_1_50);
+   fChain->SetBranchAddress("Dst_cmult_1.50", &Dst_cmult_1_50, &b_Dst_cmult_1_50);
+   fChain->SetBranchAddress("Dst_deltaEta_1.50", &Dst_deltaEta_1_50, &b_Dst_deltaEta_1_50);
+   fChain->SetBranchAddress("Dst_deltaPhi_1.50", &Dst_deltaPhi_1_50, &b_Dst_deltaPhi_1_50);
+   fChain->SetBranchAddress("Dst_pxasy_1.50", &Dst_pxasy_1_50, &b_Dst_pxasy_1_50);
+   fChain->SetBranchAddress("Dst_pyasy_1.50", &Dst_pyasy_1_50, &b_Dst_pyasy_1_50);
+   fChain->SetBranchAddress("Dst_pzasy_1.50", &Dst_pzasy_1_50, &b_Dst_pzasy_1_50);
+   fChain->SetBranchAddress("Dst_pasy_1.50", &Dst_pasy_1_50, &b_Dst_pasy_1_50);
+   fChain->SetBranchAddress("Dst_ptasy_1.50", &Dst_ptasy_1_50, &b_Dst_ptasy_1_50);
+
+   fChain->SetBranchAddress("D_cpx_1.50", &D_cpx_1_50, &b_D_cpx_1_50);
+   fChain->SetBranchAddress("D_cpy_1.50", &D_cpy_1_50, &b_D_cpy_1_50);
+   fChain->SetBranchAddress("D_cpz_1.50", &D_cpz_1_50, &b_D_cpz_1_50);
+   fChain->SetBranchAddress("D_cpt_1.50", &D_cpt_1_50, &b_D_cpt_1_50);
+   fChain->SetBranchAddress("D_cp_1.50", &D_cp_1_50, &b_D_cp_1_50);
+   fChain->SetBranchAddress("D_cmult_1.50", &D_cmult_1_50, &b_D_cmult_1_50);
+   fChain->SetBranchAddress("D_deltaEta_1.50", &D_deltaEta_1_50, &b_D_deltaEta_1_50);
+   fChain->SetBranchAddress("D_deltaPhi_1.50", &D_deltaPhi_1_50, &b_D_deltaPhi_1_50);
+   fChain->SetBranchAddress("D_pxasy_1.50", &D_pxasy_1_50, &b_D_pxasy_1_50);
+   fChain->SetBranchAddress("D_pyasy_1.50", &D_pyasy_1_50, &b_D_pyasy_1_50);
+   fChain->SetBranchAddress("D_pzasy_1.50", &D_pzasy_1_50, &b_D_pzasy_1_50);
+   fChain->SetBranchAddress("D_pasy_1.50", &D_pasy_1_50, &b_D_pasy_1_50);
+   fChain->SetBranchAddress("D_ptasy_1.50", &D_ptasy_1_50, &b_D_ptasy_1_50);
  
    fChain->SetBranchAddress("Dst_BKGCAT", &Dst_BKGCAT, &b_Dst_BKGCAT);
    fChain->SetBranchAddress("Dst_TRUEID", &Dst_TRUEID, &b_Dst_TRUEID);

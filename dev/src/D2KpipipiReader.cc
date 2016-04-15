@@ -149,7 +149,7 @@ void D2KpipipiReader::initializeMomenta(){
 
 }
 
-void D2KpipipiReader::createSubsample(TString name, double percentage) {//specify percentage of full data sample written in sideband subsample                                                 
+void D2KpipipiReader::createSubsample(TString name, double percentage) {//specify percentage of full data sample written in sideband subsample                                     
 
   Long64_t nentries = fChain->GetEntries();
   std::cout<<"This programm creates ("<<percentage<<"%) subsample in mass sideband and applies trigger selection to the rest"<<std::endl;
@@ -227,6 +227,8 @@ void D2KpipipiReader::createSubsample(TString name, double percentage) {//specif
 
     if( Dst_DTF_Dstarplus_M - Dst_DTF_D0_M < 140 ||  Dst_DTF_Dstarplus_M - Dst_DTF_D0_M > 154 ) continue;
     if( Dst_DTF_D0_M < 1760 ||  Dst_DTF_D0_M > 1980 ) continue;
+    if(!passGhostProbCut(0.5)) continue;
+
 
     //if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected()  )continue;
     initializeMomenta();
@@ -363,6 +365,8 @@ void D2KpipipiReader::createMCtrainingSample(TString name) {
     fChain->GetEntry(i);
     //aply trigger selection criteria and MC truth matching                                                                                                                                  
     if(!MCTruthmatched()) continue;
+    if(!passGhostProbCut(0.5)) continue;
+
     //    if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected() )continue;
 
     initializeMomenta();

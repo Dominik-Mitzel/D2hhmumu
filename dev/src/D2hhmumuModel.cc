@@ -10,7 +10,7 @@
 #include "RooProdPdf.h"
 #include "RooJohnsonSU.h"
 #include "RooThreshold.h"
-
+#include "RooExtendPdf.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -41,6 +41,23 @@ RooAbsPdf* D2hhmumuModel::Signal(RooRealVar m, RooRealVar dm,
   return m_ws.pdf("Signal");
 }
 
+
+RooAbsPdf* D2hhmumuModel::Signal_forLimit(RooRealVar m, RooRealVar dm,
+				 RooRealVar EffRatio,RooRealVar nNorm, RooRealVar BFsig, RooRealVar BFnorm,
+				 RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mNuJSU, RooRealVar mTauJSU,
+				 RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmNuJSU, RooRealVar dmTauJSU)
+{
+  if (m_ws.pdf("Signal_forLimit") == 0) {
+    RooJohnsonSU SignalD0_JSU("SignalD0_JSU_forLimit", "Signal D^{0} JSU", m, mMeanJSU, mWidthJSU,mNuJSU,mTauJSU);
+    RooJohnsonSU SignalDm_JSU("SignalDm_JSU_forLimit", "Signal #Deltam JSU", dm, dmMeanJSU, dmWidthJSU, dmNuJSU, dmTauJSU);
+    RooProdPdf Signal("Signal_forLimit","Signal PDF",RooArgList(SignalD0_JSU,SignalDm_JSU));
+    m_ws.import(Signal);
+    //RooRealVar nSignal("nSignal", "Signal Events", 3000, 0., 1000000.);
+    RooFormulaVar nSignal_forLimit("nSignal_forLimit", "@0/@1*@2*@3", RooArgList(BFsig,BFnorm,nNorm,EffRatio));  
+    m_ws.import(nSignal_forLimit);
+  }
+  return m_ws.pdf("Signal_forLimit");
+}
 
 RooAbsPdf* D2hhmumuModel::CombinatoricBackground(RooRealVar m, RooRealVar dm,
 				      RooRealVar mChebyA,RooRealVar mChebyB ,
@@ -146,7 +163,7 @@ RooAbsPdf* D2hhmumuModel::Model(std::string components)
       }
       pdfList.add(*m_ws.pdf(it->c_str()));
       coefList.add(*m_ws.var((std::string("n")+*it).c_str()) );
-    }
+     }
     pdfList.Print();
     coefList.Print();
     RooAddPdf Model("D2hhmumuModel", "D*^{+} #rightarrow D^{0}(#rightarrow hh #mu #mu)#pi^{+} Model", pdfList, coefList);

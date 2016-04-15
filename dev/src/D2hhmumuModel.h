@@ -25,6 +25,11 @@ class D2hhmumuModel
                     );
 
 
+  RooAbsPdf * Signal_forLimit (RooRealVar m, RooRealVar dm,
+			       RooRealVar EffRatio,RooRealVar nNorm, RooRealVar BFsig, RooRealVar BFnorm,
+			       RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mNuJSU, RooRealVar mTauJSU,
+			       RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmNuJSU, RooRealVar dmTauJSU);
+
   /*
   RooAbsPdf * CombinatoricBackground(RooRealVar m, RooRealVar dm,
 				     RooRealVar mChebyA,RooRealVar mChebyB ,RooRealVar mChebyC ,

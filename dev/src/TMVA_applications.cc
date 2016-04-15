@@ -24,7 +24,7 @@ void Classification_D2KKmumu(int part) {
     signalTree_test="DecayTree_odd";
     bkgTree_test="sideband/DecayTree_odd";
 
-    targetFile = "/work/mitzel/D2hhmumu/dev/rootFiles/training_D2KKmumu_evenTrained.root";
+    targetFile = "training_D2KKmumu_evenTrained.root";
   }
 
   if(part==2) {
@@ -34,7 +34,7 @@ void Classification_D2KKmumu(int part) {
     signalTree_test="DecayTree_even";
     bkgTree_test="sideband/DecayTree_even";
 
-    targetFile = "/work/mitzel/D2hhmumu/dev/rootFiles/training_D2KKmumu_oddTrained.root";
+    targetFile = "training_D2KKmumu_oddTrained.root";
   }
 
 
@@ -60,7 +60,7 @@ void Classification_D2KKmumu(int part) {
 
   //pointing                                                                                                                                                                                
   factory->AddVariable("D_MAXDOCA",'F');////                                                                                                                                                
-  factory->AddVariable("D_cosh",'F');////                                                                                                                                                   
+  //factory->AddVariable("D_cosh",'F');////                                                                                                                                                   
   factory->AddVariable("mu0_cosh",'F');////                                                                                                                                                 
 
   factory->AddVariable("log_D_FDCHI2_OWNPV:=log10(D_FDCHI2_OWNPV)",'F');////                                                                                                                
@@ -132,7 +132,7 @@ void D2KKmumuCrosstraining() {
 }
 
 
-void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int part) {
+void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int part,bool isMC = false) {
 
 
   TString dir    = "weights/";
@@ -181,7 +181,7 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   Float_t D_cosh,mu0_cosh,max_mu_PT;
 
   reader->AddVariable("D_MAXDOCA",&D_MAXDOCA);
-  reader->AddVariable("D_cosh",&D_cosh);
+  //reader->AddVariable("D_cosh",&D_cosh);
   reader->AddVariable("mu0_cosh",&mu0_cosh);
   reader->AddVariable("log_D_FDCHI2_OWNPV:=log10(D_FDCHI2_OWNPV)",&log_D_FDCHI2_OWNPV);
   reader->AddVariable("log_D_DIRA_OWNPV:=log(D_DIRA_OWNPV)",&log_D_DIRA_OWNPV);
@@ -215,6 +215,147 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   Double_t user_mu1_ProbNNmu, user_mu0_ProbNNmu;
   Double_t user_D_TAU;
   Int_t user_eventNumber;
+  Double_t misID_mD_OS=-1000;
+  Double_t misID_dm_OS=-1000;
+ 
+  bool mu0_L0MuonDecision_TOS,mu1_L0MuonDecision_TOS,mu0_L0DiMuonDecision_TOS,mu1_L0DiMuonDecision_TOS,h1_L0MuonDecision_TOS,h1_L0DiMuonDecision_TOS,Dst_L0Global_TIS,D_L0Global_TIS,mu0_Hlt1TrackMuonDecision_TOS,mu1_Hlt1TrackMuonDecision_TOS,D_Hlt1TrackAllL0Decision_TOS,D_Hlt1DiMuonHighMassDecision_TOS,D_Hlt1DiMuonLowMassDecision_TOS,mu0_Hlt1SingleMuonNoIPDecision_TOS,mu1_Hlt1SingleMuonNoIPDecision_TOS,mu0_Hlt1SingleMuonHighPTDecision_TOS,mu1_Hlt1SingleMuonHighPTDecision_TOS,h1_0_Hlt1TrackMuonDecision_TOS,D_Hlt2CharmSemilepD02KKMuMuDecision_TOS,D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS,D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS,Dst_Hlt2CharmHadD02HHXDst_hhXDecision_TOS,Dst_Hlt2CharmHadD02HHXDst_LeptonhhXDecision_TOS,D_Hlt2DiMuonDetachedDecision_TOS,Dst_Hlt2CharmHadD02HHHHDst_4piDecision_TOS,Dst_Hlt2CharmHadD02HHHHDst_K3piDecision_TOS,Dst_Hlt2CharmHadD02HHHHDst_KKpipiDecision_TOS,D_Hlt2CharmHadD02HHHH_K3piDecision_TOS,D_Hlt2CharmHadD02HHHH_KKpipiDecision_TOS,D_Hlt2CharmHadD02HHHH_4piDecision_TOS,h1_Hlt1TrackMuonDecision_TOS;
+
+  //MC Variables                                                                                                                                                            
+  Int_t           Dst_BKGCAT;   //!                                                                                                                                      
+  Int_t           Dst_TRUEID;   //!                                                                                                                                      
+  Int_t           Dst_MC_MOTHER_ID;
+  Int_t           Dst_MC_MOTHER_KEY;
+  Int_t           Dst_MC_GD_MOTHER_ID;
+  Int_t           Dst_MC_GD_MOTHER_KEY;
+  Int_t           Dst_MC_GD_GD_MOTHER_ID;
+  Int_t           Dst_MC_GD_GD_MOTHER_KEY;
+  Double_t        Dst_TRUEP_E;
+  Double_t        Dst_TRUEP_X;
+  Double_t        Dst_TRUEP_Y;
+  Double_t        Dst_TRUEP_Z;
+  Double_t        Dst_TRUEPT;
+  Double_t        Dst_TRUEORIGINVERTEX_X;
+  Double_t        Dst_TRUEORIGINVERTEX_Y;
+  Double_t        Dst_TRUEORIGINVERTEX_Z;
+  Double_t        Dst_TRUEENDVERTEX_X;
+  Double_t        Dst_TRUEENDVERTEX_Y;
+  Double_t        Dst_TRUEENDVERTEX_Z;
+  Bool_t          Dst_TRUEISSTABLE;
+  Double_t        Dst_TRUETAU;
+  Int_t           D_BKGCAT;
+  Int_t           D_TRUEID;
+  Int_t           D_MC_MOTHER_ID;
+  Int_t           D_MC_MOTHER_KEY;
+  Double_t        D_TRUEP_E;
+  Double_t        D_TRUEP_X;
+  Double_t        D_TRUEP_Y;
+  Double_t        D_TRUEP_Z;
+  Double_t        D_TRUEPT;
+  Double_t        D_TRUEORIGINVERTEX_X;
+  Double_t        D_TRUEORIGINVERTEX_Y;
+  Double_t        D_TRUEORIGINVERTEX_Z;
+  Double_t        D_TRUEENDVERTEX_X;
+  Double_t        D_TRUEENDVERTEX_Y;
+  Double_t        D_TRUEENDVERTEX_Z;
+  Bool_t          D_TRUEISSTABLE;
+  Double_t        D_TRUETAU;
+  Int_t           h0_TRUEID;
+  Int_t           h0_MC_MOTHER_ID;
+  Double_t        h0_TRUEP_E;
+  Double_t        h0_TRUEP_X;
+  Double_t        h0_TRUEP_Y;
+  Double_t        h0_TRUEP_Z;
+  Double_t        h0_TRUEPT;
+  Double_t        h0_TRUEORIGINVERTEX_X;
+  Double_t        h0_TRUEORIGINVERTEX_Y;
+  Double_t        h0_TRUEORIGINVERTEX_Z;
+  Bool_t          h0_TRUEISSTABLE;
+  Double_t        h0_TRUETAU;
+  Int_t           h1_TRUEID;
+  Int_t           h1_MC_MOTHER_ID;
+  Double_t        h1_TRUEP_E;
+  Double_t        h1_TRUEP_X;
+  Double_t        h1_TRUEP_Y;
+  Double_t        h1_TRUEP_Z;
+  Double_t        h1_TRUEPT;
+  Double_t        h1_TRUEORIGINVERTEX_X;
+  Double_t        h1_TRUEORIGINVERTEX_Y;
+  Double_t        h1_TRUEORIGINVERTEX_Z;
+  Bool_t          h1_TRUEISSTABLE;
+  Double_t        h1_TRUETAU;
+  Int_t           mu0_TRUEID;
+  Int_t           mu0_MC_MOTHER_ID;
+  Double_t        mu0_TRUEP_E;
+  Double_t        mu0_TRUEP_X;
+  Double_t        mu0_TRUEP_Y;
+  Double_t        mu0_TRUEP_Z;
+  Double_t        mu0_TRUEPT;
+  Double_t        mu0_TRUEORIGINVERTEX_X;
+  Double_t        mu0_TRUEORIGINVERTEX_Y;
+  Double_t        mu0_TRUEORIGINVERTEX_Z;
+  Double_t        mu0_TRUEENDVERTEX_X;
+  Double_t        mu0_TRUEENDVERTEX_Y;
+  Double_t        mu0_TRUEENDVERTEX_Z;
+  Bool_t          mu0_TRUEISSTABLE;
+  Double_t        mu0_TRUETAU;
+  Int_t           mu1_TRUEID;
+  Int_t           mu1_MC_MOTHER_ID;
+  Int_t           mu1_MC_MOTHER_KEY;
+  Double_t        mu1_TRUEP_E;
+  Double_t        mu1_TRUEP_X;
+  Double_t        mu1_TRUEP_Y;
+  Double_t        mu1_TRUEP_Z;
+  Double_t        mu1_TRUEPT;
+  Double_t        mu1_TRUEORIGINVERTEX_X;
+  Double_t        mu1_TRUEORIGINVERTEX_Y;
+  Double_t        mu1_TRUEORIGINVERTEX_Z;
+  Bool_t          mu1_TRUEISSTABLE;
+  Double_t        mu1_TRUETAU;
+  Int_t           Slowpi_TRUEID;
+  Int_t           Slowpi_MC_MOTHER_ID;
+  Double_t        Slowpi_TRUEP_E;
+  Double_t        Slowpi_TRUEP_X;
+  Double_t        Slowpi_TRUEP_Y;
+  Double_t        Slowpi_TRUEP_Z;
+  Double_t        Slowpi_TRUEPT;
+  Double_t        Slowpi_TRUEORIGINVERTEX_X;
+  Double_t        Slowpi_TRUEORIGINVERTEX_Y;
+  Double_t        Slowpi_TRUEORIGINVERTEX_Z;
+  Bool_t          Slowpi_TRUEISSTABLE;
+  Double_t        Slowpi_TRUETAU;
+
+
+  //trigger                                                                                                                                                                       
+  theTree->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  theTree->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  theTree->SetBranchAddress("mu0_L0DiMuonDecision_TOS",&mu0_L0DiMuonDecision_TOS);
+  theTree->SetBranchAddress("mu1_L0DiMuonDecision_TOS",&mu1_L0DiMuonDecision_TOS);
+  theTree->SetBranchAddress("h1_L0MuonDecision_TOS",&h1_L0MuonDecision_TOS);
+  theTree->SetBranchAddress("h1_L0DiMuonDecision_TOS",&h1_L0DiMuonDecision_TOS);
+  theTree->SetBranchAddress("Dst_L0Global_TIS",&Dst_L0Global_TIS);
+  theTree->SetBranchAddress("D_L0Global_TIS",&D_L0Global_TIS);
+  theTree->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  theTree->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  theTree->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+  theTree->SetBranchAddress("D_Hlt1DiMuonHighMassDecision_TOS",&D_Hlt1DiMuonHighMassDecision_TOS);
+  theTree->SetBranchAddress("D_Hlt1DiMuonLowMassDecision_TOS",&D_Hlt1DiMuonLowMassDecision_TOS);
+  theTree->SetBranchAddress("mu0_Hlt1SingleMuonNoIPDecision_TOS",&mu0_Hlt1SingleMuonNoIPDecision_TOS);
+  theTree->SetBranchAddress("mu1_Hlt1SingleMuonNoIPDecision_TOS",&mu1_Hlt1SingleMuonNoIPDecision_TOS);
+  theTree->SetBranchAddress("mu0_Hlt1SingleMuonHighPTDecision_TOS",&mu0_Hlt1SingleMuonHighPTDecision_TOS);
+  theTree->SetBranchAddress("mu1_Hlt1SingleMuonHighPTDecision_TOS",&mu1_Hlt1SingleMuonHighPTDecision_TOS);
+  theTree->SetBranchAddress("h1_0_Hlt1TrackMuonDecision_TOS",&h1_0_Hlt1TrackMuonDecision_TOS);
+  theTree->SetBranchAddress("D_Hlt2CharmSemilepD02KKMuMuDecision_TOS",&D_Hlt2CharmSemilepD02KKMuMuDecision_TOS);
+  theTree->SetBranchAddress("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",&D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS);
+  theTree->SetBranchAddress("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS);
+  theTree->SetBranchAddress("Dst_Hlt2CharmHadD02HHXDst_hhXDecision_TOS",&Dst_Hlt2CharmHadD02HHXDst_hhXDecision_TOS);
+  theTree->SetBranchAddress("Dst_Hlt2CharmHadD02HHXDst_LeptonhhXDecision_TOS",&Dst_Hlt2CharmHadD02HHXDst_LeptonhhXDecision_TOS);
+  theTree->SetBranchAddress("D_Hlt2DiMuonDetachedDecision_TOS",&D_Hlt2DiMuonDetachedDecision_TOS);
+  theTree->SetBranchAddress("Dst_Hlt2CharmHadD02HHHHDst_4piDecision_TOS",&Dst_Hlt2CharmHadD02HHHHDst_4piDecision_TOS);
+  theTree->SetBranchAddress("Dst_Hlt2CharmHadD02HHHHDst_K3piDecision_TOS",&Dst_Hlt2CharmHadD02HHHHDst_K3piDecision_TOS);
+  theTree->SetBranchAddress("Dst_Hlt2CharmHadD02HHHHDst_KKpipiDecision_TOS",&Dst_Hlt2CharmHadD02HHHHDst_KKpipiDecision_TOS);
+  theTree->SetBranchAddress("D_Hlt2CharmHadD02HHHH_K3piDecision_TOS",&D_Hlt2CharmHadD02HHHH_K3piDecision_TOS);
+  theTree->SetBranchAddress("D_Hlt2CharmHadD02HHHH_KKpipiDecision_TOS",&D_Hlt2CharmHadD02HHHH_KKpipiDecision_TOS);
+  theTree->SetBranchAddress("D_Hlt2CharmHadD02HHHH_4piDecision_TOS",&D_Hlt2CharmHadD02HHHH_4piDecision_TOS);
 
   theTree->SetBranchAddress( "Dst_MAXDOCA", &user_Dst_MAXDOCA );
   theTree->SetBranchAddress( "D_MAXDOCA", &user_D_MAXDOCA );
@@ -267,9 +408,136 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   theTree->SetBranchAddress( "D_cosh",&user_D_cosh);
   theTree->SetBranchAddress( "mu0_cosh",&user_mu0_cosh);
   theTree->SetBranchAddress( "eventNumber",&user_eventNumber);
+  theTree->SetBranchAddress( "misID_mD_OS",&misID_mD_OS);
+  theTree->SetBranchAddress( "misID_dm_OS",&misID_dm_OS);
+
+  //MC truth informations 
+
+  if(isMC){
+
+   theTree->SetBranchAddress("Dst_BKGCAT", &Dst_BKGCAT);
+   theTree->SetBranchAddress("Dst_TRUEID", &Dst_TRUEID);
+   theTree->SetBranchAddress("Dst_MC_MOTHER_ID", &Dst_MC_MOTHER_ID);
+   theTree->SetBranchAddress("Dst_MC_MOTHER_KEY", &Dst_MC_MOTHER_KEY );
+   theTree->SetBranchAddress("Dst_TRUEP_E", &Dst_TRUEP_E);
+   theTree->SetBranchAddress("Dst_TRUEP_X", &Dst_TRUEP_X);
+   theTree->SetBranchAddress("Dst_TRUEP_Y", &Dst_TRUEP_Y);
+   theTree->SetBranchAddress("Dst_TRUEP_Z", &Dst_TRUEP_Z);
+   theTree->SetBranchAddress("Dst_TRUEPT", &Dst_TRUEPT);
+   theTree->SetBranchAddress("Dst_TRUEORIGINVERTEX_X", &Dst_TRUEORIGINVERTEX_X);
+   theTree->SetBranchAddress("Dst_TRUEORIGINVERTEX_Y", &Dst_TRUEORIGINVERTEX_Y);
+   theTree->SetBranchAddress("Dst_TRUEORIGINVERTEX_Z", &Dst_TRUEORIGINVERTEX_Z);
+   theTree->SetBranchAddress("Dst_TRUEENDVERTEX_X", &Dst_TRUEENDVERTEX_X);
+   theTree->SetBranchAddress("Dst_TRUEENDVERTEX_Y", &Dst_TRUEENDVERTEX_Y);
+   theTree->SetBranchAddress("Dst_TRUEENDVERTEX_Z", &Dst_TRUEENDVERTEX_Z);
+   theTree->SetBranchAddress("Dst_TRUEISSTABLE", &Dst_TRUEISSTABLE);
+   theTree->SetBranchAddress("Dst_TRUETAU", &Dst_TRUETAU);
+   theTree->SetBranchAddress("D_BKGCAT", &D_BKGCAT);
+   theTree->SetBranchAddress("D_TRUEID", &D_TRUEID);
+   theTree->SetBranchAddress("D_MC_MOTHER_ID", &D_MC_MOTHER_ID);
+   theTree->SetBranchAddress("D_TRUEP_E", &D_TRUEP_E);
+   theTree->SetBranchAddress("D_TRUEP_X", &D_TRUEP_X);
+   theTree->SetBranchAddress("D_TRUEP_Y", &D_TRUEP_Y);
+   theTree->SetBranchAddress("D_TRUEP_Z", &D_TRUEP_Z);
+   theTree->SetBranchAddress("D_TRUEORIGINVERTEX_X", &D_TRUEORIGINVERTEX_X);
+   theTree->SetBranchAddress("D_TRUEORIGINVERTEX_Y", &D_TRUEORIGINVERTEX_Y);
+   theTree->SetBranchAddress("D_TRUEORIGINVERTEX_Z", &D_TRUEORIGINVERTEX_Z);
+   theTree->SetBranchAddress("D_TRUEENDVERTEX_X", &D_TRUEENDVERTEX_X);
+   theTree->SetBranchAddress("D_TRUEENDVERTEX_Y", &D_TRUEENDVERTEX_Y);
+   theTree->SetBranchAddress("D_TRUEENDVERTEX_Z", &D_TRUEENDVERTEX_Z);
+   theTree->SetBranchAddress("D_TRUEISSTABLE", &D_TRUEISSTABLE);
+   theTree->SetBranchAddress("D_TRUETAU", &D_TRUETAU);
+   theTree->SetBranchAddress("h0_TRUEID", &h0_TRUEID);
+   theTree->SetBranchAddress("h0_TRUEP_E", &h0_TRUEP_E);
+   theTree->SetBranchAddress("h0_TRUEP_X", &h0_TRUEP_X);
+   theTree->SetBranchAddress("h0_TRUEP_Y", &h0_TRUEP_Y);
+   theTree->SetBranchAddress("h0_TRUEP_Z", &h0_TRUEP_Z);
+   theTree->SetBranchAddress("h0_TRUEPT", &h0_TRUEPT);
+   theTree->SetBranchAddress("h0_TRUEORIGINVERTEX_X", &h0_TRUEORIGINVERTEX_X);
+   theTree->SetBranchAddress("h0_TRUEORIGINVERTEX_Y", &h0_TRUEORIGINVERTEX_Y);
+   theTree->SetBranchAddress("h0_TRUEORIGINVERTEX_Z", &h0_TRUEORIGINVERTEX_Z);
+   theTree->SetBranchAddress("h0_TRUEISSTABLE", &h0_TRUEISSTABLE);
+   theTree->SetBranchAddress("h0_TRUETAU", &h0_TRUETAU);
+   theTree->SetBranchAddress("h1_TRUEID", &h1_TRUEID);
+   theTree->SetBranchAddress("h1_TRUEP_E", &h1_TRUEP_E);
+   theTree->SetBranchAddress("h1_TRUEP_X", &h1_TRUEP_X);
+   theTree->SetBranchAddress("h1_TRUEP_Y", &h1_TRUEP_Y);
+   theTree->SetBranchAddress("h1_TRUEP_Z", &h1_TRUEP_Z);
+   theTree->SetBranchAddress("h1_TRUEPT", &h1_TRUEPT);
+   theTree->SetBranchAddress("h1_TRUEORIGINVERTEX_X", &h1_TRUEORIGINVERTEX_X);
+   theTree->SetBranchAddress("h1_TRUEORIGINVERTEX_Y", &h1_TRUEORIGINVERTEX_Y);
+   theTree->SetBranchAddress("h1_TRUEORIGINVERTEX_Z", &h1_TRUEORIGINVERTEX_Z);
+   theTree->SetBranchAddress("h1_TRUETAU", &h1_TRUETAU );
+   theTree->SetBranchAddress("mu0_TRUEID", &mu0_TRUEID);
+   theTree->SetBranchAddress("mu0_TRUEP_E", &mu0_TRUEP_E);
+   theTree->SetBranchAddress("mu0_TRUEP_X", &mu0_TRUEP_X);
+   theTree->SetBranchAddress("mu0_TRUEP_Y", &mu0_TRUEP_Y);
+   theTree->SetBranchAddress("mu0_TRUEP_Z", &mu0_TRUEP_Z);
+   theTree->SetBranchAddress("mu0_TRUEPT", &mu0_TRUEPT);
+   theTree->SetBranchAddress("mu0_TRUEORIGINVERTEX_X", &mu0_TRUEORIGINVERTEX_X );
+   theTree->SetBranchAddress("mu0_TRUEORIGINVERTEX_Y", &mu0_TRUEORIGINVERTEX_Y);
+   theTree->SetBranchAddress("mu0_TRUEORIGINVERTEX_Z", &mu0_TRUEORIGINVERTEX_Z);
+   theTree->SetBranchAddress("mu0_TRUETAU", &mu0_TRUETAU);
+   theTree->SetBranchAddress("mu1_TRUEID", &mu1_TRUEID );
+   theTree->SetBranchAddress("mu1_MC_MOTHER_ID", &mu1_MC_MOTHER_ID );
+   theTree->SetBranchAddress("mu1_TRUEP_E", &mu1_TRUEP_E);
+   theTree->SetBranchAddress("mu1_TRUEP_X", &mu1_TRUEP_X);
+   theTree->SetBranchAddress("mu1_TRUEP_Y", &mu1_TRUEP_Y);
+   theTree->SetBranchAddress("mu1_TRUEP_Z", &mu1_TRUEP_Z);
+   theTree->SetBranchAddress("mu1_TRUEPT", &mu1_TRUEPT);
+   theTree->SetBranchAddress("mu1_TRUEORIGINVERTEX_X", &mu1_TRUEORIGINVERTEX_X);
+   theTree->SetBranchAddress("mu1_TRUEORIGINVERTEX_Y", &mu1_TRUEORIGINVERTEX_Y);
+   theTree->SetBranchAddress("mu1_TRUEORIGINVERTEX_Z", &mu1_TRUEORIGINVERTEX_Z);
+   theTree->SetBranchAddress("mu1_TRUEISSTABLE", &mu1_TRUEISSTABLE);
+   theTree->SetBranchAddress("mu1_TRUETAU", &mu1_TRUETAU);
+   theTree->SetBranchAddress("Slowpi_TRUEID", &Slowpi_TRUEID);
+   theTree->SetBranchAddress("Slowpi_MC_MOTHER_ID", &Slowpi_MC_MOTHER_ID);
+   theTree->SetBranchAddress("Slowpi_TRUEP_E", &Slowpi_TRUEP_E);
+   theTree->SetBranchAddress("Slowpi_TRUEP_X", &Slowpi_TRUEP_X);
+   theTree->SetBranchAddress("Slowpi_TRUEP_Y", &Slowpi_TRUEP_Y);
+   theTree->SetBranchAddress("Slowpi_TRUEP_Z", &Slowpi_TRUEP_Z);
+   theTree->SetBranchAddress("Slowpi_TRUEPT", &Slowpi_TRUEPT);
+   theTree->SetBranchAddress("Slowpi_TRUEORIGINVERTEX_X", &Slowpi_TRUEORIGINVERTEX_X);
+   theTree->SetBranchAddress("Slowpi_TRUEORIGINVERTEX_Y", &Slowpi_TRUEORIGINVERTEX_Y);
+   theTree->SetBranchAddress("Slowpi_TRUEORIGINVERTEX_Z", &Slowpi_TRUEORIGINVERTEX_Z);
+   theTree->SetBranchAddress("Slowpi_TRUEISSTABLE", &Slowpi_TRUEISSTABLE);
+   theTree->SetBranchAddress("Slowpi_TRUETAU", &Slowpi_TRUETAU);  
+  }
+
 
   TFile *target  = new TFile(targetName,"RECREATE" );
-  TTree* Tree = new TTree("BDT_Tree","BDT_Tree");         // new tree with BDT variable and all relevant other variables                                                              
+  TTree* Tree = new TTree("BDT_Tree","BDT_Tree");         // new tree with BDT variable and all relevant other variables                                                        
+
+  Tree->Branch("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  Tree->Branch("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  Tree->Branch("mu0_L0DiMuonDecision_TOS",&mu0_L0DiMuonDecision_TOS);
+  Tree->Branch("mu1_L0DiMuonDecision_TOS",&mu1_L0DiMuonDecision_TOS);
+  Tree->Branch("h1_L0MuonDecision_TOS",&h1_L0MuonDecision_TOS);
+  Tree->Branch("h1_L0DiMuonDecision_TOS",&h1_L0DiMuonDecision_TOS);
+  Tree->Branch("Dst_L0Global_TIS",&Dst_L0Global_TIS);
+  Tree->Branch("D_L0Global_TIS",&D_L0Global_TIS);
+  Tree->Branch("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  Tree->Branch("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  Tree->Branch("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+  Tree->Branch("D_Hlt1DiMuonHighMassDecision_TOS",&D_Hlt1DiMuonHighMassDecision_TOS);
+  Tree->Branch("D_Hlt1DiMuonLowMassDecision_TOS",&D_Hlt1DiMuonLowMassDecision_TOS);
+  Tree->Branch("mu0_Hlt1SingleMuonNoIPDecision_TOS",&mu0_Hlt1SingleMuonNoIPDecision_TOS);
+  Tree->Branch("mu1_Hlt1SingleMuonNoIPDecision_TOS",&mu1_Hlt1SingleMuonNoIPDecision_TOS);
+  Tree->Branch("mu0_Hlt1SingleMuonHighPTDecision_TOS",&mu0_Hlt1SingleMuonHighPTDecision_TOS);
+  Tree->Branch("mu1_Hlt1SingleMuonHighPTDecision_TOS",&mu1_Hlt1SingleMuonHighPTDecision_TOS);
+  Tree->Branch("h1_Hlt1TrackMuonDecision_TOS",&h1_Hlt1TrackMuonDecision_TOS);
+  Tree->Branch("D_Hlt2CharmSemilepD02KKMuMuDecision_TOS",&D_Hlt2CharmSemilepD02KKMuMuDecision_TOS);
+  Tree->Branch("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",&D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS);
+  Tree->Branch("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS);
+  Tree->Branch("Dst_Hlt2CharmHadD02HHXDst_hhXDecision_TOS",&Dst_Hlt2CharmHadD02HHXDst_hhXDecision_TOS);
+  Tree->Branch("Dst_Hlt2CharmHadD02HHXDst_LeptonhhXDecision_TOS",&Dst_Hlt2CharmHadD02HHXDst_LeptonhhXDecision_TOS);
+  Tree->Branch("D_Hlt2DiMuonDetachedDecision_TOS",&D_Hlt2DiMuonDetachedDecision_TOS);
+  Tree->Branch("Dst_Hlt2CharmHadD02HHHHDst_4piDecision_TOS",&Dst_Hlt2CharmHadD02HHHHDst_4piDecision_TOS);
+  Tree->Branch("Dst_Hlt2CharmHadD02HHHHDst_K3piDecision_TOS",&Dst_Hlt2CharmHadD02HHHHDst_K3piDecision_TOS);
+  Tree->Branch("Dst_Hlt2CharmHadD02HHHHDst_KKpipiDecision_TOS",&Dst_Hlt2CharmHadD02HHHHDst_KKpipiDecision_TOS);
+  Tree->Branch("D_Hlt2CharmHadD02HHHH_K3piDecision_TOS",&D_Hlt2CharmHadD02HHHH_K3piDecision_TOS);
+  Tree->Branch("D_Hlt2CharmHadD02HHHH_KKpipiDecision_TOS",&D_Hlt2CharmHadD02HHHH_KKpipiDecision_TOS);
+  Tree->Branch("D_Hlt2CharmHadD02HHHH_4piDecision_TOS",&D_Hlt2CharmHadD02HHHH_4piDecision_TOS);
 
   Tree->Branch( "Dst_MAXDOCA", &user_Dst_MAXDOCA );
   Tree->Branch( "D_MAXDOCA", &user_D_MAXDOCA );
@@ -319,6 +587,101 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   Tree->Branch( "h0_ProbNNghost", & user_h0_ProbNNghost);
   Tree->Branch( "h1_ProbNNghost", & user_h1_ProbNNghost);
   Tree->Branch( "Slowpi_ProbNNghost", & user_Slowpi_ProbNNghost);
+  Tree->Branch( "misID_dm_OS", &misID_dm_OS );
+  Tree->Branch( "misID_mD_OS", &misID_mD_OS );
+  
+  if(isMC) {
+
+   Tree->Branch("Dst_BKGCAT", &Dst_BKGCAT);
+   Tree->Branch("Dst_TRUEID", &Dst_TRUEID);
+   Tree->Branch("Dst_MC_MOTHER_ID", &Dst_MC_MOTHER_ID);
+   Tree->Branch("Dst_MC_MOTHER_KEY", &Dst_MC_MOTHER_KEY );
+   Tree->Branch("Dst_TRUEP_E", &Dst_TRUEP_E);
+   Tree->Branch("Dst_TRUEP_X", &Dst_TRUEP_X);
+   Tree->Branch("Dst_TRUEP_Y", &Dst_TRUEP_Y);
+   Tree->Branch("Dst_TRUEP_Z", &Dst_TRUEP_Z);
+   Tree->Branch("Dst_TRUEPT", &Dst_TRUEPT);
+   Tree->Branch("Dst_TRUEORIGINVERTEX_X", &Dst_TRUEORIGINVERTEX_X);
+   Tree->Branch("Dst_TRUEORIGINVERTEX_Y", &Dst_TRUEORIGINVERTEX_Y);
+   Tree->Branch("Dst_TRUEORIGINVERTEX_Z", &Dst_TRUEORIGINVERTEX_Z);
+   Tree->Branch("Dst_TRUEENDVERTEX_X", &Dst_TRUEENDVERTEX_X);
+   Tree->Branch("Dst_TRUEENDVERTEX_Y", &Dst_TRUEENDVERTEX_Y);
+   Tree->Branch("Dst_TRUEENDVERTEX_Z", &Dst_TRUEENDVERTEX_Z);
+   Tree->Branch("Dst_TRUEISSTABLE", &Dst_TRUEISSTABLE);
+   Tree->Branch("Dst_TRUETAU", &Dst_TRUETAU);
+   Tree->Branch("D_BKGCAT", &D_BKGCAT);
+   Tree->Branch("D_TRUEID", &D_TRUEID);
+   Tree->Branch("D_MC_MOTHER_ID", &D_MC_MOTHER_ID);
+   Tree->Branch("D_TRUEP_E", &D_TRUEP_E);
+   Tree->Branch("D_TRUEP_X", &D_TRUEP_X);
+   Tree->Branch("D_TRUEP_Y", &D_TRUEP_Y);
+   Tree->Branch("D_TRUEP_Z", &D_TRUEP_Z);
+   Tree->Branch("D_TRUEORIGINVERTEX_X", &D_TRUEORIGINVERTEX_X);
+   Tree->Branch("D_TRUEORIGINVERTEX_Y", &D_TRUEORIGINVERTEX_Y);
+   Tree->Branch("D_TRUEORIGINVERTEX_Z", &D_TRUEORIGINVERTEX_Z);
+   Tree->Branch("D_TRUEENDVERTEX_X", &D_TRUEENDVERTEX_X);
+   Tree->Branch("D_TRUEENDVERTEX_Y", &D_TRUEENDVERTEX_Y);
+   Tree->Branch("D_TRUEENDVERTEX_Z", &D_TRUEENDVERTEX_Z);
+   Tree->Branch("D_TRUEISSTABLE", &D_TRUEISSTABLE);
+   Tree->Branch("D_TRUETAU", &D_TRUETAU);
+   Tree->Branch("h0_TRUEID", &h0_TRUEID);
+   Tree->Branch("h0_TRUEP_E", &h0_TRUEP_E);
+   Tree->Branch("h0_TRUEP_X", &h0_TRUEP_X);
+   Tree->Branch("h0_TRUEP_Y", &h0_TRUEP_Y);
+   Tree->Branch("h0_TRUEP_Z", &h0_TRUEP_Z);
+   Tree->Branch("h0_TRUEPT", &h0_TRUEPT);
+   Tree->Branch("h0_TRUEORIGINVERTEX_X", &h0_TRUEORIGINVERTEX_X);
+   Tree->Branch("h0_TRUEORIGINVERTEX_Y", &h0_TRUEORIGINVERTEX_Y);
+   Tree->Branch("h0_TRUEORIGINVERTEX_Z", &h0_TRUEORIGINVERTEX_Z);
+   Tree->Branch("h0_TRUEISSTABLE", &h0_TRUEISSTABLE);
+   Tree->Branch("h0_TRUETAU", &h0_TRUETAU);
+   Tree->Branch("h1_TRUEID", &h1_TRUEID);
+   Tree->Branch("h1_TRUEP_E", &h1_TRUEP_E);
+   Tree->Branch("h1_TRUEP_X", &h1_TRUEP_X);
+   Tree->Branch("h1_TRUEP_Y", &h1_TRUEP_Y);
+   Tree->Branch("h1_TRUEP_Z", &h1_TRUEP_Z);
+   Tree->Branch("h1_TRUEPT", &h1_TRUEPT);
+   Tree->Branch("h1_TRUEORIGINVERTEX_X", &h1_TRUEORIGINVERTEX_X);
+   Tree->Branch("h1_TRUEORIGINVERTEX_Y", &h1_TRUEORIGINVERTEX_Y);
+   Tree->Branch("h1_TRUEORIGINVERTEX_Z", &h1_TRUEORIGINVERTEX_Z);
+   Tree->Branch("h1_TRUETAU", &h1_TRUETAU);
+   Tree->Branch("mu0_TRUEID", &mu0_TRUEID);
+   Tree->Branch("mu0_TRUEP_E", &mu0_TRUEP_E);
+   Tree->Branch("mu0_TRUEP_X", &mu0_TRUEP_X);
+   Tree->Branch("mu0_TRUEP_Y", &mu0_TRUEP_Y);
+   Tree->Branch("mu0_TRUEP_Z", &mu0_TRUEP_Z);
+   Tree->Branch("mu0_TRUEPT", &mu0_TRUEPT);
+   Tree->Branch("mu0_TRUEORIGINVERTEX_X", &mu0_TRUEORIGINVERTEX_X);
+   Tree->Branch("mu0_TRUEORIGINVERTEX_Y", &mu0_TRUEORIGINVERTEX_Y);
+   Tree->Branch("mu0_TRUEORIGINVERTEX_Z", &mu0_TRUEORIGINVERTEX_Z);
+   Tree->Branch("mu0_TRUETAU", &mu0_TRUETAU);
+   Tree->Branch("mu1_TRUEID", &mu1_TRUEID );
+   Tree->Branch("mu1_MC_MOTHER_ID", &mu1_MC_MOTHER_ID );
+   Tree->Branch("mu1_TRUEP_E", &mu1_TRUEP_E);
+   Tree->Branch("mu1_TRUEP_X", &mu1_TRUEP_X);
+   Tree->Branch("mu1_TRUEP_Y", &mu1_TRUEP_Y);
+   Tree->Branch("mu1_TRUEP_Z", &mu1_TRUEP_Z);
+   Tree->Branch("mu1_TRUEPT", &mu1_TRUEPT);
+   Tree->Branch("mu1_TRUEORIGINVERTEX_X", &mu1_TRUEORIGINVERTEX_X);
+   Tree->Branch("mu1_TRUEORIGINVERTEX_Y", &mu1_TRUEORIGINVERTEX_Y);
+   Tree->Branch("mu1_TRUEORIGINVERTEX_Z", &mu1_TRUEORIGINVERTEX_Z);
+   Tree->Branch("mu1_TRUEISSTABLE", &mu1_TRUEISSTABLE);
+   Tree->Branch("mu1_TRUETAU", &mu1_TRUETAU);
+   Tree->Branch("Slowpi_TRUEID", &Slowpi_TRUEID);
+   Tree->Branch("Slowpi_MC_MOTHER_ID", &Slowpi_MC_MOTHER_ID);
+   Tree->Branch("Slowpi_TRUEP_E", &Slowpi_TRUEP_E);
+   Tree->Branch("Slowpi_TRUEP_X", &Slowpi_TRUEP_X);
+   Tree->Branch("Slowpi_TRUEP_Y", &Slowpi_TRUEP_Y);
+   Tree->Branch("Slowpi_TRUEP_Z", &Slowpi_TRUEP_Z);
+   Tree->Branch("Slowpi_TRUEPT", &Slowpi_TRUEPT);
+   Tree->Branch("Slowpi_TRUEORIGINVERTEX_X", &Slowpi_TRUEORIGINVERTEX_X);
+   Tree->Branch("Slowpi_TRUEORIGINVERTEX_Y", &Slowpi_TRUEORIGINVERTEX_Y);
+   Tree->Branch("Slowpi_TRUEORIGINVERTEX_Z", &Slowpi_TRUEORIGINVERTEX_Z);
+   Tree->Branch("Slowpi_TRUEISSTABLE", &Slowpi_TRUEISSTABLE);
+   Tree->Branch("Slowpi_TRUETAU", &Slowpi_TRUETAU);  
+  }
+
+
 
   std::cout << "number Events: " << theTree->GetEntries() << std::endl;
 
@@ -329,8 +692,6 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
     theTree->GetEntry(ievt);
     if(user_Slowpi_ProbNNghost>0.5 || user_h1_ProbNNghost>0.5 ||
        user_h0_ProbNNghost>0.5 || user_mu1_ProbNNghost>0.5 ||  user_mu0_ProbNNghost > 0.5) continue;
-    //              if(user_mu0_ProbNNmu<0.5 || user_mu1_ProbNNmu<0.5) continue;                                                                                                
-
 
     D_MAXDOCA= float(user_D_MAXDOCA);
     Dst_MINIP= float(user_Dst_MINIP);
@@ -376,10 +737,15 @@ void D2KKmumuCrossapplication(){
 
 
 
-  //data                                                                                 
+  //signal data                                                                                 
   //Application takes name of tree in input file, name of the input file, the target name and part 1 or 2 for even or odd trained events, respectively. 
+  
 
-  /*
+  /////////////////////////////                                                                                                                            
+  //     Signal  Mode        //                                                                                                                        
+
+  //////////////////////////// 
+
   Application_D2KKmumu("data/DecayTree_odd","D2KKmumu_PreselectedSubsample.root","D2KKmumu_BDT_odd.root",1);
   Application_D2KKmumu("data/DecayTree_even","D2KKmumu_PreselectedSubsample.root","D2KKmumu_BDT_even.root",2);
 
@@ -389,7 +755,7 @@ void D2KKmumuCrossapplication(){
   myChain1->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKmumu_BDT.root");
 
 
-  //sideband                                                                                                                                                                          
+  //signal sideband                                                                                                                                                                          
 
   Application_D2KKmumu("sideband/DecayTree_odd","D2KKmumu_PreselectedSubsample.root","sideband_D2KKmumu_BDT_odd.root",1);
   Application_D2KKmumu("sideband/DecayTree_even","D2KKmumu_PreselectedSubsample.root","sideband_D2KKmumu_BDT_even.root",2);
@@ -397,10 +763,9 @@ void D2KKmumuCrossapplication(){
   myChain2->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2KKmumu_BDT_odd.root");
   myChain2->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2KKmumu_BDT_even.root");
   myChain2->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2KKmumu_BDT.root");
-  */
   
-  /*
-  //MC                                                                                                                                                                                
+  
+  //signal MC                                                                                                                                                                                
  
   Application_D2KKmumu("DecayTree_odd","D2KKmumu_highStat_MCtrainingSample.root","MC_D2KKmumu_BDT_odd.root",1);
   Application_D2KKmumu("DecayTree_even","D2KKmumu_highStat_MCtrainingSample.root","MC_D2KKmumu_BDT_even.root",2);
@@ -409,13 +774,16 @@ void D2KKmumuCrossapplication(){
   myChain3->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT_odd.root");
   myChain3->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT_even.root");
   myChain3->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT.root");
-  */
+  
+  /////////////////////////////
+
+  // Normalization Mode      //
+  
+  ////////////////////////////
 
 
-
-  /*
- 
-  //normalization mode 
+  //normalization mode data
+  
   Application_D2KKmumu("data/DecayTree_odd","D2Kpimumu_PreselectedSubsample.root","D2Kpimumu_D2KKmumuBDT_odd.root",1);
   Application_D2KKmumu("data/DecayTree_even","D2Kpimumu_PreselectedSubsample.root","D2Kpimumu_D2KKmumuBDT_even.root",2);
 
@@ -423,10 +791,9 @@ void D2KKmumuCrossapplication(){
   myChain4->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT_odd.root");
   myChain4->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT_even.root");
   myChain4->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT.root");
-  */
   
-  //sideband                                                                                                                                                                          
-
+  
+  //normalization mode sideband                                                                                                                                                                           
   Application_D2KKmumu("sideband/DecayTree_odd","D2Kpimumu_PreselectedSubsample.root","sideband_D2Kpimumu_D2KKmumuBDT_odd.root",1);
   Application_D2KKmumu("sideband/DecayTree_even","D2Kpimumu_PreselectedSubsample.root","sideband_D2Kpimumu_D2KKmumuBDT_even.root",2);
   TChain* myChain7= new TChain("BDT_Tree");
@@ -435,26 +802,50 @@ void D2KKmumuCrossapplication(){
   myChain7->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT.root");
   
 
+  //nomrmalization MC                                                                                                                                          
+                                                                                                                                                          
+  Application_D2KKmumu("DecayTree_odd","D2Kpimumu_MCtrainingSample.root","MC_D2Kpimumu_D2KKmumuBDT_odd.root",1,true);
+  Application_D2KKmumu("DecayTree_even","D2KKmumu_MCtrainingSample.root","MC_D2Kpimumu_D2KKmumuBDT_even.root",2,true);
+
+  TChain* myChain10= new TChain("BDT_Tree");
+  myChain10->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpimumu_D2KKmumuBDT_odd.root");
+  myChain10->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpimumu_D2KKmumuBDT_even.root");
+  myChain10->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpimumu_D2KKmumuBDT.root");
+
+ 
+
+
+  /////////////////////////////                                                                                                                            
+
+  // misID D2hhhh  Mode      //                                                                                                                           
+
+  //////////////////////////// 
 
   /*
+  //mis ID bkg Data                                                                                                                                                                    
+  Application_D2KKmumu("data/DecayTree_odd","D2Kpipipi_PreselectedSubsample.root","D2Kpipipi_D2KKmumuBDT_odd.root",1);                                    
+  Application_D2KKmumu("data/DecayTree_even","D2Kpipipi_PreselectedSubsample.root","D2Kpipipi_D2KKmumuBDT_even.root",2);                                 
+  TChain* myChain8= new TChain("BDT_Tree");                                                                                                              
+  myChain8->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_D2KKmumuBDT_odd.root");                                                      
+  myChain8->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_D2KKmumuBDT_even.root");                                                    
+  myChain8->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_D2KKmumuBDT.root");    
+
   
   //mis ID bkg MC 
-  Application_D2KKmumu("DecayTree_odd","D2KKpipi_filteredt_MCSample.root","D2KKpipi_filtered_D2KKmumuBDT_odd.root",1); 
-  Application_D2KKmumu("DecayTree_even","D2KKpipi_filteredt_MCSample.root","D2KKpipi_filtered_D2KKmumuBDT_even.root",2);
-  TChain* myChain5= new TChain("BDT_Tree");                                                                                                                                                  
-  myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_filtered_D2KKmumuBDT_odd.root");                                                                                 
-  myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_filtered_D2KKmumuBDT_even.root");                                                                              
-  myChain5->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_filtered_D2KKmumuBDT.root");  
 
-  //mis ID bkg MC 
-  Application_D2KKmumu("DecayTree_odd","D2KKpipi_filteredt_MCSample.root","D2Kpipipi_filtered_D2KKmumuBDT_odd.root",1); 
-  Application_D2KKmumu("DecayTree_even","D2Kpipipi_filteredt_MCSample.root","D2Kpipipi_filtered_D2KKmumuBDT_even.root",2);
-  TChain* myChain6= new TChain("BDT_Tree");                                                                                                                                                  
-  myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_filtered_D2KKmumuBDT_odd.root");                                                                                
-  myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_filtered_D2KKmumuBDT_even.root");                                                                              
-  myChain6->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_filtered_D2KKmumuBDT.root");  
+  Application_D2KKmumu("DecayTree_odd","D2KKpipi_MCtrainingSample.root","MC_D2KKpipi_D2KKmumuBDT_odd.root",1,true);
+  Application_D2KKmumu("DecayTree_even","D2KKpipi_MCtrainingSample.root","MC_D2KKpipi_D2KKmumuBDT_even.root",2,true);
+  TChain* myChain5= new TChain("BDT_Tree");
+  myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKpipi_D2KKmumuBDT_odd.root");
+  myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKpipi_D2KKmumuBDT_even.root");
+  myChain5->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKpipi_D2KKmumuBDT.root");
 
+  Application_D2KKmumu("DecayTree_odd","D2Kpipipi_MCtrainingSample.root","MC_D2Kpipipi_D2KKmumuBDT_odd.root",1,true); 
+  Application_D2KKmumu("DecayTree_even","D2Kpipipi_MCtrainingSample.root","MC_D2Kpipipi_D2KKmumuBDT_even.root",2,true);
+  TChain* myChain6= new TChain("BDT_Tree");                                                                                                              
+  myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpipipi_D2KKmumuBDT_odd.root");                                                     myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpipipi_D2KKmumuBDT_even.root");                                                    myChain6->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpipipi_D2KKmumuBDT.root");  
   */
+ 
   std::cout << "==> TMVAClassificationApplication is done!"  << std::endl;
  }
 
