@@ -32,10 +32,9 @@
 
 
 
-
-
-//ClassImp(RooJohnsonSU) 
+ClassImp(RooJohnsonSU)
   
+
 RooJohnsonSU::RooJohnsonSU(const char *name, const char *title, 
 			   RooAbsReal& _x,
 			   RooAbsReal& _mean,
@@ -61,7 +60,6 @@ RooJohnsonSU::RooJohnsonSU(const RooJohnsonSU& other, const char* name) :
   tau("tau",this,other.tau)
 { 
 } 
-
 
 
 Double_t RooJohnsonSU::evaluate() const 

@@ -77,13 +77,13 @@ void Classification_D2KKmumu(int part) {
 
   //kinematic                                                                                                                                                                               
   factory->AddVariable("Slowpi_P",'F');
-  factory->AddVariable("min_mu_PT:=min(mu0_PT,mu1_PT)",'F');////                                                                                                                            
-  factory->AddVariable("min_h_PT:=min(h0_PT,h1_PT)",'F');////                                                                                                                               
+  //factory->AddVariable("min_mu_PT:=min(mu0_PT,mu1_PT)",'F');////remove newest version
+  //factory->AddVariable("min_h_PT:=min(h0_PT,h1_PT)",'F');//// remove newst version
 
   factory->AddVariable("Dst_Coneptasy",'F');
 
   factory->AddVariable("Slowpi_PT",'F');                                                                                                                                                  
-  factory->AddVariable("max_mu_PT:=max(mu0_PT,mu1_PT)",'F');////                                                                                                                          
+  //factory->AddVariable("max_mu_PT:=max(mu0_PT,mu1_PT)",'F');////remove for newest version                                                                                                                           
 
 
 
@@ -190,11 +190,11 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   reader->AddVariable("log_Slowpi_IPCHI2_OWNPV:=log10(Slowpi_IPCHI2_OWNPV)",&log_Slowpi_IPCHI2_OWNPV);
   reader->AddVariable("D_MINIPCHI2",&D_MINIPCHI2);
   reader->AddVariable("Slowpi_P",&Slowpi_P);
-  reader->AddVariable("min_mu_PT:=min(mu0_PT,mu1_PT)",&min_mu_PT);
-  reader->AddVariable("min_h_PT:=min(h0_PT,h1_PT)",&min_h_PT);
+  //reader->AddVariable("min_mu_PT:=min(mu0_PT,mu1_PT)",&min_mu_PT);///
+  //reader->AddVariable("min_h_PT:=min(h0_PT,h1_PT)",&min_h_PT);///
   reader->AddVariable("Dst_Coneptasy",&Dst_Coneptasy);
   reader->AddVariable("Slowpi_PT",&Slowpi_PT);                                                                                                                                      
-  reader->AddVariable("max_mu_PT:=max(mu0_PT,mu1_PT)",&max_mu_PT);                        
+  //reader->AddVariable("max_mu_PT:=max(mu0_PT,mu1_PT)",&max_mu_PT);///                        
 
   reader->BookMVA( methodName, weightfile );
 
@@ -215,6 +215,8 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   Double_t user_mu1_ProbNNmu, user_mu0_ProbNNmu;
   Double_t user_D_TAU;
   Int_t user_eventNumber;
+  Int_t user_nTracks_data;
+  Int_t user_nTracks_MC;
   Double_t misID_mD_OS=-1000;
   Double_t misID_dm_OS=-1000;
  
@@ -323,6 +325,9 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   Double_t        Slowpi_TRUEORIGINVERTEX_Z;
   Bool_t          Slowpi_TRUEISSTABLE;
   Double_t        Slowpi_TRUETAU;
+  Double_t        user_mHH;
+  Double_t user_h0_ProbNNk,user_h1_ProbNNk,user_h0_ProbNNpi,user_h1_ProbNNpi;
+
 
 
   //trigger                                                                                                                                                                       
@@ -357,6 +362,7 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   theTree->SetBranchAddress("D_Hlt2CharmHadD02HHHH_KKpipiDecision_TOS",&D_Hlt2CharmHadD02HHHH_KKpipiDecision_TOS);
   theTree->SetBranchAddress("D_Hlt2CharmHadD02HHHH_4piDecision_TOS",&D_Hlt2CharmHadD02HHHH_4piDecision_TOS);
 
+
   theTree->SetBranchAddress( "Dst_MAXDOCA", &user_Dst_MAXDOCA );
   theTree->SetBranchAddress( "D_MAXDOCA", &user_D_MAXDOCA );
   theTree->SetBranchAddress( "Dst_MINIP", & user_Dst_MINIP);
@@ -387,9 +393,16 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   theTree->SetBranchAddress( "h0_PX", &user_h0_PX );
   theTree->SetBranchAddress( "h0_PY", &user_h0_PY );
   theTree->SetBranchAddress( "h0_PZ", &user_h0_PZ );
+  theTree->SetBranchAddress( "h1_PX", &user_h1_PX );
+  theTree->SetBranchAddress( "h1_PY", &user_h1_PY );
+  theTree->SetBranchAddress( "h1_PZ", &user_h1_PZ );
   theTree->SetBranchAddress( "mu0_PIDmu", &user_mu0_PIDmu );
   theTree->SetBranchAddress( "mu0_ProbNNmu", &user_mu0_ProbNNmu );
   theTree->SetBranchAddress( "mu1_ProbNNmu", &user_mu1_ProbNNmu );
+  theTree->SetBranchAddress( "h0_ProbNNk", &user_h0_ProbNNk );
+  theTree->SetBranchAddress( "h1_ProbNNk", &user_h1_ProbNNk );
+  theTree->SetBranchAddress( "h0_ProbNNpi", &user_h0_ProbNNpi );
+  theTree->SetBranchAddress( "h1_ProbNNpi", &user_h1_ProbNNpi );
   theTree->SetBranchAddress( "D_M", &user_D_M );
   theTree->SetBranchAddress( "Dst_M", &user_Dst_M );
   theTree->SetBranchAddress( "D_DiMuon_Mass", &user_D_DiMuon_Mass );
@@ -410,7 +423,8 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   theTree->SetBranchAddress( "eventNumber",&user_eventNumber);
   theTree->SetBranchAddress( "misID_mD_OS",&misID_mD_OS);
   theTree->SetBranchAddress( "misID_dm_OS",&misID_dm_OS);
-
+  theTree->SetBranchAddress("mHH", & user_mHH);
+  if(!isMC) theTree->SetBranchAddress("nTracks_data", &user_nTracks_data);
   //MC truth informations 
 
   if(isMC){
@@ -502,6 +516,7 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
    theTree->SetBranchAddress("Slowpi_TRUEORIGINVERTEX_Z", &Slowpi_TRUEORIGINVERTEX_Z);
    theTree->SetBranchAddress("Slowpi_TRUEISSTABLE", &Slowpi_TRUEISSTABLE);
    theTree->SetBranchAddress("Slowpi_TRUETAU", &Slowpi_TRUETAU);  
+   theTree->SetBranchAddress("nTracks", &user_nTracks_data);
   }
 
 
@@ -565,10 +580,13 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   Tree->Branch( "mu0_PZ", &user_mu0_PZ );
   Tree->Branch( "mu1_PX", &user_mu1_PX );
   Tree->Branch( "mu1_PY", &user_mu1_PY );
-  Tree->Branch( "m1_PZ", &user_mu1_PZ );
+  Tree->Branch( "mu1_PZ", &user_mu1_PZ );
   Tree->Branch( "h0_PX", &user_h0_PX );
   Tree->Branch( "h0_PY", &user_h0_PY );
   Tree->Branch( "h0_PZ", &user_h0_PZ );
+  Tree->Branch( "h1_PX", &user_h1_PX );
+  Tree->Branch( "h1_PY", &user_h1_PY );
+  Tree->Branch( "h1_PZ", &user_h1_PZ );
   Tree->Branch( "D_M", &user_D_M );
   Tree->Branch( "Dst_M", &user_Dst_M );
   Tree->Branch( "BDT", &user_BDT );
@@ -589,7 +607,14 @@ void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int
   Tree->Branch( "Slowpi_ProbNNghost", & user_Slowpi_ProbNNghost);
   Tree->Branch( "misID_dm_OS", &misID_dm_OS );
   Tree->Branch( "misID_mD_OS", &misID_mD_OS );
-  
+  Tree->Branch( "mHH", & user_mHH);
+  Tree->Branch( "Dst_Coneptasy", & user_Dst_Coneptasy);
+  Tree->Branch( "h0_ProbNNk", &user_h0_ProbNNk );
+  Tree->Branch( "h1_ProbNNk", &user_h1_ProbNNk );
+  Tree->Branch( "h0_ProbNNpi", &user_h0_ProbNNpi );
+  Tree->Branch( "h1_ProbNNpi", &user_h1_ProbNNpi );
+  Tree->Branch( "nTracks", &user_nTracks_data );
+
   if(isMC) {
 
    Tree->Branch("Dst_BKGCAT", &Dst_BKGCAT);
@@ -745,7 +770,9 @@ void D2KKmumuCrossapplication(){
   //     Signal  Mode        //                                                                                                                        
 
   //////////////////////////// 
-
+  
+  /*
+  
   Application_D2KKmumu("data/DecayTree_odd","D2KKmumu_PreselectedSubsample.root","D2KKmumu_BDT_odd.root",1);
   Application_D2KKmumu("data/DecayTree_even","D2KKmumu_PreselectedSubsample.root","D2KKmumu_BDT_even.root",2);
 
@@ -753,10 +780,10 @@ void D2KKmumuCrossapplication(){
   myChain1->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKmumu_BDT_odd.root");
   myChain1->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKmumu_BDT_even.root");
   myChain1->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKmumu_BDT.root");
-
-
+  */
+  /*
+  
   //signal sideband                                                                                                                                                                          
-
   Application_D2KKmumu("sideband/DecayTree_odd","D2KKmumu_PreselectedSubsample.root","sideband_D2KKmumu_BDT_odd.root",1);
   Application_D2KKmumu("sideband/DecayTree_even","D2KKmumu_PreselectedSubsample.root","sideband_D2KKmumu_BDT_even.root",2);
   TChain* myChain2= new TChain("BDT_Tree");
@@ -764,23 +791,25 @@ void D2KKmumuCrossapplication(){
   myChain2->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2KKmumu_BDT_even.root");
   myChain2->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2KKmumu_BDT.root");
   
-  
+  */
   //signal MC                                                                                                                                                                                
- 
-  Application_D2KKmumu("DecayTree_odd","D2KKmumu_highStat_MCtrainingSample.root","MC_D2KKmumu_BDT_odd.root",1);
-  Application_D2KKmumu("DecayTree_even","D2KKmumu_highStat_MCtrainingSample.root","MC_D2KKmumu_BDT_even.root",2);
+  
+  Application_D2KKmumu("DecayTree_odd","D2KKmumu_highStat_MCtrainingSample.root","MC_D2KKmumu_BDT_odd.root",1,true);
+  Application_D2KKmumu("DecayTree_even","D2KKmumu_highStat_MCtrainingSample.root","MC_D2KKmumu_BDT_even.root",2,true);
 
   TChain* myChain3= new TChain("BDT_Tree");
   myChain3->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT_odd.root");
   myChain3->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT_even.root");
   myChain3->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT.root");
   
+  
+  
   /////////////////////////////
 
   // Normalization Mode      //
   
   ////////////////////////////
-
+  /*
 
   //normalization mode data
   
@@ -800,20 +829,19 @@ void D2KKmumuCrossapplication(){
   myChain7->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT_odd.root");
   myChain7->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT_even.root");
   myChain7->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT.root");
-  
-
+   
+  */
   //nomrmalization MC                                                                                                                                          
                                                                                                                                                           
-  Application_D2KKmumu("DecayTree_odd","D2Kpimumu_MCtrainingSample.root","MC_D2Kpimumu_D2KKmumuBDT_odd.root",1,true);
-  Application_D2KKmumu("DecayTree_even","D2KKmumu_MCtrainingSample.root","MC_D2Kpimumu_D2KKmumuBDT_even.root",2,true);
+  Application_D2KKmumu("DecayTree_odd","D2Kpimumu_highStat_MCtrainingSample.root","MC_D2Kpimumu_D2KKmumuBDT_odd.root",1,true);
+  Application_D2KKmumu("DecayTree_even","D2Kpimumu_highStat_MCtrainingSample.root","MC_D2Kpimumu_D2KKmumuBDT_even.root",2,true);
 
   TChain* myChain10= new TChain("BDT_Tree");
   myChain10->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpimumu_D2KKmumuBDT_odd.root");
   myChain10->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpimumu_D2KKmumuBDT_even.root");
   myChain10->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpimumu_D2KKmumuBDT.root");
-
- 
-
+  
+    
 
   /////////////////////////////                                                                                                                            
 
@@ -821,16 +849,25 @@ void D2KKmumuCrossapplication(){
 
   //////////////////////////// 
 
-  /*
-  //mis ID bkg Data                                                                                                                                                                    
-  Application_D2KKmumu("data/DecayTree_odd","D2Kpipipi_PreselectedSubsample.root","D2Kpipipi_D2KKmumuBDT_odd.root",1);                                    
-  Application_D2KKmumu("data/DecayTree_even","D2Kpipipi_PreselectedSubsample.root","D2Kpipipi_D2KKmumuBDT_even.root",2);                                 
+/*    
+  //mis ID bkg Data                                                                                                                                                            
+  //Application_D2KKmumu("data/DecayTree_odd","D2Kpipipi_PIDline_PreselectedSubsample1.root","D2Kpipipi_D2KKmumuBDT_odd1.root",1); 
+  //Application_D2KKmumu("data/DecayTree_even","D2Kpipipi_PIDline_PreselectedSubsample1.root","D2Kpipipi_D2KKmumuBDT_even1.root",2);                                 
   TChain* myChain8= new TChain("BDT_Tree");                                                                                                              
-  myChain8->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_D2KKmumuBDT_odd.root");                                                      
-  myChain8->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_D2KKmumuBDT_even.root");                                                    
-  myChain8->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_D2KKmumuBDT.root");    
-
+  myChain8->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_D2KKmumuBDT_odd1.root");        
+  myChain8->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_D2KKmumuBDT_even1.root");                                                    
+  myChain8->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_PIDline_D2KKmumuBDT2.root");    
+*/ 
+  /*
+  Application_D2KKmumu("data/DecayTree_odd","D2KKpipi_PIDline_PreselectedSubsample1.root","D2KKpipi_D2KKmumuBDT_odd1.root",1);
+  Application_D2KKmumu("data/DecayTree_even","D2KKpipi_PIDline_PreselectedSubsample1.root","D2KKpipi_D2KKmumuBDT_even1.root",2);
+  TChain* myChain11= new TChain("BDT_Tree");
+  myChain11->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_D2KKmumuBDT_odd1.root");
+  myChain11->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_D2KKmumuBDT_even1.root");
+  myChain11->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_PIDline_D2KKmumuBDT1.root");
   
+  */
+    
   //mis ID bkg MC 
 
   Application_D2KKmumu("DecayTree_odd","D2KKpipi_MCtrainingSample.root","MC_D2KKpipi_D2KKmumuBDT_odd.root",1,true);
@@ -840,13 +877,17 @@ void D2KKmumuCrossapplication(){
   myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKpipi_D2KKmumuBDT_even.root");
   myChain5->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKpipi_D2KKmumuBDT.root");
 
+
   Application_D2KKmumu("DecayTree_odd","D2Kpipipi_MCtrainingSample.root","MC_D2Kpipipi_D2KKmumuBDT_odd.root",1,true); 
-  Application_D2KKmumu("DecayTree_even","D2Kpipipi_MCtrainingSample.root","MC_D2Kpipipi_D2KKmumuBDT_even.root",2,true);
+  Application_D2KKmumu("DecayTree_even","D2Kpipipi_MCtrainingSample.root","MC_D2Kpipipi_D2KKmumuBDT_even.root",2,true);  
   TChain* myChain6= new TChain("BDT_Tree");                                                                                                              
-  myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpipipi_D2KKmumuBDT_odd.root");                                                     myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpipipi_D2KKmumuBDT_even.root");                                                    myChain6->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpipipi_D2KKmumuBDT.root");  
-  */
+  myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples_backup/MC_D2Kpipipi_D2KKmumuBDT_odd.root");
+  myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples_backup/MC_D2Kpipipi_D2KKmumuBDT_even.root");
+  myChain6->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples_backup/MC_D2Kpipipi_D2KKmumuBDT.root");  
+  
  
   std::cout << "==> TMVAClassificationApplication is done!"  << std::endl;
- }
+  
+  }
 
 

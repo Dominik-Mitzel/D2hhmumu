@@ -54,9 +54,9 @@ protected:
   Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName=0) const ;
   Double_t analyticalIntegral(Int_t code, const char* rangeName=0) const ;
 
-  //  private:
+public:
 
-  //ClassDef(RooJohnsonSU,1) // Your description goes here...
+  ClassDef(RooJohnsonSU,1) // Your description goes here...
 };
  
 #endif

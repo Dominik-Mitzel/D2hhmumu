@@ -19,16 +19,12 @@ class D2hhmumuModel
   //PDF in mD0 
   //signal PDF 
  
-  RooAbsPdf * Signal(RooRealVar m, RooRealVar dm,RooRealVar nSignal,
+  RooAbsPdf * Signal(RooRealVar m, RooRealVar dm,
                      RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mDeltaJSU, RooRealVar mGammaJSU,
-                     RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmDeltaJSU, RooRealVar dmGammaJSU
+                     RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmDeltaJSU, RooRealVar dmGammaJSU,
+		     RooRealVar ResolutionScale, RooRealVar globalShift
                     );
 
-
-  RooAbsPdf * Signal_blindable (RooRealVar m, RooRealVar dm,RooRealVar nSignal_blindable, 
-			       RooRealVar EffRatio,RooRealVar nNorm, RooRealVar BFsig, RooRealVar BFnorm,
-			       RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mNuJSU, RooRealVar mTauJSU,
-			       RooRealVar dmMeanJSU, RooRealVar dmWidthJSU, RooRealVar dmNuJSU, RooRealVar dmTauJSU);
 
   /*
   RooAbsPdf * CombinatoricBackground(RooRealVar m, RooRealVar dm,
@@ -37,8 +33,7 @@ class D2hhmumuModel
 				     );
   */
 
-  RooAbsPdf * CombinatoricBackground(RooRealVar m, RooRealVar dm,                                                                                                                          
-                                     RooRealVar mChebyA,RooRealVar mChebyB ,                                                                                           
+  RooAbsPdf * CombinatoricBackground(RooRealVar m, RooRealVar dm,                                                                                                                                                 RooRealVar mChebyA,RooRealVar mChebyB ,                                                                                           
                                      RooRealVar dmThreshold, RooRealVar dmAlpha                                                                                                            
                                      );   
 
@@ -66,12 +61,12 @@ class D2hhmumuModel
                               RooRealVar mMeanGauss, RooRealVar mSigmaGauss,
   	 		      RooRealVar dmThreshold, RooRealVar dmAlpha
                               );
-
-  RooAbsPdf* Model(std::string components);
+  
+   RooAbsPdf* Model(std::string components);
   RooWorkspace GetWorkspace() {return m_ws;}
 
  private:
-  // Variables
+  void initializeDefaultYields();
   RooWorkspace m_ws;
 };
 

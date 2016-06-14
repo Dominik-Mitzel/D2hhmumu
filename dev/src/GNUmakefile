@@ -1,5 +1,5 @@
 PROGNAME = ../bin/minimal_test
-SOURCEFILES = main.cc sWeights.cc D2hhmumuReader.cc D2KKmumuReader.cc D2KpimumuReader.cc D2pipimumuReader.cc D2hhmumuFitter.cc RooJohnsonSU.cc RooThreshold.cc D2hhmumuModel.cc D2KKpipiReader.cc D2KpipipiReader.cc TMVA_applications.cc optimizeSelection.cc
+SOURCEFILES = main.cc sWeights.cc D2hhmumuReader.cc D2KKmumuReader.cc D2KpimumuReader.cc D2pipimumuReader.cc D2hhmumuFitter.cc RooJohnsonSU.cc RooThreshold.cc D2hhmumuModel.cc D2KKpipiReader.cc D2KpipipiReader.cc TMVA_applications.cc optimizeSelection.cc D2hhmumuFitter1D.cc D2hhmumuModel1D.cc D2hhmumuFitter_Applications.cc EfficiencyCalculator.cc MyDict.cc 
 OBJS    = $(patsubst %.cc, %.o,$(SOURCEFILES))
 
 ROOTCFLAGS   := $(shell root-config --cflags)
@@ -17,15 +17,22 @@ LIBS         += -lMinuit -L /opt/root/lib \
 	   		        -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic \
 				        -lSpectrum -lRooFit -lHtml -l RooStats -lTMVA
 
-%.o: %.cc
-	        g++ ${CFLAGS} -c  -g -o $@ $<
+%.o: %.cc 
+		#first create the dictionary MyDict.cc needed for the shared library
+	        rootcint -f MyDict.cc -c $(CFLAGS) -p RooJohnsonSU.h RooThreshold.h LinkDef.h
+	        g++ -fPIC ${CFLAGS} -c  -g -o $@ $<
 
-$(PROGNAME):$(OBJS)
+$(PROGNAME):$(OBJS) 
 	        g++ -o $@ $(OBJS) $(LDFLAGS) $(LIBS)
 		#-mv  $(OBJS) ../obj
+
+sharedLibrary:$(OBJS)
+	g++ -fPIC -shared -o PdfLib.so $(LDFLAGS) $(LIBS) $(OBJS)
+
 
 test:
 	        @echo $(ROOTCFLAGS)
 
 clean:  
 	        -rm -f ${PROGNAME} ${OBJS}
+

@@ -10,11 +10,11 @@
 
 bool D2hhmumuReader::isBkgSideband(){
 
-  if (Dst_DTF_D0_M < 1840 )return false; //cut these events also in event loop pr preselection... 
+  if (Dst_DTF_D0_M < 1890 )return false; //cut these events also in event loop pr preselection... 
 
   //  if(  !((D_M > 1840 && D_M<1880) && (DTFdm() > 144.5 && DTFdm() < 146.5)) ) return true;
-  if(  !((Dst_DTF_D0_M > 1840 && Dst_DTF_D0_M<1880) && (DTFdm() > 144.5 && DTFdm() < 146.5)) ) return true;                                                                                                   
-  else return false; 	 
+  //if(  !((Dst_DTF_D0_M > 1840 && Dst_DTF_D0_M<1880) && (DTFdm() > 144.5 && DTFdm() < 146.5)) ) return true;                                                                                                   
+  else return true; 	 
 }
 
 
@@ -71,7 +71,7 @@ return true;
 
 bool D2hhmumuReader::isL0Selected(){
 
-  if(mu0_L0MuonDecision_TOS==1 || mu1_L0MuonDecision_TOS ==1 || mu0_L0DiMuonDecision_TOS==1 || mu1_L0DiMuonDecision_TOS ==1 || Dst_L0Global_TIS==1) return true;
+  if(mu0_L0MuonDecision_TOS==1 || mu1_L0MuonDecision_TOS ==1 || /*mu0_L0DiMuonDecision_TOS==1 || mu1_L0DiMuonDecision_TOS ==1 ||*/ Dst_L0Global_TIS==1) return true;
   else return false; 	 
 }
 

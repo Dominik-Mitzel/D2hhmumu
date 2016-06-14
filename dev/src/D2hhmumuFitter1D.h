@@ -1,5 +1,5 @@
-#ifndef D2HHMUMUFITTER_H
-#define D2HHMUMUFITTER_H
+#ifndef D2HHMUMUFITTER1D_H
+#define D2HHMUMUFITTER1D_H
 
 //class for the implemetation of 2D dm-mD0 fit for D2hhmumu decays
 #include <iostream>
@@ -51,15 +51,21 @@
 #include "RooProdPdf.h"
 #include "RooJohnsonSU.h"
 #include "RooThreshold.h"
-#include "D2hhmumuModel.h"
+#include "D2hhmumuModel1D.h"
 #include "RooWorkspace.h"
 
-class D2hhmumuFitter {
+class D2hhmumuFitter1D {
 
  public:
- D2hhmumuFitter() ;
-  
-  ~D2hhmumuFitter();
+  D2hhmumuFitter1D() ;
+  ~D2hhmumuFitter1D();
+
+  TRandom3* generator;
+  double Nsig_offset;
+  double BFsig_offset;
+
+  RooRealVar Nsig_blinding; 
+  RooRealVar BFsig_blinding;
 
   //variables used in the fitter
   //
@@ -67,10 +73,6 @@ class D2hhmumuFitter {
 
   
   //signal
-  RooRealVar deltaM_xi;
-  RooRealVar deltaM_lambda;
-  RooRealVar deltaM_gamma;
-  RooRealVar deltaM_delta;
 
   RooRealVar D0_M_xi;
   RooRealVar D0_M_lambda;
@@ -81,31 +83,39 @@ class D2hhmumuFitter {
   RooRealVar globalShift;
 
   //purely combinatorial background                                                                                                                                             
-  RooRealVar deltaM_threshold;
-  RooRealVar deltaM_alpha;
 
   RooRealVar D0_M_chebyA;
   RooRealVar D0_M_chebyB;
   RooRealVar D0_M_chebyC;
 
-
-  RooRealVar deltaM_xi_bkg;
-  RooRealVar deltaM_lambda_bkg;
-  RooRealVar deltaM_gamma_bkg;
-  RooRealVar deltaM_delta_bkg;
-
   RooRealVar D0_M_xi_bkg;
   RooRealVar D0_M_lambda_bkg;
   RooRealVar D0_M_gamma_bkg;
   RooRealVar D0_M_delta_bkg;
- 
-  RooRealVar mean1;
-  RooRealVar sigma1;
+
+  RooRealVar D0_M_xi_bkg_norm;
+  RooRealVar D0_M_lambda_bkg_norm;
+  RooRealVar D0_M_gamma_bkg_norm;
+  RooRealVar D0_M_delta_bkg_norm;
 
   RooRealVar EffRatio;
   RooRealVar nNorm;
   RooRealVar BFsig;
   RooRealVar BFnorm;
+
+  RooRealVar D0_M_mean;
+  RooRealVar D0_M_sigma;
+  RooRealVar D0_M_alphaR;
+  RooRealVar D0_M_alphaL;
+  RooRealVar D0_M_nL;
+  RooRealVar D0_M_nR;
+
+  RooRealVar D0_M_mean_bkg;
+  RooRealVar D0_M_sigma_bkg;
+  RooRealVar D0_M_alphaR_bkg;
+  RooRealVar D0_M_alphaL_bkg;
+  RooRealVar D0_M_nL_bkg;
+  RooRealVar D0_M_nR_bkg;
 
 
   
@@ -114,7 +124,8 @@ class D2hhmumuFitter {
   //************************                                                                                                                                                    
   
 
-  RooWorkspace  initializeModel(D2hhmumuModel* myModel, RooRealVar D0_M,RooRealVar deltaM);
+  RooWorkspace  initializeModel(D2hhmumuModel1D* myModel, RooRealVar D0_M);
+  RooWorkspace  initializeNormalizationModel(D2hhmumuModel1D* myModel, RooRealVar D0_M);
   void setStyle();
 
   TString pathToSignalData;
@@ -124,14 +135,16 @@ class D2hhmumuFitter {
   TString pathToSidebandData;
   TString pathToKpipipiData;
   TString pathToKpipipiHistoData;
+  TString pathToKKpipiData;
 
+  void setPathToKKpipiData(TString path);
   void setPathToSignalMC(TString path);
   void setPathToSignalData(TString path);
   void setPathToNormData(TString path);
-  void setPathToKpipipiHistoData(TString path);
   void setPathToInvData(TString path);
   void setPathToKpipipiData(TString path);
   void setPathToSidebandData(TString path);
+  void setPathToKpipipiHistoData(TString path);
 
   void setKpimumuStartParameters(); //to be implemented, especially when there will be other channles..    
   void setKKmumuStartParameters(); //to be implemented, especially when there will be other channles..                                                    
@@ -139,14 +152,21 @@ class D2hhmumuFitter {
   //used for selection optimisation
   double getMisIDbkgExp(TString cut,TString namePlot);
   double getCombBkg(TString cut,TString namePlot);
+  double getCombBkgFromDeltaM(TString cut,TString namePlot);
 
   //actually the fits
-  void fit_MC(TString cut, bool fixShape,TString namePlot);
+  void fit_MC(TString cut, bool fixShape, TString namePlot);
   void fit_PIDinverted_Data(bool fixShape,TString namePlot);
   void fit_Data(TString cut,TString namePlot);
   void fit_Kpipipi_misID(TString cut,bool fixShape,TString namePlot);
-  void fit_normalization_Data(TString cut,TString namePlot);  
+  void fit_HHpipi_misID(TString cut,bool fixShape,TString namePlot);
+  void fit_Kpipipi_misID_fromHistogramm(TString cut,bool fixShape,TString namePlot);
+  double fit_normalization_Data(TString cut,TString namePlot);  
   //void fillWorkspace(RooWorkspace &ws,RooRealVar D0_M,RooRealVar deltaM);
+  void GausExpModel(int nsig ,    // number of signal events                                                                                                      
+                    int nbkg ) ;
+  void fillModelConfig(TString dataCut,TString nomalizationCut,TString misIDCut, TString name);
+  void makeToyStudy(TString dataCut,TString nomalizationCut,TString misIDCut,TString targetFile,double nSig_exp, double nCombBkg_exp, double nMisID_exp, bool fixMisID20);  
   
 };
  

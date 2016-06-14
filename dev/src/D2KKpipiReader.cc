@@ -161,7 +161,7 @@ void D2KKpipiReader::createSubsample(TString name, double percentage) {//specify
     fChain->GetEntry(i);
     //select only events that pass the trigger seelction criteria                                                                                                                   
     if( Dst_DTF_Dstarplus_M - Dst_DTF_D0_M < 140 ||  Dst_DTF_Dstarplus_M - Dst_DTF_D0_M > 154 ) continue;
-    if( Dst_DTF_D0_M < 1760 ||  Dst_DTF_D0_M > 1980 ) continue;
+    if( Dst_DTF_D0_M < 1740 ||  Dst_DTF_D0_M > 2000 ) continue;
     if(!passGhostProbCut(0.5)) continue;
 
     //if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected()  )continue;                                                                                                       
