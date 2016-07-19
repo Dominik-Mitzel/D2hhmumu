@@ -39,9 +39,11 @@ void D2KKpipiMC();
 void D2KpipipiMC();
 void D2KKpipiData();
 void D2KpipipiData();
+void D2pipipipiData();
 
 void draw_BDT_crosschecks_forVariable(TString variable, int xLow, int xHigh, double BDTcut);
 void draw_BDT_crosschecks();
 
 void check_peakingBackground(TString kind,bool PIDCut);
 void createGeneratorLevelMCTuple(TString kind);
+void studyKKMCEfficiency(double BDTCut, double PIDCut, TString fOut);

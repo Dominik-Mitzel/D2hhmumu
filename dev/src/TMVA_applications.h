@@ -11,6 +11,8 @@
 #include "TSystem.h"
 #include "TROOT.h"
 #include "TMath.h"
+#include "TLorentzVector.h"
+#include "Tools.h"
 
 
 #include "TMVA/Tools.h"
@@ -23,12 +25,19 @@
 #include "TMVA/MethodCategory.h"
 
 
-
 //training, testing and application for D2KKmumu
 void Classification_D2KKmumu(int part);
 void D2KKmumuCrosstraining();
 
+//training, testing and application for D2pipimumu
+void Classification_D2pipimumu(int part);
+void D2pipimumuCrosstraining();
+
 //BDT is applied to data, MC, data sideband and normalization channel
-void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int part,bool isMC);
+void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int part,bool isMC, bool isNormalizationMode);
 void D2KKmumuCrossapplication();
+
+//BDT is applied to data, MC, data sideband and normalization channel
+void Application_D2pipimumu(TString treeName, TString fileIn, TString fileOut, int part,bool isMC, bool isNormalizationMode);
+void D2pipimumuCrossapplication();
 

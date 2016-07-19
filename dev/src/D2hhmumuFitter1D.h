@@ -79,6 +79,11 @@ class D2hhmumuFitter1D {
   RooRealVar D0_M_gamma;
   RooRealVar D0_M_delta;
 
+  RooRealVar D0_M_xi_norm;
+  RooRealVar D0_M_lambda_norm;
+  RooRealVar D0_M_gamma_norm;
+  RooRealVar D0_M_delta_norm;
+
   RooRealVar ResolutionScale;
   RooRealVar globalShift;
 
@@ -131,14 +136,18 @@ class D2hhmumuFitter1D {
   TString pathToSignalData;
   TString pathToNormData;
   TString pathToSignalMC;
+  TString pathToNormMC;
   TString pathToInvData;
   TString pathToSidebandData;
   TString pathToKpipipiData;
   TString pathToKpipipiHistoData;
-  TString pathToKKpipiData;
+  TString pathToHHpipiData;
+  
+  TString q2RangeNormalizationMode;
 
-  void setPathToKKpipiData(TString path);
+  void setPathToHHpipiData(TString path);
   void setPathToSignalMC(TString path);
+  void setPathToNormMC(TString path);
   void setPathToSignalData(TString path);
   void setPathToNormData(TString path);
   void setPathToInvData(TString path);
@@ -156,17 +165,21 @@ class D2hhmumuFitter1D {
 
   //actually the fits
   void fit_MC(TString cut, bool fixShape, TString namePlot);
+  void fit_normalization_MC(TString cut, bool fixShape, TString namePlot);
   void fit_PIDinverted_Data(bool fixShape,TString namePlot);
   void fit_Data(TString cut,TString namePlot);
+  double fit_resonant_Data(TString cut,TString namePlot);
   void fit_Kpipipi_misID(TString cut,bool fixShape,TString namePlot);
   void fit_HHpipi_misID(TString cut,bool fixShape,TString namePlot);
+  double fit_HHpipi(TString cut,TString namePlot);
   void fit_Kpipipi_misID_fromHistogramm(TString cut,bool fixShape,TString namePlot);
   double fit_normalization_Data(TString cut,TString namePlot);  
   //void fillWorkspace(RooWorkspace &ws,RooRealVar D0_M,RooRealVar deltaM);
   void GausExpModel(int nsig ,    // number of signal events                                                                                                      
                     int nbkg ) ;
   void fillModelConfig(TString dataCut,TString nomalizationCut,TString misIDCut, TString name);
-  void makeToyStudy(TString dataCut,TString nomalizationCut,TString misIDCut,TString targetFile,double nSig_exp, double nCombBkg_exp, double nMisID_exp, bool fixMisID20);  
+  void makeToyStudy(TString dataCut,TString nomalizationCut,TString misIDCut,TString targetFile,double nSig_exp, double nCombBkg_exp, double nMisID_exp, bool fixMisID20,bool combBkgShapeFree);  
+  void addNormalizationSWeights(TString dataCut, TString misIDCut);
   
 };
  

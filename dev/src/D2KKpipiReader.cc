@@ -125,6 +125,9 @@ void D2KKpipiReader::createSubsample(TString name, double percentage) {//specify
   bool isSideband;
   double mKpiOS,mKpiSS,mpipiOS,mpipiSS,misID_mD_OS,misID_mD_SS,misID_dm_SS,misID_dm_OS;
   double pKpiOS, pKpiSS, ppipiSS, ppipiOS;
+  double h0_PIDK,h1_PIDK;
+  Int_t mu0_MuonNShared,mu1_MuonNShared;
+
 
   std::vector<TTree*> trees;
   trees.push_back(newtree_data_odd);
@@ -152,6 +155,10 @@ void D2KKpipiReader::createSubsample(TString name, double percentage) {//specify
     (*it)->Branch("misID_dm_OS", & misID_dm_OS);
     (*it)->Branch("pKpiOS", &pKpiOS );
     (*it)->Branch("ppipiOS", & ppipiOS);
+    (*it)->Branch("mu0_MuonNShared", &mu0_MuonNShared );
+    (*it)->Branch("mu1_MuonNShared", &mu1_MuonNShared );
+    (*it)->Branch("h0_PIDK", &h0_PIDK );
+    (*it)->Branch("h1_PIDK", &h1_PIDK );
 
   }
   for (Long64_t i=0;i<nentries; i++) {
@@ -160,7 +167,8 @@ void D2KKpipiReader::createSubsample(TString name, double percentage) {//specify
 
     fChain->GetEntry(i);
     //select only events that pass the trigger seelction criteria                                                                                                                   
-    if( Dst_DTF_Dstarplus_M - Dst_DTF_D0_M < 140 ||  Dst_DTF_Dstarplus_M - Dst_DTF_D0_M > 154 ) continue;
+    //   if( Dst_DTF_Dstarplus_M - Dst_DTF_D0_M < 140 ||  Dst_DTF_Dstarplus_M - Dst_DTF_D0_M > 154 ) continue;
+    if( Dst_DTF_Dstarplus_M - Dst_DTF_D0_M < 143 ||  Dst_DTF_Dstarplus_M - Dst_DTF_D0_M > 148 ) continue; //tighten here small window for 1D fit                
     if( Dst_DTF_D0_M < 1740 ||  Dst_DTF_D0_M > 2000 ) continue;
     if(!passGhostProbCut(0.5)) continue;
 
@@ -307,6 +315,8 @@ void D2KKpipiReader::createMCtrainingSample(TString name) {
   double mHH;
   double mKpiOS,mKpiSS,mpipiOS,mpipiSS,misID_mD_OS,misID_mD_SS,misID_dm_SS,misID_dm_OS;
   double pKpiOS, pKpiSS, ppipiSS, ppipiOS;
+  double h0_PIDK,h1_PIDK;
+  Int_t mu0_MuonNShared,mu1_MuonNShared;
 
   newtree_even->Branch("Slowpi_cosh",&Slowpi_cosh);
   newtree_even->Branch("D_cosh", & D_cosh);
@@ -324,6 +334,10 @@ void D2KKpipiReader::createMCtrainingSample(TString name) {
   newtree_even->Branch("misID_dm_OS", & misID_dm_OS);
   newtree_even->Branch("pKpiOS", &pKpiOS );
   newtree_even->Branch("ppipiOS", & ppipiOS);
+  newtree_even->Branch("mu0_MuonNShared", &mu0_MuonNShared );
+  newtree_even->Branch("mu1_MuonNShared", &mu1_MuonNShared );
+  newtree_even->Branch("h0_PIDK", &h0_PIDK );
+  newtree_even->Branch("h1_PIDK", &h1_PIDK );
 
   newtree_odd->Branch("Slowpi_cosh",&Slowpi_cosh);
   newtree_odd->Branch("D_cosh", & D_cosh);
@@ -340,6 +354,10 @@ void D2KKpipiReader::createMCtrainingSample(TString name) {
   newtree_odd->Branch("misID_dm_OS", & misID_dm_OS);
   newtree_odd->Branch("pKpiOS", &pKpiOS );
   newtree_odd->Branch("ppipiOS", & ppipiOS);
+  newtree_odd->Branch("mu0_MuonNShared", &mu0_MuonNShared );
+  newtree_odd->Branch("mu1_MuonNShared", &mu1_MuonNShared );
+  newtree_odd->Branch("h0_PIDK", &h0_PIDK );
+  newtree_odd->Branch("h1_PIDK", &h1_PIDK );
 
   //  for (Long64_t i=0;i<nentries; i++) {                                                                                                            
   for (Long64_t i=0;i<nentries; i++) {

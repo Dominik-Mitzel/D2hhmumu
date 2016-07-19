@@ -500,8 +500,8 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
          if (fileULDist) ulDist= fileULDist->Get("RULDist");
       }
 
-
-      TFile * fileOut = new TFile(mResultFileName,"RECREATE");
+      //set to HD PATH 
+      TFile * fileOut = new TFile("/work/mitzel/D2hhmumu/dev/D2KKmumu/img/limits/"+mResultFileName,"RECREATE");
       r->Write();
       if (ulDist) ulDist->Write();
       Info("StandardHypoTestInvDemo","HypoTestInverterResult has been written in the file %s",mResultFileName.Data());
@@ -537,8 +537,8 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
    // else
    //    plot->Draw("");  // plot all and Clb
    //c1->Print("plot_"+mResultFileName+".eps");
-   c1->SaveAs("plot_"+mResultFileName+".eps");
-   c1->Print("plot_"+mResultFileName+".eps"); 
+   c1->SaveAs("/work/mitzel/D2hhmumu/dev/D2KKmumu/img/limits/plot_"+mResultFileName+".eps");
+   c1->Print("/work/mitzel/D2hhmumu/dev/D2KKmumu/img/limits/plot_"+mResultFileName+".eps"); 
 
    const int nEntries = r->ArraySize();
 

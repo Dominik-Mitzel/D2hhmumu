@@ -51,7 +51,7 @@ using namespace RooFit ;
 using namespace RooStats;
 
 
-void calculateSweights(TString pathToFile){
+void calculateSweights(TString pathToFile,TString cuts){
 
   bool binned=true;
   bool sWeight=true;
@@ -79,11 +79,12 @@ void calculateSweights(TString pathToFile){
   ///Fill all needed variables in RooDataSet                                                                                                                                            
   ///---------------------------------------                                                                                                                                            
 
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1820., 1940.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1770., 1940.,"MeV");
   RooArgList list =  RooArgList(D0_M);
   RooDataSet* data = new RooDataSet("data", "data", tree, list, "");
   RooDataSet* data_small = (RooDataSet*) data->reduce(SelectVars(RooArgSet(D0_M)));
   RooDataHist* data_binned = data_small->binnedClone();
+
 
   ///Define fit model                                                                                                                                                                   
   ///----------------                                                                                                                                                                   
