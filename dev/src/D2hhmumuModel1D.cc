@@ -69,6 +69,19 @@ RooAbsPdf* D2hhmumuModel1D::CombinatoricBackground(RooRealVar m,
 }
 
 
+RooAbsPdf* D2hhmumuModel1D::CombinatoricExponentialBackground(RooRealVar m, 
+				      RooRealVar mExpoLambda 
+						 )			
+{
+  if (m_ws.pdf("CombinatoricExpoBkg") == 0) {
+    RooExponential CombinatoricExpoBkg("CombinatoricExpoBkg", "Combinatoric Background (M) Exponential", m, mExpoLambda);
+    m_ws.import(CombinatoricExpoBkg);
+  }
+  return m_ws.pdf("CombinatoricExpoBkg");
+}
+
+
+
 
 RooAbsPdf* D2hhmumuModel1D::D2hhhhBackground(RooRealVar m, 
 					   RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mDeltaJSU, RooRealVar mGammaJSU
@@ -82,33 +95,33 @@ RooAbsPdf* D2hhmumuModel1D::D2hhhhBackground(RooRealVar m,
   return m_ws.pdf("D2hhhhBkg");
 }
 
- /* //alternative D2hhhhBkg models
-RooAbsPdf* D2hhmumuModel1D::D2hhhhBackground(RooRealVar m,
+ //alternative D2hhhhBkg models
+RooAbsPdf* D2hhmumuModel1D::D2hhhhDoubleCBBackground(RooRealVar m,
                                    RooRealVar mean, RooRealVar sigma, RooRealVar alphaR, RooRealVar alphaL, RooRealVar nR, RooRealVar nL
                                    )
 {
-  if (m_ws.pdf("D2hhhhBkg") == 0) {
+  if (m_ws.pdf("D2hhhhDoubleCBBkg") == 0) {
     RooCBShape CBleftBkg("CBleftBkg", "D2hhhhbkg D^{0} CBleft", m, mean, sigma,alphaL,nL);
     RooCBShape CBrightBkg("CBrightBkg", "D2hhhhbkg D^{0} CBright", m, mean, sigma,alphaR,nR);
     RooRealVar fractionBkg("fraction","fraction",0.5);
-    RooAddPdf D2hhhhBkg("D2hhhhBkg", "D*^{+} #rightarrow D^{0}(#rightarrow hh #mu #mu)#pi^{+} Signal", RooArgSet(CBleftBkg,CBrightBkg),fractionBkg);
-    m_ws.import(D2hhhhBkg);
+    RooAddPdf D2hhhhDoubleCBBkg("D2hhhhDoubleCBBkg", "D*^{+} #rightarrow D^{0}(#rightarrow hh #mu #mu)#pi^{+} Signal", RooArgSet(CBleftBkg,CBrightBkg),fractionBkg);
+    m_ws.import(D2hhhhDoubleCBBkg);
   }
-  return m_ws.pdf("D2hhhhBkg");
+  return m_ws.pdf("D2hhhhDoubleCBBkg");
 }
- */
-  /*
-RooAbsPdf* D2hhmumuModel1D::D2hhhhBackground(RooRealVar m,
+ 
+
+RooAbsPdf* D2hhmumuModel1D::D2hhhhSingleCBBackground(RooRealVar m,
 				   RooRealVar mean, RooRealVar sigma, RooRealVar alphaL, RooRealVar nL
 				   )
 {
-  if (m_ws.pdf("D2hhhhBkg") == 0) {
-    RooCBShape D2hhhhBkg("D2hhhhBkg", "Signal D^{0} CBleft", m, mean, sigma,alphaL,nL);
-    m_ws.import(D2hhhhBkg);
+  if (m_ws.pdf("D2hhhhSingleCBBkg") == 0) {
+    RooCBShape D2hhhhSingleCBBkg("D2hhhhSingleCBBkg", "Signal D^{0} CBleft", m, mean, sigma,alphaL,nL);
+    m_ws.import(D2hhhhSingleCBBkg);
   }
-  return m_ws.pdf("D2hhhhBkg");
+  return m_ws.pdf("D2hhhhSingleCBBkg");
 }
-  */
+
 
 
 void D2hhmumuModel1D::initializeDefaultYields() {
@@ -116,12 +129,24 @@ void D2hhmumuModel1D::initializeDefaultYields() {
   //if no special yields are desired, a default set can be initialized here. the function Model return then a fully working model PDF. If blinded variables are to be used,
   //they can be given to the workspace later in the Fitter. See D2hhmumuFitter.cc for details. DONT use D2hhmumuModel in this case
   if(m_ws.var("nD2hhhhBkg") == 0){
-    RooRealVar nD2hhhhBkg("nD2hhhhBkg", "misidentified D2hhmumu background events", 500, 0., 150000.);
+    RooRealVar nD2hhhhBkg("nD2hhhhBkg", "misidentified D2hhmumu background events", 500, 0., 2500000.);
     m_ws.import(nD2hhhhBkg);
+  }   
+  if(m_ws.var("nD2hhhhDoubleCBBkg") == 0){
+    RooRealVar nD2hhhhDoubleCBBkg("nD2hhhhDoubleCBBkg", "misidentified D2hhmumu background events", 500, 0., 2500000.);
+    m_ws.import(nD2hhhhDoubleCBBkg);
+  }   
+  if(m_ws.var("nD2hhhhSingleCBBkg") == 0){
+    RooRealVar nD2hhhhSingleCBBkg("nD2hhhhSingleCBBkg", "misidentified D2hhmumu background events", 500, 0., 2500000.);
+    m_ws.import(nD2hhhhSingleCBBkg);
   }   
   if(m_ws.var("nCombinatoricBkg") == 0){
     RooRealVar nCombinatoricBkg("nCombinatoricBkg", "Combinatoric Background Events", 1000, 0., 10000000.);
     m_ws.import(nCombinatoricBkg);  
+  }
+  if(m_ws.var("nCombinatoricExpoBkg") == 0){
+    RooRealVar nCombinatoricExpoBkg("nCombinatoricExpoBkg", "Combinatoric Background Events", 1000, 0., 10000000.);
+    m_ws.import(nCombinatoricExpoBkg);  
   }
   if(m_ws.var("nSignal") == 0){
    RooRealVar nSignal("nSignal", "Signal Events", 3000, 0., 1000000.);

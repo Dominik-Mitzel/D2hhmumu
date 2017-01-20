@@ -30,19 +30,20 @@ class D2hhmumuModel1D
 
   RooAbsPdf * CombinatoricBackground(RooRealVar m,                                                                                                                                                           RooRealVar mChebyA,RooRealVar mChebyB );   
 
-  //RooAbsPdf* D2hhhhBackground(RooRealVar m,
-  //					       RooRealVar mean, RooRealVar sigma, RooRealVar alphaR, RooRealVar alphaL, RooRealVar nR, RooRealVar nL
-  //			      );
-
-  //RooAbsPdf *D2hhhhBackground(RooRealVar m,
-  //		     RooRealVar mean, RooRealVar sigma,  RooRealVar alphaL,  RooRealVar nL
-  //		   );
+  RooAbsPdf * CombinatoricExponentialBackground(RooRealVar m,                                                                                                                                                           RooRealVar mExpoLamda );   
 
    RooAbsPdf* D2hhhhBackground(RooRealVar m,
               RooRealVar mMeanJSU, RooRealVar mWidthJSU, RooRealVar mDeltaJSU, RooRealVar mGammaJSU
               );
 
-			        
+   RooAbsPdf* D2hhhhDoubleCBBackground(RooRealVar m,
+				       RooRealVar mean, RooRealVar sigma, RooRealVar alphaR, RooRealVar alphaL, RooRealVar nR, RooRealVar nL
+			       );
+
+   RooAbsPdf* D2hhhhSingleCBBackground(RooRealVar m,
+				       RooRealVar mean, RooRealVar sigma,RooRealVar alphaL,RooRealVar nL
+			       );
+		        
   RooAbsPdf* Model(std::string components);
   RooWorkspace GetWorkspace() {return m_ws;}
 

@@ -58,6 +58,8 @@
 #include "RooStats/HypoTestInverterResult.h"
 #include "RooStats/HypoTestInverterPlot.h"
 
+#include "TMultiGraph.h"
+
 using namespace RooFit;
 using namespace RooStats;
 using namespace std;
@@ -428,7 +430,7 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
                                           int testStatType,
                                           bool useCLs,
                                           int npoints,
-                                          const char * fileNameBase ){
+					  const char * fileNameBase ){
 
    // analyze result produced by the inverter, optionally save it in a file
 
@@ -501,7 +503,7 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
       }
 
       //set to HD PATH 
-      TFile * fileOut = new TFile("/work/mitzel/D2hhmumu/dev/D2KKmumu/img/limits/"+mResultFileName,"RECREATE");
+      TFile * fileOut = new TFile("/work/mitzel/D2hhmumu/dev/D2pipimumu/img/limits/"+mResultFileName,"RECREATE");
       r->Write();
       if (ulDist) ulDist->Write();
       Info("StandardHypoTestInvDemo","HypoTestInverterResult has been written in the file %s",mResultFileName.Data());
@@ -537,8 +539,39 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
    // else
    //    plot->Draw("");  // plot all and Clb
    //c1->Print("plot_"+mResultFileName+".eps");
-   c1->SaveAs("/work/mitzel/D2hhmumu/dev/D2KKmumu/img/limits/plot_"+mResultFileName+".eps");
-   c1->Print("/work/mitzel/D2hhmumu/dev/D2KKmumu/img/limits/plot_"+mResultFileName+".eps"); 
+
+   //remove the .root extension from fileName
+   TString target = mResultFileName.Remove(mResultFileName.Sizeof()-6);
+   
+   c1->SaveAs("/work/mitzel/D2hhmumu/dev/D2pipimumu/img/limits/plot_"+target+".C");
+   c1->Print("/work/mitzel/D2hhmumu/dev/D2pipimumu/img/limits/plot_"+target+".eps"); 
+
+   TCanvas * c2 = new TCanvas("c2","c2");
+   c2->SetRightMargin(0.15);
+
+   TMultiGraph  * gr = plot->MakeExpectedPlot();
+   ((TGraph*)gr->GetListOfGraphs()->At(0))->SetFillColor(kRed-6);
+   ((TGraph*)gr->GetListOfGraphs()->At(1))->SetFillColor(kRed+2);
+   //((TGraph*)gr->GetListOfGraphs()->At(0))->SetFillColor(46);
+   //((TGraph*)gr->GetListOfGraphs()->At(1))->SetFillColor(45);
+
+   gr->Draw("APL");
+   //gr->GetXaxis()->SetTitle(xlabel);
+   gr->GetYaxis()->SetTitle("CLs");
+
+   gr->Draw("APL");
+   double min = gr->GetXaxis()->GetXmin();
+   double max = gr->GetXaxis()->GetXmax();
+   //TLine *line = new TLine(, 0.1, r->GetExpectedUpperLimit(0), 0.1);
+   TLine *line = new TLine(min, 0.05 , max, 0.05);
+   line->SetLineColor(kRed);
+   line->SetLineWidth(2);
+   line->Draw("SAME");
+
+   c2->Print("/work/mitzel/D2hhmumu/dev/D2pipimumu/img/limits/plot_"+target+"_2.pdf");
+
+
+
 
    const int nEntries = r->ArraySize();
 

@@ -25,10 +25,20 @@
 void optimizeSelection(TString cutNtracks);
 void optimizeSelection2D(TString cutNtracks);
 void optimizeSelectionInBins(TString cutNtracks,TString q2Range);
+void optimizeSelectionInBins_pipimumu(TString cutNtracks,TString q2Range);
+void newCutOptimization(TString kind, TString polarity, TString q2Range);
 
+
+//these are obsolet functions to get the Efficienc. The final Efficiancy evaluation is in in EfficienStudies.h/cpp
 double getMCSignalEfficiency(TString cut);
 double EffD2KKpipiToEffD2Kpipipi(TString cut);
+void Draw_MC_L0Muon_Efficiencies(TString channel, TString variable, int nBins,int xLow, int xHigh, TString SelCut) ;
+void Draw_MC_L0Muon_Efficiencies_forVariable(TString normSelection,int nBins,TString SelCut); 
+void Draw_MC_TriggerEfficiencies( TString variable, int nBins, int xLow, int xHigh, TString SelCut) ;
+void Draw_MC_L0Muon_Efficiencies_2D();
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+//this functions merge all data, add relevant branches for analysis and perform a preselection
 void D2pipimumuMC();
 void D2pipimumuData();
 void D2KpimumuMC();
@@ -40,6 +50,11 @@ void D2KpipipiMC();
 void D2KKpipiData();
 void D2KpipipiData();
 void D2pipipipiData();
+void D2pipipipiMC();
+void D2pipipipiRandomizedData();
+void D2KpipipiRandomizedData();
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 void draw_BDT_crosschecks_forVariable(TString variable, int xLow, int xHigh, double BDTcut);
 void draw_BDT_crosschecks();
@@ -47,3 +62,6 @@ void draw_BDT_crosschecks();
 void check_peakingBackground(TString kind,bool PIDCut);
 void createGeneratorLevelMCTuple(TString kind);
 void studyKKMCEfficiency(double BDTCut, double PIDCut, TString fOut);
+void studypipiMCEfficiency(double BDTCut, double PIDCut, TString fOut);
+void define_binning(TString kind);
+

@@ -36,6 +36,18 @@ void D2KKmumuReader::initializeMomenta(){
   pDTFMu1.SetXYZM(Dst_DTF_mu1_PX,Dst_DTF_mu1_PY,Dst_DTF_mu1_PZ,Mass::Mu());
   pDTFMu0.SetXYZM(Dst_DTF_mu0_PX,Dst_DTF_mu0_PY,Dst_DTF_mu0_PZ,Mass::Mu());
 
+  pMu0_hypPi.SetXYZM(mu0_PX,mu0_PY,mu0_PZ,Mass::Pi());
+  pMu1_hypPi.SetXYZM(mu1_PX,mu1_PY,mu1_PZ,Mass::Pi());
+  pH0_hypMu.SetXYZM(h0_PX,h0_PY,h0_PZ,Mass::Mu());
+  pH1_hypMu.SetXYZM(h1_PX,h1_PY,h1_PZ,Mass::Mu());
+  pH0_hypKaon.SetXYZM(h0_PX,h0_PY,h0_PZ,Mass::K());
+  pH1_hypKaon.SetXYZM(h1_PX,h1_PY,h1_PZ,Mass::K());
+  pH0_hypProton.SetXYZM(h0_PX,h0_PY,h0_PZ,Mass::P());
+  pH1_hypProton.SetXYZM(h1_PX,h1_PY,h1_PZ,Mass::P());
+  pH0_hypPi.SetXYZM(h0_PX,h0_PY,h0_PZ,Mass::Pi());
+  pH1_hypPi.SetXYZM(h1_PX,h1_PY,h1_PZ,Mass::Pi());
+
+
 }
 
 

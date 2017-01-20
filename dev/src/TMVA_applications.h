@@ -34,10 +34,13 @@ void Classification_D2pipimumu(int part);
 void D2pipimumuCrosstraining();
 
 //BDT is applied to data, MC, data sideband and normalization channel
-void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int part,bool isMC, bool isNormalizationMode);
+void Application_D2KKmumu(TString treeName, TString fileIn, TString fileOut, int part,bool isMC, bool isNormalizationMode, bool skipPID);
 void D2KKmumuCrossapplication();
 
 //BDT is applied to data, MC, data sideband and normalization channel
-void Application_D2pipimumu(TString treeName, TString fileIn, TString fileOut, int part,bool isMC, bool isNormalizationMode);
+void Application_D2pipimumu(TString treeName, TString fileIn, TString fileOut, int part,bool isMC, bool isNormalizationMode, bool skipPID);
 void D2pipimumuCrossapplication();
 
+void CrossapplicationForEfficiencyStudies();
+void CrossapplicationForEfficiencyStudiesNoTruthmatching();
+void CrossapplicationForEfficiencyStudiesNoQ2Splitting();

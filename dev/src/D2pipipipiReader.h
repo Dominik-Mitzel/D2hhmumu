@@ -26,7 +26,8 @@ class D2pipipipiReader : public D2hhmumuReader {
   //get masses m(mumu) for decay in flight
   void   addMisIdMasses(TString name);
   void   set_mMuMu_misID();
- 
+  void   createRandomizedSubsample(TString name);
+  
   double mMuMu_noDCF;
   double mMuMu_doubleDCF;
   double mMuMu_DCF0;

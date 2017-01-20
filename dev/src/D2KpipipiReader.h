@@ -29,7 +29,7 @@ class D2KpipipiReader : public D2hhmumuReader {
   double get_mMuMu_doubleDCF();
   double get_mMuMu_DCF_lowP();
   double get_mMuMu_DCF_highP();
-
+  void   createRandomizedSubsample(TString name);
 };
 
 #endif

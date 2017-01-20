@@ -26,12 +26,22 @@ public :
    virtual void     Show(Long64_t entry = -1);
    virtual void     createSubsample(TString name, double percentage); 
    virtual void     createMCtrainingSample(TString name);
+   virtual void     createMCEfficiencyStudySample(TString name, double q2Low, double q2High);
+   virtual void     createMCEfficiencyStudySampleNoTruthmatching(TString name, double q2Low, double q2High); 
    virtual void     createValidationSubsample(TString name); //used for sim09 validation purposes
-   virtual void     fillHistograms(TString fname, bool isMC);
-   virtual void     studyTriggerEfficiency();
+   virtual void     createSubsampleNoTriggerCuts(TString name); 
+   virtual void     fillHistograms(TString fname, bool isMC); //old function that was used to have first look on mass distributions
+   virtual void     studyTriggerEfficiency(); //obsolet, used to have first look on MC based trigger Efficiencies, done now in EfficiencyStudies
    virtual double   slowpi_helicityAngle();
    virtual double   muon_helicityAngle();    
    virtual double   D0_helicityAngle();    
+
+   virtual double   m_mumupipi();
+   virtual double   m_pKpipi();
+   virtual double   m_Kppipi();
+   virtual double   m_pipipipi();
+   virtual double   m_Kpipipi();
+   virtual double   m_KKpipi();
 
 
    double DTFdm();
@@ -62,6 +72,18 @@ public :
    TLorentzVector pDTFMu1;
    TLorentzVector pDTFH0;
    TLorentzVector pDTFH1;
+
+   TLorentzVector pMu0_hypPi;
+   TLorentzVector pMu1_hypPi;
+   TLorentzVector pH0_hypProton;
+   TLorentzVector pH1_hypProton;
+   TLorentzVector pH0_hypKaon;
+   TLorentzVector pH1_hypKaon;
+   TLorentzVector pH0_hypMu;
+   TLorentzVector pH1_hypMu;
+   TLorentzVector pH0_hypPi;
+   TLorentzVector pH1_hypPi;
+
 
 
    TH1* h1_DTFdm; 

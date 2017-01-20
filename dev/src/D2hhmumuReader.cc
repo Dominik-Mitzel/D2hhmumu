@@ -8,6 +8,37 @@
 #include <TVector3.h>
 #include <iostream>
 
+double D2hhmumuReader::m_mumupipi(){
+  
+  return (pH0_hypMu+pH1_hypMu+pMu0_hypPi+pMu1_hypPi).M();
+}
+
+double D2hhmumuReader::m_pKpipi(){
+  
+  return (pH0_hypProton+pH1_hypKaon+pMu0_hypPi+pMu1_hypPi).M();
+}
+
+double D2hhmumuReader::m_Kppipi(){
+
+  return (pH0_hypKaon+pH1_hypProton+pMu0_hypPi+pMu1_hypPi).M();
+}
+    
+double D2hhmumuReader::m_pipipipi(){
+
+  return (pH0_hypPi+pH1_hypPi+pMu0_hypPi+pMu1_hypPi).M();
+}
+
+double D2hhmumuReader::m_Kpipipi(){
+
+  return (pH0_hypKaon+pH1_hypPi+pMu0_hypPi+pMu1_hypPi).M();
+}
+
+double D2hhmumuReader::m_KKpipi(){
+
+  return (pH0_hypKaon+pH1_hypKaon+pMu0_hypPi+pMu1_hypPi).M();
+}
+
+
 bool D2hhmumuReader::isBkgSideband(){
 
   if (Dst_DTF_D0_M < 1890 )return false; //cut these events also in event loop pr preselection... 
@@ -71,7 +102,7 @@ return true;
 
 bool D2hhmumuReader::isL0Selected(){
 
-  if(mu0_L0MuonDecision_TOS==1 || mu1_L0MuonDecision_TOS ==1 || /*mu0_L0DiMuonDecision_TOS==1 || mu1_L0DiMuonDecision_TOS ==1 ||*/ Dst_L0Global_TIS==1) return true;
+  if(mu0_L0MuonDecision_TOS==1 || mu1_L0MuonDecision_TOS ==1 /*|| mu0_L0DiMuonDecision_TOS==1 || mu1_L0DiMuonDecision_TOS ==1 || Dst_L0Global_TIS==1 */) return true;
   else return false; 	 
 }
 
@@ -158,10 +189,200 @@ void D2hhmumuReader::fillHistograms(TString fname, bool isMC=false) {
 
 }
 
-
+ 
 
  
 void D2hhmumuReader::createMCtrainingSample(TString name) {
+
+  InitMC();
+  //activateRelevantBranches();
+
+  Long64_t nentries = fChain->GetEntries();
+  std::cout<<"Found tree with "<<nentries <<" entries..."<<std::endl;
+
+  fChain->GetEntry(0);
+
+  //Create a new file + a clone of old tree in new file
+  TFile *newfile = new TFile(name,"recreate");
+  TTree *newtree_even = fChain->CloneTree(0);
+  TTree *newtree_odd = fChain->CloneTree(0);
+  newtree_odd->SetName("DecayTree_odd");
+  newtree_even->SetName("DecayTree_even ");
+
+
+  double Slowpi_cosh,mu0_cosh,D_cosh, deltaM;
+  double D_Conemult,Dst_Conemult,D_Coneptasy,Dst_Coneptasy;
+  double mHH; 
+  double mmumupipi,mpKpipi,mKppipi,mpipipipi,mKpipipi,mKKpipi;
+
+  newtree_even->Branch("Slowpi_cosh",&Slowpi_cosh);
+  newtree_even->Branch("D_cosh", & D_cosh);
+  newtree_even->Branch("mu0_cosh",&mu0_cosh);
+  newtree_even->Branch("deltaM",&deltaM);
+  newtree_even->Branch("D_Conemult",&D_Conemult);
+  newtree_even->Branch("Dst_Conemult",&Dst_Conemult);
+  newtree_even->Branch("D_Coneptasy",&D_Coneptasy);
+  newtree_even->Branch("Dst_Coneptasy",&Dst_Coneptasy);
+  newtree_even->Branch("mHH", & mHH);
+  newtree_even->Branch("mmumupipi",&mmumupipi);
+  newtree_even->Branch("mpKpipi",&mpKpipi);
+  newtree_even->Branch("mKppipi",&mKppipi);
+  newtree_even->Branch("mpipipipi",&mpipipipi);
+  newtree_even->Branch("mpipipipi",&mpipipipi);
+  newtree_even->Branch("mKpipipi",&mKpipipi);
+  newtree_even->Branch("mKKpipi",&mKKpipi);
+
+
+  newtree_odd->Branch("Slowpi_cosh",&Slowpi_cosh);
+  newtree_odd->Branch("D_cosh", & D_cosh);
+  newtree_odd->Branch("mu0_cosh",&mu0_cosh);
+  newtree_odd->Branch("deltaM",&deltaM);
+  newtree_odd->Branch("D_Conemult",&D_Conemult);
+  newtree_odd->Branch("Dst_Conemult",&Dst_Conemult);
+  newtree_odd->Branch("D_Coneptasy",&D_Coneptasy);
+  newtree_odd->Branch("Dst_Coneptasy",&Dst_Coneptasy);
+  newtree_odd->Branch("mHH", & mHH);
+  newtree_odd->Branch("mmumupipi",&mmumupipi);
+  newtree_odd->Branch("mpKpipi",&mpKpipi);
+  newtree_odd->Branch("mKppipi",&mKppipi);
+  newtree_odd->Branch("mpipipipi",&mpipipipi);
+  newtree_odd->Branch("mpipipipi",&mpipipipi);
+  newtree_odd->Branch("mKpipipi",&mKpipipi);
+  newtree_odd->Branch("mKKpipi",&mKKpipi);
+
+
+  for (Long64_t i=0;i<nentries; i++) {
+     fChain->GetEntry(i);
+     //aply trigger selection criteria and MC truth matching 
+     //////RIGHT NOW INCLUDE PRESELCTION CUTS////////////
+     if(!passGhostProbCut(0.5)) continue;
+     if(!MCTruthmatched()) continue;
+     if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected() )continue;    
+     if(mu0_MuonNShared!=0) continue;
+     if(mu1_MuonNShared!=0) continue;
+
+      initializeMomenta();
+      Slowpi_cosh=slowpi_helicityAngle();
+      D_cosh = D0_helicityAngle();
+      mu0_cosh=muon_helicityAngle();
+      deltaM = Dst_DTF_Dstarplus_M - Dst_DTF_D0_M; 
+      D_Conemult = D_cmult_1_50;
+      Dst_Conemult = Dst_cmult_1_50;
+      D_Coneptasy = D_ptasy_1_50;
+      Dst_Coneptasy = Dst_ptasy_1_50;
+      mHH = (pH1+pH0).M();
+
+      mmumupipi = m_mumupipi();
+      mpKpipi = m_pKpipi();
+      mKppipi = m_Kppipi();
+      mpipipipi = m_pipipipi();
+      mKpipipi = m_Kpipipi();
+      mKKpipi = m_KKpipi();
+
+
+      if(eventNumber%2==0) newtree_even->Fill(); 
+      else newtree_odd->Fill();
+   }
+   
+  std::cout<<"Created MC taining samples "<< name <<" with "<<newtree_even->GetEntries()<<" entries (even sample) and "<< newtree_odd->GetEntries() <<"(odd.)"<<std::endl;
+
+   //newtree->Print();
+   newtree_even->AutoSave();
+   newtree_odd->AutoSave();
+ 
+   delete newfile;
+
+} 
+
+void D2hhmumuReader::createMCEfficiencyStudySample(TString name, double q2Low, double q2High) {
+
+  InitMC();
+  //activateRelevantBranches();
+
+  Long64_t nentries = fChain->GetEntries();
+  std::cout<<"Found tree with "<<nentries <<" entries..."<<std::endl;
+
+  fChain->GetEntry(0);
+
+  //Create a new file + a clone of old tree in new file
+  TFile *newfile = new TFile(name,"recreate");
+  TTree *newtree_even = fChain->CloneTree(0);
+  TTree *newtree_odd = fChain->CloneTree(0);
+  newtree_odd->SetName("DecayTree_odd");
+  newtree_even->SetName("DecayTree_even ");
+
+
+  double Slowpi_cosh,mu0_cosh,D_cosh, deltaM;
+  double D_Conemult,Dst_Conemult,D_Coneptasy,Dst_Coneptasy;
+  double mHH; 
+
+  newtree_even->Branch("Slowpi_cosh",&Slowpi_cosh);
+  newtree_even->Branch("D_cosh", & D_cosh);
+  newtree_even->Branch("mu0_cosh",&mu0_cosh);
+  newtree_even->Branch("deltaM",&deltaM);
+  newtree_even->Branch("D_Conemult",&D_Conemult);
+  newtree_even->Branch("Dst_Conemult",&Dst_Conemult);
+  newtree_even->Branch("D_ConepactivateRelevantBranches();tasy",&D_Coneptasy);
+  newtree_even->Branch("Dst_Coneptasy",&Dst_Coneptasy);
+  newtree_even->Branch("mHH", & mHH);
+
+  newtree_odd->Branch("Slowpi_cosh",&Slowpi_cosh);
+  newtree_odd->Branch("D_cosh", & D_cosh);
+  newtree_odd->Branch("mu0_cosh",&mu0_cosh);
+  newtree_odd->Branch("deltaM",&deltaM);
+  newtree_odd->Branch("D_Conemult",&D_Conemult);
+  newtree_odd->Branch("Dst_Conemult",&Dst_Conemult);
+  newtree_odd->Branch("D_Coneptasy",&D_Coneptasy);
+  newtree_odd->Branch("Dst_Coneptasy",&Dst_Coneptasy);
+  newtree_odd->Branch("mHH", & mHH);
+
+
+  for (Long64_t i=0;i<nentries; i++) {
+     fChain->GetEntry(i);
+     
+     //////RIGHT NOW NO PRESELCTION CUTS////////////
+     //ONLY TRUTH MATCHING
+     //NO OTHER CUTS (NEEDED FOR EFFICIENCY STUDIES LATER)
+     if(!MCTruthmatched()) continue;
+     //std::cout<<i<<"  "<<D_DiMuon_Mass<<"  "<<q2High<<"  "<<q2Low<<"  "<<h0_PT<<std::endl;
+
+     if(D_DiMuon_Mass>q2High) continue;
+     if(D_DiMuon_Mass<q2Low) continue;
+
+     if(mu0_MuonNShared!=0) continue;
+     if(mu1_MuonNShared!=0) continue;
+    
+      initializeMomenta();
+      Slowpi_cosh=slowpi_helicityAngle();
+      D_cosh = D0_helicityAngle();
+      mu0_cosh=muon_helicityAngle();
+      deltaM = Dst_DTF_Dstarplus_M - Dst_DTF_D0_M; 
+      D_Conemult = D_cmult_1_50;
+      Dst_Conemult = Dst_cmult_1_50;
+      D_Coneptasy = D_ptasy_1_50;
+      Dst_Coneptasy = Dst_ptasy_1_50;
+      mHH = (pH1+pH0).M();
+
+      if(deltaM>146.5) continue;
+      if(deltaM<144.5) continue;
+
+      if(eventNumber%2==0) newtree_even->Fill(); 
+      else newtree_odd->Fill();
+   }
+   
+  std::cout<<"Created MC taining samples "<< name <<" with "<<newtree_even->GetEntries()<<" entries (even sample) and "<< newtree_odd->GetEntries() <<"(odd.)"<<std::endl;
+
+   //newtree->Print();
+   newtree_even->AutoSave();
+   newtree_odd->AutoSave();
+ 
+   delete newfile;
+
+} 
+
+
+void D2hhmumuReader::createMCEfficiencyStudySampleNoTruthmatching(TString name, double q2Low, double q2High) {
+  //THis one is to check if the efficiecny changes of cat==60 is included in the effiecieny determination
 
   InitMC();
   //activateRelevantBranches();
@@ -206,12 +427,20 @@ void D2hhmumuReader::createMCtrainingSample(TString name) {
 
   for (Long64_t i=0;i<nentries; i++) {
      fChain->GetEntry(i);
-     //aply trigger selection criteria and MC truth matching 
-      if(!passGhostProbCut(0.5)) continue;
-      if(!MCTruthmatched()) continue;
-      if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected() )continue;    
-      
-      initializeMomenta();
+     
+     //////RIGHT NOW NO PRESELCTION CUTS////////////
+     //NO TRUTH MATCHING
+     //NO OTHER CUTS (NEEDED FOR EFFICIENCY STUDIES LATER)
+     ///if(!MCTruthmatched()) continue;
+     //std::cout<<i<<"  "<<D_DiMuon_Mass<<"  "<<q2High<<"  "<<q2Low<<"  "<<h0_PT<<std::endl;
+
+     if(D_DiMuon_Mass>q2High) continue;
+     if(D_DiMuon_Mass<q2Low) continue;
+
+     if(mu0_MuonNShared!=0) continue;
+     if(mu1_MuonNShared!=0) continue;
+
+     initializeMomenta();
       Slowpi_cosh=slowpi_helicityAngle();
       D_cosh = D0_helicityAngle();
       mu0_cosh=muon_helicityAngle();
@@ -221,6 +450,9 @@ void D2hhmumuReader::createMCtrainingSample(TString name) {
       D_Coneptasy = D_ptasy_1_50;
       Dst_Coneptasy = Dst_ptasy_1_50;
       mHH = (pH1+pH0).M();
+
+      if(deltaM>146.5) continue;
+      if(deltaM<144.5) continue;
 
       if(eventNumber%2==0) newtree_even->Fill(); 
       else newtree_odd->Fill();
@@ -235,6 +467,7 @@ void D2hhmumuReader::createMCtrainingSample(TString name) {
    delete newfile;
 
 } 
+
 
 void D2hhmumuReader::createSubsample(TString name, double percentage) {//specify percentage of full data sample written in sideband subsample
 
@@ -267,6 +500,7 @@ void D2hhmumuReader::createSubsample(TString name, double percentage) {//specify
    Int_t nTracks_data,nPVs_data,nSPDHits;
    double mHH;
    bool isSideband;
+   double mmumupipi,mpKpipi,mKppipi,mpipipipi,mKpipipi,mKKpipi;
 
 
    std::vector<TTree*> trees; 
@@ -290,6 +524,13 @@ void D2hhmumuReader::createSubsample(TString name, double percentage) {//specify
      (*it)->Branch("nVeloTracks",&nVeloTracks);
      (*it)->Branch("nTracks_data",&nTracks_data);
      (*it)->Branch("mHH", & mHH);
+     (*it)->Branch("mmumupipi",&mmumupipi);
+     (*it)->Branch("mpKpipi",&mpKpipi);
+     (*it)->Branch("mKppipi",&mKppipi);
+     (*it)->Branch("mpipipipi",&mpipipipi);
+     (*it)->Branch("mpipipipi",&mpipipipi);
+     (*it)->Branch("mKpipipi",&mKpipipi);
+     (*it)->Branch("mKKpipi",&mKKpipi);
 
    }
 
@@ -299,9 +540,12 @@ void D2hhmumuReader::createSubsample(TString name, double percentage) {//specify
      
      fChain->GetEntry(i);
       //select only events that pass the trigger seelction criteria 
+     ////ALL CUTS REMOVED RIGHT NOW FOR TIS TOS STUDIES
      if(!passGhostProbCut(0.5)) continue; 
      if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected()  )continue;   
-      
+     if(mu0_MuonNShared!=0) continue;
+     if(mu1_MuonNShared!=0) continue;
+
       //additional variables
       Slowpi_cosh=slowpi_helicityAngle();
       D_cosh = D0_helicityAngle();
@@ -316,7 +560,15 @@ void D2hhmumuReader::createSubsample(TString name, double percentage) {//specify
       nTracks_data=(int)nTracks;
       nPVs_data=(int)nPVs;
       mHH = (pH1+pH0).M();
-        
+
+      mmumupipi = m_mumupipi();
+      mpKpipi = m_pKpipi();
+      mKppipi = m_Kppipi();
+      mpipipipi = m_pipipipi();
+      mKpipipi = m_Kpipipi();
+      mKKpipi = m_KKpipi();
+
+  
       if(eventNumber%2!=0){ //odd events
 
 	trees[0]->Fill(); //odd data
@@ -343,6 +595,80 @@ void D2hhmumuReader::createSubsample(TString name, double percentage) {//specify
    f_sideband->cd();
    trees[2]->Write();
    trees[3]->Write();
+  
+   delete newfile;
+
+}
+
+
+void D2hhmumuReader::createSubsampleNoTriggerCuts(TString name) {//specify percentage of full data sample written in sideband subsample
+
+   Long64_t nentries = fChain->GetEntries();
+
+
+   activateRelevantBranches();
+   fChain->GetEntry(0);
+
+ 
+   //Create a new file + a clone of old tree in new file
+   TFile *newfile = new TFile(name,"recreate");
+   TTree *newtree_data = fChain->CloneTree(0);
+   newtree_data->SetName("DecayTree");
+
+   double Slowpi_cosh,mu0_cosh, D_cosh, deltaM,nVeloTracks;
+   double D_Conemult,Dst_Conemult,D_Coneptasy,Dst_Coneptasy;
+   Int_t nTracks_data,nPVs_data,nSPDHits;
+   double mHH;
+   bool isSideband;
+
+     
+    newtree_data->Branch("isBkgSideband",&isSideband);
+    newtree_data->Branch("Slowpi_cosh",&Slowpi_cosh);
+    newtree_data->Branch("D_cosh", & D_cosh);
+    newtree_data->Branch("mu0_cosh",&mu0_cosh);
+    newtree_data->Branch("deltaM",&deltaM);
+    newtree_data->Branch("D_Conemult",&D_Conemult);
+    newtree_data->Branch("Dst_Conemult",&Dst_Conemult);
+    newtree_data->Branch("D_Coneptasy",&D_Coneptasy);
+    newtree_data->Branch("Dst_Coneptasy",&Dst_Coneptasy);   
+    newtree_data->Branch("nSPDHits",&nSPDHits);
+    newtree_data->Branch("nVeloTracks",&nVeloTracks);
+    newtree_data->Branch("nTracks_data",&nTracks_data);
+    newtree_data->Branch("mHH", & mHH);
+
+
+   for (Long64_t i=0;i<nentries; i++) {
+     
+     if(i%10000 == 0) std::cout<<i<<" events processed...." << std::endl; 
+     
+     fChain->GetEntry(i);
+      //select only events that pass the trigger seelction criteria 
+     ////ALL CUTS REMOVED RIGHT NOW FOR TIS TOS STUDIES
+     if(!passGhostProbCut(0.5)) continue; 
+
+     if(mu0_MuonNShared!=0) continue;
+     if(mu1_MuonNShared!=0) continue;
+
+      //additional variables
+      Slowpi_cosh=slowpi_helicityAngle();
+      D_cosh = D0_helicityAngle();
+      mu0_cosh=muon_helicityAngle();
+      deltaM = Dst_DTF_Dstarplus_M - Dst_DTF_D0_M;
+      if(deltaM<144.5 || deltaM>146.5) continue;
+
+      D_Conemult = Dst_CONEMULT_D;
+      Dst_Conemult = Dst_CONEMULT_Dstar;
+      D_Coneptasy = Dst_CONEPTASYM_D;
+      Dst_Coneptasy = Dst_CONEPTASYM_Dstar;
+      nSPDHits = (int)nSpdDigits;
+      nVeloTracks=nVELO;
+      nTracks_data=(int)nTracks;
+      nPVs_data=(int)nPVs;
+      mHH = (pH1+pH0).M();
+      newtree_data->Fill(); //odd data
+	  
+   }
+   newtree_data->Write();
   
    delete newfile;
 
@@ -412,6 +738,7 @@ void D2hhmumuReader::createValidationSubsample(TString name) {//specify percenta
 
 void D2hhmumuReader::studyTriggerEfficiency(){
 
+  //obsolet programm
   InitMC(); //only meant to be used for for MC 
  
   std::cout<<"Start evaluating MC trigger efficiencies..."<<  std::cout<<"Done:Histograms are saved in ../rootfiles/triggerEfficienciesMC.root "<<std::endl;
@@ -976,6 +1303,7 @@ void D2hhmumuReader::Init(TTree *tree)
    fChain->SetBranchAddress("D_PX", &D_PX, &b_D_PX);
    fChain->SetBranchAddress("D_PY", &D_PY, &b_D_PY);
    fChain->SetBranchAddress("D_PZ", &D_PZ, &b_D_PZ);
+   fChain->SetBranchAddress("D_DiMuon_Mass", &D_DiMuon_Mass, &b_D_DiMuon_Mass);
    fChain->SetBranchAddress("D_MM", &D_MM, &b_D_MM);
    fChain->SetBranchAddress("D_MMERR", &D_MMERR, &b_D_MMERR);
    fChain->SetBranchAddress("D_M", &D_M, &b_D_M);
@@ -2763,14 +3091,154 @@ void D2hhmumuReader::activateRelevantBranches()
 
   //trigger 
 
+  fChain->SetBranchStatus("mu0_L0MuonDecision_Dec",1);
+  fChain->SetBranchStatus("mu1_L0MuonDecision_Dec",1);
+  fChain->SetBranchStatus("mu0_L0DiMuonDecision_Dec",1);
+  fChain->SetBranchStatus("mu1_L0DiMuonDecision_Dec",1);
+  fChain->SetBranchStatus("h1_L0MuonDecision_Dec",1);
+  fChain->SetBranchStatus("h1_L0DiMuonDecision_Dec",1);
+  fChain->SetBranchStatus("Dst_L0Global_TIS",1);
+  fChain->SetBranchStatus("D_L0Global_TIS",1);
+
+  fChain->SetBranchStatus("D_L0HadronDecision_TIS",1);
+  fChain->SetBranchStatus("D_L0MuonDecision_TIS",1);
+  fChain->SetBranchStatus("D_L0DiMuonDecision_TIS",1);
+  fChain->SetBranchStatus("D_L0PhotonDecision_TIS",1);
+  fChain->SetBranchStatus("D_L0ElectronDecision_TIS",1);
+
+  fChain->SetBranchStatus("D_L0HadronDecision_TOS",1);
+  fChain->SetBranchStatus("D_L0MuonDecision_TOS",1);
+  fChain->SetBranchStatus("D_L0DiMuonDecision_TOS",1);
+  fChain->SetBranchStatus("D_L0PhotonDecision_TOS",1);
+  fChain->SetBranchStatus("D_L0ElectronDecision_TOS",1);
+
+  fChain->SetBranchStatus("mu0_L0HadronDecision_TIS",1);
+  fChain->SetBranchStatus("mu0_L0MuonDecision_TIS",1);
+  fChain->SetBranchStatus("mu0_L0DiMuonDecision_TIS",1);
+  fChain->SetBranchStatus("mu0_L0PhotonDecision_TIS",1);
+  fChain->SetBranchStatus("mu0_L0ElectronDecision_TIS",1);
+
+  fChain->SetBranchStatus("mu0_L0HadronDecision_TOS",1);
+  fChain->SetBranchStatus("mu0_L0MuonDecision_TOS",1);
+  fChain->SetBranchStatus("mu0_L0DiMuonDecision_TOS",1);
+  fChain->SetBranchStatus("mu0_L0PhotonDecision_TOS",1);
+  fChain->SetBranchStatus("mu0_L0ElectronDecision_TOS",1);
+
+  fChain->SetBranchStatus("mu1_L0HadronDecision_TIS",1);
+  fChain->SetBranchStatus("mu1_L0MuonDecision_TIS",1);
+  fChain->SetBranchStatus("mu1_L0DiMuonDecision_TIS",1);
+  fChain->SetBranchStatus("mu1_L0PhotonDecision_TIS",1);
+  fChain->SetBranchStatus("mu1_L0ElectronDecision_TIS",1);
+
+  fChain->SetBranchStatus("mu1_L0HadronDecision_TOS",1);
+  fChain->SetBranchStatus("mu1_L0MuonDecision_TOS",1);
+  fChain->SetBranchStatus("mu1_L0DiMuonDecision_TOS",1);
+  fChain->SetBranchStatus("mu1_L0PhotonDecision_TOS",1);
+  fChain->SetBranchStatus("mu1_L0ElectronDecision_TOS",1);
+
+  fChain->SetBranchStatus("h1_L0HadronDecision_TIS",1);
+  fChain->SetBranchStatus("h1_L0MuonDecision_TIS",1);
+  fChain->SetBranchStatus("h1_L0DiMuonDecision_TIS",1);
+  fChain->SetBranchStatus("h1_L0PhotonDecision_TIS",1);
+  fChain->SetBranchStatus("h1_L0ElectronDecision_TIS",1);
+
+  fChain->SetBranchStatus("h0_L0HadronDecision_TOS",1);
+  fChain->SetBranchStatus("h0_L0MuonDecision_TOS",1);
+  fChain->SetBranchStatus("h0_L0DiMuonDecision_TOS",1);
+  fChain->SetBranchStatus("h0_L0PhotonDecision_TOS",1);
+  fChain->SetBranchStatus("h0_L0ElectronDecision_TOS",1);
+
+  fChain->SetBranchStatus("h0_L0HadronDecision_TIS",1);
+  fChain->SetBranchStatus("h0_L0MuonDecision_TIS",1);
+  fChain->SetBranchStatus("h0_L0DiMuonDecision_TIS",1);
+  fChain->SetBranchStatus("h0_L0PhotonDecision_TIS",1);
+  fChain->SetBranchStatus("h0_L0ElectronDecision_TIS",1);
+
+  fChain->SetBranchStatus("h0_L0HadronDecision_TOS",1);
+  fChain->SetBranchStatus("h0_L0MuonDecision_TOS",1);
+  fChain->SetBranchStatus("h0_L0DiMuonDecision_TOS",1);
+  fChain->SetBranchStatus("h0_L0PhotonDecision_TOS",1);
+  fChain->SetBranchStatus("h0_L0ElectronDecision_TOS",1);
+
+  fChain->SetBranchStatus("mu0_Hlt1TrackMuonDecision_Dec",1);
+  fChain->SetBranchStatus("mu1_Hlt1TrackMuonDecision_Dec",1);
+  fChain->SetBranchStatus("D_Hlt1TrackAllL0Decision_Dec",1);
+  fChain->SetBranchStatus("D_Hlt1DiMuonHighMassDecision_Dec",1);
+  fChain->SetBranchStatus("D_Hlt1DiMuonLowMassDecision_Dec",1);
+  fChain->SetBranchStatus("mu0_Hlt1SingleMuonNoIPDecision_Dec",1);
+  fChain->SetBranchStatus("mu1_Hlt1SingleMuonNoIPDecision_Dec",1);
+  fChain->SetBranchStatus("mu0_Hlt1SingleMuonHighPTDecision_Dec",1);
+  fChain->SetBranchStatus("mu1_Hlt1SingleMuonHighPTDecision_Dec",1);
+  fChain->SetBranchStatus("h1_0_Hlt1TrackMuonDecision_Dec",1);
+  fChain->SetBranchStatus("D_Hlt2CharmSemilepD02KKMuMuDecision_Dec",1);
+  fChain->SetBranchStatus("D_Hlt2CharmSemilepD02PiPiMuMuDecision_Dec",1);
+  fChain->SetBranchStatus("D_Hlt2CharmSemilepD02KPiMuMuDecision_Dec",1);
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHXDst_hhXDecision_Dec",1);
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHXDst_LeptonhhXDecision_Dec",1);
+  fChain->SetBranchStatus("D_Hlt2DiMuonDetachedDecision_Dec",1);
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHHHDst_4piDecision_Dec",1);	
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHHHDst_K3piDecision_Dec",1);	
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHHHDst_KKpipiDecision_Dec",1);	
+  fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_K3piDecision_Dec",1);	
+  fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_KKpipiDecision_Dec",1);	
+  fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_4piDecision_Dec",1);
+
+  fChain->SetBranchStatus("mu0_L0MuonDecision_TIS",1);
+  fChain->SetBranchStatus("mu1_L0MuonDecision_TIS",1);
+  fChain->SetBranchStatus("mu0_L0DiMuonDecision_TIS",1);
+  fChain->SetBranchStatus("mu1_L0DiMuonDecision_TIS",1);
+  fChain->SetBranchStatus("h1_L0MuonDecision_TIS",1);
+  fChain->SetBranchStatus("h1_L0DiMuonDecision_TIS",1);
+
+  fChain->SetBranchStatus("D_Hlt1Phys_Dec",1) ;
+  fChain->SetBranchStatus("D_Hlt1Phys_TIS",1) ;
+  fChain->SetBranchStatus("D_Hlt1Phys_TOS",1);
+  fChain->SetBranchStatus("D_Hlt2Global_Dec",1);
+  fChain->SetBranchStatus("D_Hlt2Global_TIS",1);
+  fChain->SetBranchStatus("D_Hlt2Global_TOS",1);
+  fChain->SetBranchStatus("D_Hlt2Phys_Dec",1);
+  fChain->SetBranchStatus("D_Hlt2Phys_TIS",1);
+  fChain->SetBranchStatus("D_Hlt2Phys_TOS",1);
+
+  fChain->SetBranchStatus("Dst_Hlt1Phys_Dstec",1) ;
+  fChain->SetBranchStatus("Dst_Hlt1Phys_TIS",1) ;
+  fChain->SetBranchStatus("Dst_Hlt1Phys_TOS",1);
+  fChain->SetBranchStatus("Dst_Hlt2Global_Dstec",1);
+  fChain->SetBranchStatus("Dst_Hlt2Global_TIS",1);
+  fChain->SetBranchStatus("Dst_Hlt2Global_TOS",1);
+  fChain->SetBranchStatus("Dst_Hlt2Phys_Dec",1);
+  fChain->SetBranchStatus("Dst_Hlt2Phys_TIS",1);
+  fChain->SetBranchStatus("Dst_Hlt2Phys_TOS",1);
+
+  fChain->SetBranchStatus("mu0_Hlt1TrackMuonDecision_TIS",1);
+  fChain->SetBranchStatus("mu1_Hlt1TrackMuonDecision_TIS",1);
+  fChain->SetBranchStatus("D_Hlt1TrackAllL0Decision_TIS",1);
+  fChain->SetBranchStatus("D_Hlt1DiMuonHighMassDecision_TIS",1);
+  fChain->SetBranchStatus("D_Hlt1DiMuonLowMassDecision_TIS",1);
+  fChain->SetBranchStatus("mu0_Hlt1SingleMuonNoIPDecision_TIS",1);
+  fChain->SetBranchStatus("mu1_Hlt1SingleMuonNoIPDecision_TIS",1);
+  fChain->SetBranchStatus("mu0_Hlt1SingleMuonHighPTDecision_TIS",1);
+  fChain->SetBranchStatus("mu1_Hlt1SingleMuonHighPTDecision_TIS",1);
+  fChain->SetBranchStatus("h1_0_Hlt1TrackMuonDecision_TIS",1);
+  fChain->SetBranchStatus("D_Hlt2CharmSemilepD02KKMuMuDecision_TIS",1);
+  fChain->SetBranchStatus("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TIS",1);
+  fChain->SetBranchStatus("D_Hlt2CharmSemilepD02KPiMuMuDecision_TIS",1);
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHXDst_hhXDecision_TIS",1);
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHXDst_LeptonhhXDecision_TIS",1);
+  fChain->SetBranchStatus("D_Hlt2DiMuonDetachedDecision_TIS",1);
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHHHDst_4piDecision_TIS",1);	
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHHHDst_K3piDecision_TIS",1);	
+  fChain->SetBranchStatus("Dst_Hlt2CharmHadD02HHHHDst_KKpipiDecision_TIS",1);	
+  fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_K3piDecision_TIS",1);	
+  fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_KKpipiDecision_TIS",1);	
+  fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_4piDecision_TIS",1);
+
   fChain->SetBranchStatus("mu0_L0MuonDecision_TOS",1);
   fChain->SetBranchStatus("mu1_L0MuonDecision_TOS",1);
   fChain->SetBranchStatus("mu0_L0DiMuonDecision_TOS",1);
   fChain->SetBranchStatus("mu1_L0DiMuonDecision_TOS",1);
   fChain->SetBranchStatus("h1_L0MuonDecision_TOS",1);
   fChain->SetBranchStatus("h1_L0DiMuonDecision_TOS",1);
-  fChain->SetBranchStatus("Dst_L0Global_TIS",1);
-  fChain->SetBranchStatus("D_L0Global_TIS",1);
 
   fChain->SetBranchStatus("mu0_Hlt1TrackMuonDecision_TOS",1);
   fChain->SetBranchStatus("mu1_Hlt1TrackMuonDecision_TOS",1);
@@ -2794,6 +3262,8 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_K3piDecision_TOS",1);	
   fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_KKpipiDecision_TOS",1);	
   fChain->SetBranchStatus("D_Hlt2CharmHadD02HHHH_4piDecision_TOS",1);
+
+
   fChain->SetBranchStatus("mu1_TRACK_GhostProb",1);
   fChain->SetBranchStatus("mu0_TRACK_GhostProb",1);
   fChain->SetBranchStatus("h0_TRACK_GhostProb",1);
@@ -2896,6 +3366,7 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("h1_MINIP",1); 
   fChain->SetBranchStatus("h1_MINIPCHI2",1);
   fChain->SetBranchStatus("h1_NShared",1);
+  fChain->SetBranchStatus("h1_MuonNShared",1);
  
   fChain->SetBranchStatus("h0_isMuon",1);
   fChain->SetBranchStatus("h0_isMuonLoose",1);
@@ -2906,6 +3377,7 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("h0_MINIP",1); 
   fChain->SetBranchStatus("h0_MINIPCHI2",1);
   fChain->SetBranchStatus("h0_NShared",1);
+  fChain->SetBranchStatus("h0_MuonNShared",1);
 
   fChain->SetBranchStatus("Dst_CONEANGLE_D",1);
   fChain->SetBranchStatus("Dst_CONEANGLE_Dstar",1);
@@ -2920,6 +3392,7 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("h0_TRACK_CHI2NDOF",1);
   fChain->SetBranchStatus("Slowpi_TRACK_CHI2NDOF",1);
   fChain->SetBranchStatus("eventNumber",1);
+  fChain->SetBranchStatus("Polarity",1);
 
   Notify();
   

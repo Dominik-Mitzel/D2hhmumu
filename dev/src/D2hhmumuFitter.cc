@@ -263,8 +263,19 @@ void D2hhmumuFitter::fit_normalization_Data(TString cut="",TString namePlot=""){
   tree->SetBranchStatus("Dst_DTF_D0_M",1);
   tree->SetBranchStatus("deltaM",1);  
   tree->SetBranchStatus("BDT",1);
+
   tree->SetBranchStatus("mu0_ProbNNmu",1);
   tree->SetBranchStatus("mu1_ProbNNmu",1);
+  tree->SetBranchStatus("mu0_ProbNNghost",1);
+  tree->SetBranchStatus("mu1_ProbNNghost",1);
+  tree->SetBranchStatus("h0_ProbNNghost",1);
+  tree->SetBranchStatus("h1_ProbNNghost",1);
+  tree->SetBranchStatus("h0_ProbNNK",1);
+  tree->SetBranchStatus("h1_ProbNNpi",1);
+  tree->SetBranchStatus("Slowpi_ProbNNghost",1);
+  tree->SetBranchStatus("mu0_MuonNShared",1);
+  tree->SetBranchStatus("mu1_MuonNShared",1);
+
   //apply cuts if needed
   TTree* cutTree = tree->CopyTree(cut);
   RooArgList list =  RooArgList( D0_M,deltaM );

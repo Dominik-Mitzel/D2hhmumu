@@ -29,6 +29,11 @@ class EfficiencyCalculator {
 
   EfficiencyCalculator(TString kind);
   ~EfficiencyCalculator();
+
+  double genLevelCutEfficiency_KKmumu;
+  double genLevelCutEfficiency_Kpimumu;
+  double genLevelCutEfficiency_pipimumu;
+
   
   TString m_kind;
   TString pathToFiles;
@@ -55,6 +60,10 @@ class EfficiencyCalculator {
   double getMCNormalizationMisIDEfficiency(TString selectionCut, TString splitting, TString q2Range); 
   double getMCRelativeSigToNormMisIDEfficiency(TString selectionCut, TString splitting, TString q2RangeSig,TString q2RangeNorm);
   double getMisIDFractionQ2Range(TString q2Range);
+
+  double getMCSignalEfficiencyError(TString selectionCut, TString splitting, TString q2Range);
+  double getMCNormalizationEfficiencyError(TString selectionCut, TString splitting, TString q2Range);
+  double getMCRelativeSigToNormEfficiencyError(TString selectionCut, TString splitting, TString q2RangeSig,TString q2RangeNorm);
 
 };
   

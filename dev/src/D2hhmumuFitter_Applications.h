@@ -15,6 +15,7 @@ class D2hhmumuFitter_Applications {
 
   TString pathToSignalData;
   TString pathToNormData;
+  TString pathToNormMC;
   TString pathToInvData;
   TString pathToSidebandData;
   TString pathToKpipipiData;
@@ -26,22 +27,28 @@ class D2hhmumuFitter_Applications {
 
   void setDefaultPathToData(TString m_kind);
   void setQ2Ranges(TString m_kind);
-  void saveModelConfig(TString dataCut,TString misIDCut,TString q2Range);
-  void saveAllModelConfig(TString dataCut,TString misIDCut);
+  std::vector<double> rangespipi_low = {200,525,565,950,1100};
+  std::vector<double> rangespipi_high = {525,565,950,1100,1600};
+  std::vector<double> rangesKK_low = {200,525,565};
+  std::vector<double> rangesKK_high = {525,565,900};//!!//THIS IS THE NEW BINNING 
 
+  void saveModelConfig(TString dataCut,TString misIDCut);
   void compare_1D_and_2D_fit(TString dataCut,TString nomalizationCut,TString misIDCut);
-  void compare_misID_shapes();
+  void compare_misID_shapes(TString dataCut);
   void compare_misID_shapes_2D();
-  void ExtractExpectedLimit(TString fIn);
-  void ExtractAllExpectedLimit(TString dataCut);
-  void runFull1DFits(TString dataCut,TString misIDCut,TString q2Range);
-  void runAllFull1DFits(TString dataCut,TString misIDCut);  
+  void ExtractExpectedLimit();
+  void runFull1DFits(TString dataCut,TString misIDCut);
   void runFullResonant1DFits(TString dataCut,TString misIDCut,TString q2Range);
   void runAllResonantFull1DFits(TString dataCut,TString misIDCut);  
-  void performAllToyStudies();
-  void studyResolutionScale(TString dataCut,TString misIDCut,TString q2Cut,TString channel);
-  void runAllResolutionScaleStudies(TString dataCut,TString misIDCut); //checks resolution diffenrences in MC/data in D2HHpipi modes
   void studyNormalizationFits(TString dataCut,TString misIDCut, bool doNSharedCut); 
+  void studyTriggerEfficiencyNormalizationMode();
+  void studyTISEfficiencyNormalizationModeBinned();
+  void plotRelativeEfficiencies(TString dataCut);
 
+  void drawMisIDShapes(TString cut);
+  void drawMCSignalShapes(TString cut);
+  void studyResolutionScale(TString cut);
+  void performAllToyStudies();
+  
 };
   
