@@ -183,8 +183,8 @@ class D2hhmumuFitter1D {
   void fit_MC(TString cut="",bool fixShape = true,TString namePlot="",TString xLabel="m(hh#mu#mu)",TString legend="");
   void fit_normalization_MC(TString cut, bool fixShape, TString namePlot);
   void fit_PIDinverted_Data(bool fixShape,TString namePlot);
-  void fit_Data(TString kind="D2KKmumu", TString cut="", TString q2Range="",TString namePlot="",TString xLabel="m(hh#mu#mu)",TString legend="");
-  double fit_resonant_Data(TString cut="",TString namePlot="",TString xLabel="m(hh#mu#mu)",TString legend="");
+  void fit_Data(TString kind="D2KKmumu", TString cut="", TString q2Range="",TString namePlot="",TString xLabel="m(hh#mu#mu)",TString legend="",bool bkgShapeFromInvertedBDTCut=false);
+  double fit_resonant_Data(TString kind="D2KKmumu", TString cut="",TString q2Range="",TString namePlot="",TString xLabel="m(hh#mu#mu)",TString legend="",bool fixBkgShape=false);
   void fit_Kpipipi_misID(TString cut,bool fixShape,TString namePlot);
   void fit_HHpipi_misID(TString cut="",bool fixShape = true,TString namePlot="",TString xLabel="m_{hhhh}(hh#mu#mu)",TString legend="");
   double fit_HHpipi(TString cut,TString namePlot);
@@ -192,10 +192,12 @@ class D2hhmumuFitter1D {
   double fit_normalization_Data(TString cut,TString namePlot);  
   std::pair<double,double> getBkgFromBlindedFit(TString cut,TString q2Range, TString namePlot);
   //void fillWorkspace(RooWorkspace &ws,RooRealVar D0_M,RooRealVar deltaM);
+  double fit_invertedBDT_data(TString cut,TString q2Range,TString namePlot,TString xLabel,TString legend);
   void GausExpModel(int nsig ,int nbkg ) ;
   void fillModelConfig(TString kind, TString dataCut,TString nomalizationCut,Int_t q2Bin, TString fileName);
   void fillModelConfigFake2011(TString kind, TString dataCut,TString nomalizationCut,TString misIDCut, TString name);
-  void makeToyStudy(TString dataCut,TString nomalizationCut,TString misIDCut,TString targetFile,double nSig_exp, double nCombBkg_exp, double nMisID_exp, bool fixMisID20,bool combBkgShapeFree);  
+  void makeToyStudy(TString kind, TString dataCut,TString nomalizationCut,TString misIDCut,TString targetFile,double nSig_exp, double nCombBkg_exp, double nMisID_exp);  
+  void makeSimpleToyStudy(TString kind, TString dataCut,TString q2Range, TString misIDCut,TString targetFile,double nSig_exp, double nCombBkg_exp, double nMisID_exp);
   void addNormalizationSWeights(TString dataCut, TString misIDCut,TString fIn,TString fOut);
   void addNormalizationSWeightsHadronicChannel(TString dataCut,TString fIn, TString fOut, TString plot);
   void defineBinning();  

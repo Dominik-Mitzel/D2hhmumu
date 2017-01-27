@@ -2115,8 +2115,8 @@ void Draw_MC_TriggerEfficiencies( TString variable, int nBins, int xLow, int xHi
 void newCutOptimization(TString kind, TString polarity="", TString q2Range="") {
 
   
-  TFile *fout = new TFile("/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/"+kind+"_PID_BDT_cut_scan_1D_"+q2Range+polarity+".root","recreate");
-  TString path="/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/";
+  TFile *fout = new TFile("/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/newJan17/"+kind+"_PID_BDT_cut_scan_1D_"+q2Range+polarity+".root","recreate");
+  TString path="/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/newJan17/";
 
   TH2* h2_misIDBkg = new TH2D("h2_misIDBkg","h2_misIDBkg",15,-0.5,1,10,0,1);
   TH2* h2_misIDBkg_alt = new TH2D("h2_misIDBkg_alt","h2_misIDBkg_alt",15,-0.5,1,10,0,1);
@@ -2140,6 +2140,7 @@ void newCutOptimization(TString kind, TString polarity="", TString q2Range="") {
 
   TString cut_singleID;
   TString cut_doubleID;
+  //MC file to get efficiency
   TString fIn1="/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_"+kind+"_BDT.root";
   //  TString fIn2=;
 

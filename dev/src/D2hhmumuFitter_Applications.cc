@@ -157,7 +157,7 @@ void D2hhmumuFitter_Applications::compare_misID_shapes(TString dataCut="BDT>0.4&
   myFitter1D.fit_Kpipipi_misID("BDT>0.4&&mu1_ProbNNmu>0.5",true,PathToFolder+"Kpipipi_singleMuonID_piminus.eps");
   myFitter1D.fit_normalization_Data(dataCut,PathToFolder+"norm_singleMuonID_piminus.eps");
   myFitter1D.fit_MC(dataCut+"&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",true,PathToFolder+"MCSignalShape.eps");
-  myFitter1D.fit_resonant_Data(dataCut+"&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",PathToFolder+"signal_singleMuonID_piminus.eps");
+  myFitter1D.fit_resonant_Data("D2pipimumu",dataCut,"D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",PathToFolder+"signal_singleMuonID_piminus.eps");
 
   D2hhmumuFitter1D myFitter1D_2;
   myFitter1D_2.setPathToNormMC(pathToNormMC);
@@ -175,7 +175,7 @@ void D2hhmumuFitter_Applications::compare_misID_shapes(TString dataCut="BDT>0.4&
   myFitter1D_2.fit_Kpipipi_misID("BDT>0.4&&mu0_ProbNNmu>0.5",true,PathToFolder+"Kpipipi_singleMuonID_piplus.eps");
   myFitter1D_2.fit_normalization_Data(dataCut,PathToFolder+"norm_singleMuonID_piplus.eps");
   myFitter1D_2.fit_MC(dataCut+"&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",true,PathToFolder+"MCSignalShape.eps");
-  myFitter1D_2.fit_resonant_Data(dataCut+"&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",PathToFolder+"signal_singleMuonID_piplus.eps");
+  myFitter1D_2.fit_resonant_Data("D2pipimumu",dataCut,"D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",PathToFolder+"signal_singleMuonID_piplus.eps");
 
   D2hhmumuFitter1D myFitter1D_3;
   myFitter1D_3.setPathToNormMC(pathToNormMC);
@@ -193,7 +193,7 @@ void D2hhmumuFitter_Applications::compare_misID_shapes(TString dataCut="BDT>0.4&
   myFitter1D_3.fit_Kpipipi_misID("BDT>0.4 && ( ( (mu1_PT < mu0_PT) && mu1_ProbNNmu>0.5) || ((mu1_PT > mu0_PT) && mu0_ProbNNmu>0.5))",true,PathToFolder+"Kpipipi_lowPTMuonID.eps");
   myFitter1D_3.fit_normalization_Data(dataCut,PathToFolder+"norm_lowPTMuonID.eps");
   myFitter1D_3.fit_MC(dataCut+"&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",true,PathToFolder+"MCSignalShape.eps");
-  myFitter1D_3.fit_resonant_Data(dataCut+"&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",PathToFolder+"signal_lowPTMuonID.eps");
+  myFitter1D_3.fit_resonant_Data("D2pipimumu",dataCut,"D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",PathToFolder+"signal_lowPTMuonID.eps");
 
 
   D2hhmumuFitter1D myFitter1D_4;
@@ -212,7 +212,7 @@ void D2hhmumuFitter_Applications::compare_misID_shapes(TString dataCut="BDT>0.4&
   myFitter1D_4.fit_Kpipipi_misID("BDT>0.4 && ( ( (mu1_PT > mu0_PT) && mu1_ProbNNmu>0.5) || ((mu1_PT < mu0_PT) && mu0_ProbNNmu>0.5))",true,PathToFolder+"Kpipipi_lowPTMuonID.eps");
   myFitter1D_4.fit_normalization_Data(dataCut,PathToFolder+"norm_highPTMuonID.eps");
   myFitter1D_4.fit_MC(dataCut+"&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",true,PathToFolder+"MCSignalShape.eps");
-  myFitter1D_4.fit_resonant_Data(dataCut+"&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",PathToFolder+"signal_highPTMuonID.eps");
+  myFitter1D_4.fit_resonant_Data("D2pipimumu",dataCut,"D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",PathToFolder+"signal_highPTMuonID.eps");
   
 
   
@@ -232,7 +232,7 @@ void D2hhmumuFitter_Applications::compare_misID_shapes(TString dataCut="BDT>0.4&
   myFitter1D_5.fit_Kpipipi_misID("BDT>0.4&&nTracks%15==0",true,PathToFolder+"Kpipipi_noMuonID.eps");
   myFitter1D_5.fit_normalization_Data(dataCut,PathToFolder+"norm_noMuonID.eps");
   myFitter1D_5.fit_MC(dataCut+"&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",true,PathToFolder+"MCSignalShape.eps");
-  myFitter1D_5.fit_resonant_Data(dataCut+"&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",PathToFolder+"signal_noMuonID.eps");
+  myFitter1D_5.fit_resonant_Data("D2pipimumu",dataCut,"D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",PathToFolder+"signal_noMuonID.eps");
   
 
   /*  
@@ -373,7 +373,7 @@ void D2hhmumuFitter_Applications::runFull1DFits(TString dataCut,TString misIDCut
       myFitter1D->fit_HHpipi_misID(misIDCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_KKmumu_bin_%i.eps",counter),"m_{KK#mu#mu}(KK#pi#pi)",TString::Format("%.0fMeV<m(#pi#pi)<%.0fMeV",rangesKK_low[counter],rangesKK_high[counter])); 
       std::cout<<"misID fits done.."<<std::endl;
       myFitter1D->fit_normalization_Data(dataCut,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_norm_KKTrained.eps");
-      myFitter1D->fit_Data(kind,dataCut,+(*it),TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_blind_KKmumu_bin_%i.eps",counter),"m(KK#mu#mu)",TString::Format("%.0fMeV<m(#mu#mu)<%.0fMeV",rangesKK_low[counter],rangesKK_high[counter]));
+      myFitter1D->fit_Data(kind,dataCut,+(*it),TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_blind_KKmumu_bin_%i.eps",counter),"m(KK#mu#mu)",TString::Format("%.0fMeV<m(#mu#mu)<%.0fMeV",rangesKK_low[counter],rangesKK_high[counter]),true);
       std::cout<<"blind data fits done.."<<std::endl;
 
       ++counter;
@@ -395,7 +395,7 @@ void D2hhmumuFitter_Applications::runFull1DFits(TString dataCut,TString misIDCut
       myFitter1D->fit_HHpipi_misID(misIDCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_pipimumu_bin_%i.eps",counter),"m_{#pi#pi#mu#mu}(#pi#pi#pi#pi)",TString::Format("%.0fMeV<m(#pi#pi)<%.0fMeV",rangespipi_low[counter],rangespipi_high[counter])); 
       std::cout<<"misID fits done.."<<std::endl;
       myFitter1D->fit_normalization_Data(dataCut,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_norm_pipiTrained.eps");
-      myFitter1D->fit_Data(kind,dataCut,+(*it),TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_blind_pipimumu_bin_%i.eps",counter),"m(#pi#pi#mu#mu)",TString::Format("%.0fMeV<m(#mu#mu)<%.0fMeV",rangespipi_low[counter],rangespipi_high[counter]));
+      myFitter1D->fit_Data(kind,dataCut,+(*it),TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_blind_pipimumu_bin_%i.eps",counter),"m(#pi#pi#mu#mu)",TString::Format("%.0fMeV<m(#mu#mu)<%.0fMeV",rangespipi_low[counter],rangespipi_high[counter]),true);
       std::cout<<"blind data fits done.."<<std::endl;
       
       ++counter;
@@ -403,54 +403,120 @@ void D2hhmumuFitter_Applications::runFull1DFits(TString dataCut,TString misIDCut
   }
 }
 
-void D2hhmumuFitter_Applications::runFullResonant1DFits(TString dataCut,TString misIDCut,TString q2Cut){
 
-  D2hhmumuFitter1D myFitter1D;
+void D2hhmumuFitter_Applications::runFullResonant1DFits(TString dataCut,TString misIDCut){
 
-  if(kind=="D2KKmumu"){
-    myFitter1D.setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2KKmumu_BDT.root");
-    myFitter1D.setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpimumu_D2KKmumuBDT.root");
-    myFitter1D.setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_PIDline_D2KKmumuBDT.root");
-    myFitter1D.setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKpipi_PIDline_D2KKmumuBDT.root");
-    myFitter1D.setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2KKmumuBDT.root");
-    myFitter1D.setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2KKmumu_BDT.root");
-  }
 
-  if(kind=="D2pipimumu"){
-    myFitter1D.setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2pipimumu_BDT.root");
-    myFitter1D.setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MC_D2Kpimumu_D2pipimumuBDT.root");
-    myFitter1D.setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpipipi_PIDline_D2pipimumuBDT.root");
-    myFitter1D.setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2pipipipi_PIDline_D2pipimumuBDT.root");
-    myFitter1D.setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2pipimumuBDT.root");
-    myFitter1D.setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2pipimumu_BDT.root");
-  }
+  D2hhmumuFitter1D* myFitter1D;
+  int counter=0;
 
-  std::cout<<dataCut+"&&"+q2Cut<<std::endl;
-  myFitter1D.fit_MC(dataCut+"&&"+q2Cut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_"+dataCut+q2Cut+".eps");
-  myFitter1D.fit_normalization_MC(dataCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_normMode_"+dataCut+".eps");
-  std::cout<<"Monte Carlo fits done.."<<std::endl;
+  for (std::vector<TString>::iterator it = q2Ranges.begin() ; it != q2Ranges.end(); ++it) {
+
+      myFitter1D= new D2hhmumuFitter1D();
+
+      if(kind=="D2KKmumu" && (counter!=0 && counter!=1 && counter!=2 ) ){
+	myFitter1D->setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2KKmumu_BDT.root");
+	myFitter1D->setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2KKmumuBDT.root");
+	myFitter1D->setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2KKmumuBDT_new.root");
+	myFitter1D->setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKpipi_D2KKmumuBDT_new.root");
+	myFitter1D->setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT.root");
+	myFitter1D->setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT.root");
   
-  myFitter1D.fit_Kpipipi_misID(misIDCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_Kpi"+misIDCut+q2RangeNormalizationMode+".eps");
-  myFitter1D.fit_HHpipi_misID(misIDCut+"&&"+q2Cut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_pipi"+misIDCut+q2Cut+".eps"); ////q2 cut missing? check!
-  std::cout<<"misID fits done.."<<std::endl;
+	myFitter1D->fit_MC(dataCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_KKmumu_bin_%i.eps",counter),"m(KK#mu#mu)",TString::Format("%.0fMeV<m(#mu#mu)<%.0fMeV",rangesKK_low[counter],rangesKK_high[counter]));
+	myFitter1D->fit_normalization_MC(dataCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_norm_KKTrained.eps");
+	std::cout<<"Monte Carlo fits done.."<<std::endl;
+	myFitter1D->fit_Kpipipi_misID(misIDCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_Kpipipi_KKTrained.eps");
+	myFitter1D->fit_HHpipi_misID(misIDCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_KKmumu_bin_%i.eps",counter),"m_{KK#mu#mu}(KK#pi#pi)",TString::Format("%.0fMeV<m(#pi#pi)<%.0fMeV",rangesKK_low[counter],rangesKK_high[counter])); 
+	std::cout<<"misID fits done.."<<std::endl;
+	myFitter1D->fit_normalization_Data(dataCut,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_norm_KKTrained.eps");
+	myFitter1D->fit_resonant_Data(kind,dataCut,+(*it),TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_KKmumu_bin_%i.eps",counter),"m(KK#mu#mu)",TString::Format("%.0fMeV<m(#mu#mu)<%.0fMeV",rangesKK_low[counter],rangesKK_high[counter]),true);
+	std::cout<<"data fits done.."<<std::endl;
 
-  myFitter1D.fit_normalization_Data(dataCut,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/normMode_"+dataCut+q2RangeNormalizationMode+".eps");
-  myFitter1D.fit_resonant_Data(dataCut+"&&"+q2Cut,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/resonant_data_"+dataCut+q2Cut+".eps");
+      }
+ 
+      if(kind=="D2pipimumu" && (counter!=0 && counter!=1 && counter!=4)){
+	myFitter1D->setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2pipimumu_BDT.root");
+	myFitter1D->setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2pipimumuBDT.root");
+	myFitter1D->setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2pipimumuBDT_new.root");
+	myFitter1D->setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_D2pipimumuBDT_new.root");
+	myFitter1D->setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT.root");
+	myFitter1D->setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT.root");
+
+	myFitter1D->fit_MC(dataCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_pipimumu_bin_%i.eps",counter),"m(#pi#pi#mu#mu)",TString::Format("%.0fMeV<m(#mu#mu)<%.0fMeV",rangespipi_low[counter],rangespipi_high[counter]));
+	myFitter1D->fit_normalization_MC(dataCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_norm_pipiTrained.eps");
+	std::cout<<"Monte Carlo fits done.."<<std::endl;
+	myFitter1D->fit_Kpipipi_misID(misIDCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_Kpipipi_pipiTrained.eps");
+	myFitter1D->fit_HHpipi_misID(misIDCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_pipimumu_bin_%i.eps",counter),"m_{#pi#pi#mu#mu}(#pi#pi#pi#pi)",TString::Format("%.0fMeV<m(#pi#pi)<%.0fMeV",rangespipi_low[counter],rangespipi_high[counter])); 
+	std::cout<<"misID fits done.."<<std::endl;
+	myFitter1D->fit_normalization_Data(dataCut,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_norm_pipiTrained.eps");
+	myFitter1D->fit_resonant_Data(kind,dataCut,+(*it),TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_pipimumu_bin_%i.eps",counter),"m(#pi#pi#mu#mu)",TString::Format("%.0fMeV<m(#mu#mu)<%.0fMeV",rangespipi_low[counter],rangespipi_high[counter]),true);
+	std::cout<<" data fits done.."<<std::endl;
+      
+      }
+      ++counter;
+  }
+  
   std::cout<<"data fits done.."<<std::endl;
 
-
 }
 
 
-void D2hhmumuFitter_Applications::runAllResonantFull1DFits(TString dataCut,TString misIDCut){
+void D2hhmumuFitter_Applications::constrainCombBkgShapes(TString dataCut,TString misIDCut){
 
-  //only fits in the resonant bins
+  D2hhmumuFitter1D* myFitter1D;
+  int counter=0;
 
-  //runFullResonant1DFits(dataCut,misIDCut,q2Ranges[1]);
-    runFullResonant1DFits(dataCut,misIDCut,q2Ranges[2]);
-    runFullResonant1DFits(dataCut,misIDCut,q2Ranges[3]);
+  for (std::vector<TString>::iterator it = q2Ranges.begin() ; it != q2Ranges.end(); ++it) {
 
+    myFitter1D= new D2hhmumuFitter1D();
+
+    if(kind=="D2KKmumu"){
+      myFitter1D->setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2KKmumu_BDT.root");
+      myFitter1D->setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2KKmumuBDT.root");
+      myFitter1D->setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2KKmumuBDT_new.root");
+      myFitter1D->setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKpipi_D2KKmumuBDT_new.root");
+      myFitter1D->setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT.root");
+      myFitter1D->setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT.root");
+
+
+      myFitter1D->fit_MC(dataCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/MC_KKmumu_bin_%i.eps",counter),"m(KK#mu#mu)",TString::Format("%.0fMeV<m(#mu#mu)<%.0fMeV",rangesKK_low[counter],rangesKK_high[counter]));
+      myFitter1D->fit_normalization_MC(dataCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/MC_norm_KKTrained.eps");
+      std::cout<<"Monte Carlo fits done.."<<std::endl;
+      myFitter1D->fit_Kpipipi_misID(misIDCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/misID_Kpipipi_KKTrained.eps");
+      myFitter1D->fit_HHpipi_misID(misIDCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/misID_KKmumu_bin_%i.eps",counter),"m_{KK#mu#mu}(KK#pi#pi)",TString::Format("%.0fMeV<m(#pi#pi)<%.0fMeV",rangesKK_low[counter],rangesKK_high[counter])); 
+      std::cout<<"misID fits done.."<<std::endl;
+      myFitter1D->fit_normalization_Data(dataCut,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/data_norm_KKTrained.eps");
+      //inverderd BDT CUT!!
+      myFitter1D->fit_Data(kind,"BDT<.4&&mu1_ProbNNmu>.5&&mu0_ProbNNmu>.5",+(*it),TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/data_blind_invertedBDT_KKmumu_bin_%i.eps",counter),"m(KK#mu#mu)","",false);
+      std::cout<<"blind data fits done.."<<std::endl;
+
+      ++counter;
+    
+    }
+
+    if(kind=="D2pipimumu"){
+      myFitter1D->setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2pipimumu_BDT.root");
+      myFitter1D->setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2pipimumuBDT.root");
+      myFitter1D->setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2pipimumuBDT_new.root");
+      myFitter1D->setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_D2pipimumuBDT_new.root");
+      myFitter1D->setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT.root");
+      myFitter1D->setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT.root");
+
+      myFitter1D->fit_MC(dataCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/MC_pipimumu_bin_%i.eps",counter),"m(#pi#pi#mu#mu)",TString::Format("%.0fMeV<m(#mu#mu)<%.0fMeV",rangespipi_low[counter],rangespipi_high[counter]));
+      myFitter1D->fit_normalization_MC(dataCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/MC_norm_pipiTrained.eps");
+      std::cout<<"Monte Carlo fits done.."<<std::endl;
+      myFitter1D->fit_Kpipipi_misID(misIDCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/misID_Kpipipi_pipiTrained.eps");
+      myFitter1D->fit_HHpipi_misID(misIDCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/misID_pipimumu_bin_%i.eps",counter),"m_{#pi#pi#mu#mu}(#pi#pi#pi#pi)",TString::Format("%.0fMeV<m(#pi#pi)<%.0fMeV",rangespipi_low[counter],rangespipi_high[counter])); 
+      std::cout<<"misID fits done.."<<std::endl;
+      myFitter1D->fit_normalization_Data(dataCut,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/data_norm_pipiTrained.eps");
+      myFitter1D->fit_Data(kind,"BDT<.4&&BDT>-.5&&mu1_ProbNNmu>.5&&mu0_ProbNNmu>.5",(*it),TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/constrainCombBkgShape/data_blind_invertedBDTpipimumu_bin_%i.eps",counter),"m(#pi#pi#mu#mu)","",false);
+      std::cout<<"blind data fits done.."<<std::endl;
+      
+      ++counter;
+    }
+  }
 }
+
 
 
 void D2hhmumuFitter_Applications::plotRelativeEfficiencies(TString dataCut){
@@ -495,6 +561,7 @@ void D2hhmumuFitter_Applications::plotRelativeEfficiencies(TString dataCut){
 
 
 void D2hhmumuFitter_Applications::performAllToyStudies(){
+  /*
 
   TString dataCut="BDT>0.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5";
   TString misIDCut="BDT>0.4&&mu0_ProbNNmu>0.5";
@@ -511,25 +578,30 @@ void D2hhmumuFitter_Applications::performAllToyStudies(){
   double nSig[4] = {2240,30,1,2}; //{norm,reso,eta,low}
   double nBkg[4] = {107,10,1,10};
   double nMisID[4] = {378,4,1,1};
-
+  */
   /*
   myFitter1D.makeToyStudy(dataCut,q2Ranges[1],misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_EtaBin.eps",nSig[2],nBkg[2],nMisID[2],false,false);
   myFitter1D.makeToyStudy(dataCut,q2Ranges[0],misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_lowMassBin.eps",nSig[3],nBkg[3],nMisID[3],false,false);  
   myFitter1D.makeToyStudy(dataCut,q2Ranges[2],misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_resonantBin.eps",nSig[1],nBkg[1],nMisID[1],false,false);
   myFitter1D.makeToyStudy(dataCut,q2RangeNormalizationMode,misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_normalization.eps",nSig[0],nBkg[0],nMisID[0],false,false);//toys are thrown with the expected yields    
   */
+  
   //shape of comb free, more unstable
+  /*
   myFitter1D.makeToyStudy(dataCut,q2Ranges[1],misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_EtaBin_combBkgShapeFree.eps",nSig[2],nBkg[2],nMisID[2],false,true);
   myFitter1D.makeToyStudy(dataCut,q2Ranges[0],misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_lowMassBin_combBkgShapeFree.eps",nSig[3],nBkg[3],nMisID[3],false,true);
   myFitter1D.makeToyStudy(dataCut,q2Ranges[2],misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_resonantBin_combBkgShapeFree.eps",nSig[1],nBkg[1],nMisID[1],false,true);
   myFitter1D.makeToyStudy(dataCut,q2RangeNormalizationMode,misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_normalization_combBkgShapeFree.eps",nSig[0],nBkg[0],nMisID[0],false,true);
-
+  */
+  
   /* set misID bkg to 0 
   myFitter1D.makeToyStudy(dataCut,q2Ranges[1],misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_EtaBin_misID20.eps",nSig[2],nBkg[2],nMisID[2],true,true);
   myFitter1D.makeToyStudy(dataCut,q2Ranges[0],misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_lowMassBin_misID20.eps",nSig[3],nBkg[3],nMisID[3],true,true);
   myFitter1D.makeToyStudy(dataCut,q2Ranges[2],misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_resonantBin_misID20.eps",nSig[1],nBkg[1],nMisID[1],true,true);
   myFitter1D.makeToyStudy(dataCut,q2RangeNormalizationMode,misIDCut,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/fitterValidation/KKmumu_normalization_misID20.eps",nSig[0],nBkg[0],nMisID[0],false,true);
   */
+
+  
 }
 
 void D2hhmumuFitter_Applications::studyNormalizationFits(TString dataCut,TString misIDCut, bool doNSharedCut){

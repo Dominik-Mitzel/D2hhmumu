@@ -33,9 +33,9 @@ void copyMCTuplesWithCut(TString fileIn,TString target, TString nameTree,TString
 void createTuplesForRecoEfficiency();
 
 void MC_PID_efficiency(double ghostProbCut,double hadronPID,double muonPID);
+
 //MC BDT efficiency
 void MC_BDT_efficiency(double ghostProbCut,double hadronPID,double muonPID, double BDT, bool applyPID, bool applyTrigger);
-
 void MC_total_efficiency(double ghostProbCut,double hadronPID,double muonPID,double BDT);
 
 
@@ -77,11 +77,11 @@ void compareHadonAndMuonEfficienciesWithDifferentBinning();
 
 //generator level cuts Efficiency
 void drawGenLevelCutEfficiencies();
-
 //stripping and reco
 void addDiMuonMassBranch(TChain *chain, TString fOut, bool isReco);
 void drawRecoAndStrippingEfficiency(int cat);
 void drawRecoAndStrippingEfficiencyWithFit(bool useFit,TString additionalCut);
+void drawRecoAndStrippingEfficiencyWithFit_alternativeFitModel(bool useFit,TString additionalCut); //take alternative fit model for systemtic studies
 void compareDifferentRecoAndStrippingEfficiencies();
 
 //multiple candidates
@@ -90,7 +90,6 @@ void chose_multiple_events(const char *input,TString channel,bool withGhosts);
 void addMultipleCandidateBranch(TChain *chain, TString fOut,const char *f_chosenCand);
 void createTuplesWithSelectedMultipleCand();
 void writeAllTrueCanidatesToFile();
-
 
 ///TAG and Probe method to get L0 trigger efficiecny, hadron PID and BDT cut hardcoded
 void calibrateTagAndProbeL0EfficiencyWithMC();
@@ -103,12 +102,11 @@ void applyTagAndProbeL0Efficiency(bool useData); //if use data is set to false a
 void MC_HltTrigger_efficiency(double ghostProbCut,double hadronPID,double muonPID,double BDT,bool applyPID, bool applyBDT, TString triggerLevel);
 void MC_Combined_Hlt_BDT_efficiency(double ghostProbCut,double hadronPID,double muonPID,double BDT,bool applyPID,bool withGhosts);
 
-
+void drawTotalEfficiency();
 
 //Old version where the efficienc was tried to be computed with TISTOS methon. No satisfying results
 void MC_L0Trigger_efficiency(double ghostProbCut,double hadronPID,double muonPID, double BDT, bool applyPID,bool applyTrigger, TString cut_Trigger_TIS);
 
 
-void drawTotalEfficiency();
 
 

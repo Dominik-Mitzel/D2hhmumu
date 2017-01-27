@@ -38,8 +38,8 @@ class D2hhmumuFitter_Applications {
   void compare_misID_shapes_2D();
   void ExtractExpectedLimit();
   void runFull1DFits(TString dataCut,TString misIDCut);
-  void runFullResonant1DFits(TString dataCut,TString misIDCut,TString q2Range);
-  void runAllResonantFull1DFits(TString dataCut,TString misIDCut);  
+  void runFullResonant1DFits(TString dataCut,TString misIDCut);
+  void constrainCombBkgShapes(TString dataCut,TString misIDCut);
   void studyNormalizationFits(TString dataCut,TString misIDCut, bool doNSharedCut); 
   void studyTriggerEfficiencyNormalizationMode();
   void studyTISEfficiencyNormalizationModeBinned();

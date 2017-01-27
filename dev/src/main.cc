@@ -19,6 +19,7 @@
 
 using namespace std;
 
+
 using namespace RooFit ;
 using namespace RooStats;
 
@@ -77,18 +78,26 @@ int main() {
   D2KKpipiMC();                                                                                   
   D2KpipipiMC();                         
 
+  //create the generator level MC tuples for all channels.
+  //createGeneratorLevelMCTuple("D2KKmumu");
+  //createGeneratorLevelMCTuple("D2Kpimumu");
+  //createGeneratorLevelMCTuple("D2KKpipi");
+  //createGeneratorLevelMCTuple("D2Kpipipi");
+  //createGeneratorLevelMCTuple("D2pipimumu");
+  //createGeneratorLevelMCTuple("D2pipipipi");  
+
+
   */
+  //randomize the order of the pions for the double misID K3Pi and 4pi
   //D2pipipipiRandomizedData();
   //D2KpipipiRandomizedData();
 
   //D2KKpipiData();                                                                                                               
   //D2KpipipiData();                                                                                                               
   
-
-  //create the tuples binned in defined D_DiMuon mass binning scheme
+  //create the tuples binned in defined D_DiMuon mass binning scheme, also needed to efficiency evaluation
   //createTuplesForRecoEfficiency();
   
-
   //////////////////////////////////////
   //                                  //
   //  TMVA training and application   //
@@ -108,19 +117,16 @@ int main() {
   //CrossapplicationForEfficiencyStudies();
   //createMCTuplesForEffStudiesNoTruthmatching();
   //CrossapplicationForEfficiencyStudiesNoTruthmatching();
-
-
   
-   ///////////////////////////////
-   //
-   //    Efficiency Studies
-   //
-   //////////////////////////////
+  ///////////////////////////////
+  //
+  //    Efficiency Studies
+  //
+  //////////////////////////////
 
   //plotPIDCalibMuonSampleAndSignalMC();
   //plotPIDCalibKaonSampleAndSignalMC();
   //plotPIDCalibPionSampleAndSignalMC();
-  
   
   // GEN LEVEL EFFICIENCIES
   //Draw the generator level efficiency. Taken from privatey produced gauss sample, where a TTree was saved before and after the cut tool
@@ -132,15 +138,12 @@ int main() {
   //STRIPPING AND RECO AND PRESELECTION EFFICIENCY
   //Different ways to get the combined reco and stripping eff. are tried. Especially different treatments of multiple candidates in MC
 
-  //here the different method are listed. the first argument is set true if a fit is ti be used to get the signal yield. second argument is cut (on top of the muon Nshared and delta M cut )
+  //here the different method are listed. the first argument is set true if a fit is to be used to get the signal yield. second argument is cut (on top of the muon Nshared and delta M cut )
   //results can be found in ../img/EfficiencyStudies/strippingEfficiency/RecoAndStrippingEfficiency
 
   //drawRecoAndStrippingEfficiencyWithFit(true,"(Dst_BKGCAT<11||Dst_BKGCAT==60)");
-  //drawRecoAndStrippingEfficiencyWithFit(true,"isSelectedMultipleCandidate");
   //drawRecoAndStrippingEfficiencyWithFit(false,"Dst_BKGCAT<11"); 
-  //drawRecoAndStrippingEfficiencyWithFit(false,"Dst_BKGCAT<11&&isSelectedMultipleCandidate"); 
-  //drawRecoAndStrippingEfficiencyWithFit(true,"isMatchedCandidate");
-  //drawRecoAndStrippingEfficiencyWithFit(true,"isMatchedCandidate&&isSelectedMultipleCandidate");
+  //drawRecoAndStrippingEfficiencyWithFit_alternativeFitModel(true,"(Dst_BKGCAT<11||Dst_BKGCAT==60)");                                                                                                         
   //compareDifferentRecoAndStrippingEfficiencies();
 
   ////////////////////////////////////////////////
@@ -164,7 +167,7 @@ int main() {
 
   //createTuplesWithSelectedMultipleCand();
   
-  //writeAllTrueCanidatesToFile(); //write all candidates of the true MC tuple to be able to perform a matching later with the reconstructed candidates
+  //writeAllTrueCanidatesToFile(); //write all candidates of the true MC tuple to be able to perform a matching later with the reconstructed candidates. This thing is not uesd at the moment
   
   //////////////////////////////////////////
   //
@@ -191,7 +194,12 @@ int main() {
   
   //BDT EFFICIENCY
   //MC_BDT_efficiency(0.5,0.2,0.5,0.4,true,true);
+  
+  //this is the one which is supposed to be used. Takes the filtere MC samples and optionally allows for cat60 or not
+  //MC_Combined_Hlt_BDT_efficiency(0.5,0.2,0.5,0.4,true,false);
+  //MC_Combined_Hlt_BDT_efficiency(0.5,0.2,0.5,0.4,true,true);
 
+  
   ////////////////////////////////////////////
   //
   //LEVEL 0 WITH TAGPROBE
@@ -206,17 +214,16 @@ int main() {
   //applyTagAndProbeL0EfficiencyToyStudy(true,100); not yet implemented
 
 
-  //MC_Combined_Hlt_BDT_efficiency(0.5,0.2,0.5,0.4,true,false);
-  //MC_Combined_Hlt_BDT_efficiency(0.5,0.2,0.5,0.4,true,true);
   
  
   //createDataTuplesForEffStudies();
 
   //drawTotalEfficiency();
 
-
+  //
   //norm mode and D->hhpipi sWeights
-  
+  //
+
   /*
   D2hhmumuFitter1D myFitter1D_1;
   myFitter1D_1.addNormalizationSWeightsHadronicChannel("eventNumber%5==0","/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/temp/D2KKpipi_D2KKmumuBDT.root","/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/temp/D2KKpipi_D2KKmumuBDT_sWeights.root","drawingMacros/sWeights_D2KKpipi.eps");
@@ -229,9 +236,6 @@ int main() {
   myFitter1D.setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT.root");
   myFitter1D.addNormalizationSWeights("mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5&&Dst_DTF_D0_M<1950&&D_DiMuon_Mass>675&&D_DiMuon_Mass<875","mu0_ProbNNmu>0.5","/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT.root","/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT_sWeights.root");
   */
- 
-
-
 
   //MC_L0Trigger_efficiency(0.5,0.2,0.5,0.,true,false,"D_L0Global_TIS");
   //MC_L0Trigger_efficiency(0.5,0.2,0.5,0.,false,false,"D_L0MuonDecision_TIS");
@@ -281,13 +285,7 @@ int main() {
   //getMCEfficiencyError("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/MCEfficiencyStudies/PTBins/MC_D2KKmumu_0.0_525.0_800.0_1200.0_D2KKmumuBDT_magUp.root","BDT_Tree","mu0_ProbNNmu>0.5","D_DiMuon_Mass>0");
 
   
-  //createGeneratorLevelMCTuple("D2KKmumu");
-  //createGeneratorLevelMCTuple("D2Kpimumu");
-  //createGeneratorLevelMCTuple("D2KKpipi");
-  //createGeneratorLevelMCTuple("D2Kpipipi");
-  //createGeneratorLevelMCTuple("D2pipimumu");
-  //createGeneratorLevelMCTuple("D2pipipipi");  
-
+  
   //EfficiencyCalculator myEfficiencies("D2KKmumu");
   //myEfficiencies.getMCSignalEfficiency("BDT>0.&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5","","D_DiMuon_Mass<565");
   //myEfficiencies.getMCSignalEfficiencyError("BDT>0.&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5","","D_DiMuon_Mass<565");
@@ -318,74 +316,67 @@ int main() {
   // fitting is done with D2hhmumuFitter//
   ////////////////////////////////////////
 
- 
+    
   
-  /*         
+  /*        
   D2hhmumuFitter1D* myFitter1D = new D2hhmumuFitter1D();
   myFitter1D->setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2pipimumuBDT.root");
   myFitter1D->setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2pipimumu_BDT.root");
   myFitter1D->setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_D2pipimumuBDT_new.root");  
-  myFitter1D->setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2pipimumuBDT.root");  
+  myFitter1D->setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2pipimumuBDT_new.root");  
   myFitter1D->setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT.root");  
   myFitter1D->setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT.root");
-  
-  myFitter1D->fit_MC("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",true,"test.eps","m(KK#mu#mu)","950MeV<m(#mu#mu)<1100MeV");
+  myFitter1D->makeToyStudy("D2pipimumu","BDT>.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5","D_DiMuon_Mass<525","BDT>0.4&&mu1_ProbNNmu>0.5","/work/mitzel/D2hhmumu/dev/D2pipimumu/fitValidation/D2pipimumu_FitterValidation_lowStat.root",5,24,20);
+  myFitter1D->makeToyStudy("D2pipimumu","BDT>.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5","D_DiMuon_Mass>950&&D_DiMuon_Mass<1100","BDT>0.4&&mu1_ProbNNmu>0.5","/work/mitzel/D2hhmumu/dev/D2pipimumu/fitValidation/D2pipimumu_FitterValidation_highStat.root",300,40,40);
+  */
+
+ 
+  D2hhmumuFitter1D* myFitter1D2 = new D2hhmumuFitter1D();
+  myFitter1D2->setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2KKmumuBDT.root");
+  myFitter1D2->setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2KKmumu_BDT.root");
+  myFitter1D2->setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKpipi_D2KKmumuBDT_new.root");  
+  myFitter1D2->setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2KKmumuBDT_new.root");  
+  myFitter1D2->setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT.root");  
+  myFitter1D2->setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT.root");
+  myFitter1D2->makeToyStudy("D2KKmumu","BDT>.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5","D_DiMuon_Mass<525","BDT>0.4&&mu1_ProbNNmu>0.5","/work/mitzel/D2hhmumu/dev/D2KKmumu/fitValidation/D2KKmumu_FitterValidation_lowStat.root",5,7,1);
+  myFitter1D2->makeToyStudy("D2KKmumu","BDT>.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5","D_DiMuon_Mass<565&&D_DiMuon_Mass<950","BDT>0.4&&mu1_ProbNNmu>0.5","/work/mitzel/D2hhmumu/dev/D2KKmumu/fitValidation/D2KKmumu_FitterValidation_highStat.root",30,1,4);
+ 
+
+  //myFitter1D->fit_MC("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5&&D_DiMuon_Mass<525",true,"test.eps","m(KK#mu#mu)","950MeV<m(#mu#mu)<1100MeV");
   //myFitter1D->fit_normalization_MC("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5",true,"test1.eps");
   
   //myFitter1D->fit_Kpipipi_misID("BDT>0.4&&nTracks%15==0",true,"test2.eps");
-  myFitter1D->fit_HHpipi_misID("BDT>0.4&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",true,"test3.eps","m_{#pi#pi#mu#mu}(#pi#pi#pi#pi)","950MeV<m(#pi#pi)<1100MeV");
+  //myFitter1D->fit_HHpipi_misID("BDT>0.4&&mu1_ProbNNmu>0.5&&D_DiMuon_Mass<525",true,"test3.eps","m_{#pi#pi#mu#mu}(#pi#pi#pi#pi)","950MeV<m(#pi#pi)<1100MeV");
   
   //myFitter1D->fit_normalization_Data("BDT>0.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5","test4.eps");
   //myFitter1D->fit_resonant_Data("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100","test5.eps","m(#pi#pi#mu#mu)","950MeV<m(#mu#mu)<1100MeV");
-  myFitter1D->fit_Data("D2pipimumu","BDT>0.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5","D_DiMuon_Mass>950&D_DiMuon_Mass<1100","test5.eps");
+  //myFitter1D->fit_resonant_Data("D2KKmumu","BDT>.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5","D_DiMuon_Mass<525&&D_DiMuon_Mass<565","test5.eps","","",true);
   
-  */
   
-  D2hhmumuFitter_Applications myApplication("D2KKmumu","2012");
+  
+  //D2hhmumuFitter_Applications myApplication("D2KKmumu","2012");
   //myApplication.drawMisIDShapes("BDT>0.4&&mu1_ProbNNmu>0.5");
-  myApplication.drawMCSignalShapes("BDT>0.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5");
+  //myApplication.drawMCSignalShapes("BDT>0.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5");
   //myApplication.studyResolutionScale("BDT>0.4&&mu0_ProbNNmu<0.5&&mu1_ProbNNmu<0.5");
   //myApplication.runFull1DFits("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
   //myApplication.saveModelConfig("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5"); 
   //myApplication.ExtractExpectedLimit();
+  //myApplication.runFullResonant1DFits("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
+  //myApplication.constrainCombBkgShapes("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5"); 
 
-  D2hhmumuFitter_Applications myApplication2("D2pipimumu","2012");
+  //D2hhmumuFitter_Applications myApplication2("D2pipimumu","2012");
   //myApplication2.drawMisIDShapes("BDT>0.4&&mu1_ProbNNmu>0.5");
-  myApplication2.drawMCSignalShapes("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5");
+  //myApplication2.drawMCSignalShapes("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5");
   //myApplication2.studyResolutionScale("BDT>0.4&&mu0_ProbNNmu<0.5&&mu1_ProbNNmu<0.5");
   //myApplication2.performAllToyStudies();
   //myApplication2.runFull1DFits("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
   //myApplication2.compare_misID_shapes("BDT>0.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5");
   //myApplication2.saveModelConfig("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
   //myApplication2.ExtractExpectedLimit();
+  //myApplication2.runFullResonant1DFits("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
+  //myApplication2.constrainCombBkgShapes("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5"); 
 
   /*
-
-  // myFitter1D->ResolutionScale.setVal(1.1007);
-   myFitter1D->ResolutionScale.setVal(1.0918);
-   myFitter1D->ResolutionScale.setConstant();
-  //myFitter1D->globalShift.setVal(1.0004);
-  myFitter1D->globalShift.setVal(1.0003);
-  myFitter1D->globalShift.setConstant();
-  myFitter1D->D0_M_chebyB.setVal(0); 
-  myFitter1D->D0_M_chebyB.setConstant();
-  myFitter1D->D0_M_chebyA.setVal(-4.8960e-01);
-  myFitter1D->D0_M_chebyA.setConstant();
-  myFitter1D->fit_normalization_Data("BDT>0.6&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","test4.eps");
-  */
-  //myFitter1D->fit_HHpipi("BDT>0.6&&D_DiMuon_Mass>565&&eventNumber<5e5","test2.eps");
-  //myFitter1D->fit_HHpipi_misID("BDT>0.6&&D_DiMuon_Mass>565&&mu1_ProbNNmu>0.5",true,"test2.eps");
-  //myFitter1D->fit_Data("BDT>0.6&&D_DiMuon_Mass>565&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu<0.5","test3.eps");
-    
-  //myApplication.runFull1DFits("BDT>0.6&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.6&&mu0_ProbNNmu>0.5","D_DiMuon_Mass>0&&D_DiMuon_Mass<2000");
-  // myApplication.runAllFull1DFits("BDT>0.6&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.6&&mu1_ProbNNmu>0.5");
-  //myApplication.runAllFull1DFits("BDT>0.6&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5&&mu0_MuonNShared==0&&mu1_MuonNShared==0","BDT>0.6&&mu1_ProbNNmu>0.5");
-  //myApplication.compare_misID_shapes();
-  //myApplication.compare_misID_shapes_2D();
-  //myApplication.saveAllModelConfig("BDT>0.6&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.6&&mu1_ProbNNmu>0.5");
-  //myApplication.compare_1D_and_2D_fit("BDT>0.7&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.7&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.7&&mu0_ProbNNmu>0.5");
-  //myApplication.ExtractAllExpectedLimit("BDT>0.6&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5");
- 
   /******/ 
   
 
@@ -400,6 +391,7 @@ int main() {
   //  defined in selectionOptimization//
   //                                  //
   //////////////////////////////////////
+
 
   /*
   //pipimumu bins
@@ -427,29 +419,8 @@ int main() {
   newCutOptimization("D2KKmumu","Polarity==-1","D_DiMuon_Mass>0");
   newCutOptimization("D2pipimumu","Polarity==1","D_DiMuon_Mass>0");
   newCutOptimization("D2pipimumu","Polarity==-1","D_DiMuon_Mass>0");
-
   */
 
-
-  /*
-  D2hhmumuFitter1D myFitter1D;
-  myFitter1D.setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2pipimumu_BDT.root");
-  myFitter1D.setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2pipimumuBDT.root");
-  myFitter1D.setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2pipimumuBDT.root");
-  myFitter1D.setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_D2pipimumuBDT.root");
-  myFitter1D.setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT.root");
-  myFitter1D.setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT.root");
-
-  TString dataCut = "deltaM>144.5&&deltaM<146.5&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5&&BDT>0.4";
-  TString misIDCut = "deltaM>144.5&&deltaM<146.5&&mu0_ProbNNmu>0.5&&BDT>0.4";
-  TString q2Cut = "D_DiMuon_Mass<1100&&D_DiMuon_Mass>950";
-  myFitter1D.fit_MC(dataCut+"&&"+q2Cut,true,"test.eps");
-  myFitter1D.fit_normalization_MC(dataCut,true,"test2.eps");
-  myFitter1D.fit_Kpipipi_misID(misIDCut,true,"test.eps");
-  myFitter1D.fit_HHpipi_misID(misIDCut+"&&"+q2Cut,true,"test.eps"); ////q2 cut missing? check!                                            
-  myFitter1D.fit_normalization_Data(dataCut,"test2.eps");
-  myFitter1D.fit_resonant_Data(dataCut+"&&"+q2Cut,"test3.eps");
-  */
 
 
   //define_binning("D2KKmumu");
@@ -459,13 +430,6 @@ int main() {
   //optimizeSelection("nTracksEven"); 
   //optimizeSelection2D("nTracksEven"); 
   //draw_BDT_crosschecks();
-  //check_peakingBackground("D2KKmumu",true); //last argument decides if PID cuts are aplied or not
-  //check_peakingBackground("D2KKmumu",false);
-
-  //studyKKMCEfficiency(0.,0.5,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/EfficiencyStudies/offlineSelected.eps");
-  //studypipiMCEfficiency(0.,0.5,"/work/mitzel/D2hhmumu/dev/D2pipimumu/img/EfficiencyStudies/offlineSelected.eps");
-  
-  //studyKKMCEfficiency(-10,-10,"/work/mitzel/D2hhmumu/dev/D2KKmumu/img/EfficiencyStudies/stripTrigSelected.eps");
   
   cout << "==============================================" << endl;
   cout << " Done " 

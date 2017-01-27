@@ -5854,10 +5854,10 @@ void MC_BDT_efficiency(double ghostProbCut,double hadronPID,double muonPID,doubl
 
   
   double nSel_norm = myFitter1D.fit_normalization_Data(cut_Kpimumu,"/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MC_BDT_Eff_Kpimumu_fit1.eps");
-  double nSel_pipi=myFitter1D.fit_resonant_Data(cut_pipimumu+"&&"+q2Cut,"/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MC_BDT_Eff_pipimumu_fit1.eps");
+  double nSel_pipi=myFitter1D.fit_resonant_Data("D2pipimumu",cut_pipimumu,q2Cut,"/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MC_BDT_Eff_pipimumu_fit1.eps");
 
   double nTot_norm = myFitter1D.fit_normalization_Data(cut_PID_Kpimumu,"/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MC_BDT_Eff_Kpimumu_fit2.eps");
-  double nTot_pipi=myFitter1D.fit_resonant_Data(cut_PID_pipimumu+"&&"+q2Cut,"/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MC_BDT_Eff_pipimumu_fit2.eps");
+  double nTot_pipi=myFitter1D.fit_resonant_Data("D2pipimumu",cut_PID_pipimumu,q2Cut,"/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MC_BDT_Eff_pipimumu_fit2.eps");
 
   double Eff_norm = nSel_norm/nTot_norm;
   double Eff_pipi = nSel_pipi/nTot_pipi;
@@ -6790,10 +6790,10 @@ void MC_L0Trigger_efficiency(double ghostProbCut,double hadronPID,double muonPID
 
   //use TIS TOS method
   double nSel_norm = myFitter1D.fit_normalization_Data(cut_Kpimumu+"&&"+q2RangeNormalizationMode+"&&"+cut_Trigger_TIS,textFile+"1.eps"); //TIS&&TOS
-  double nSel_pipi=myFitter1D.fit_resonant_Data(cut_pipimumu+"&&"+q2Cut+"&&"+cut_Trigger_TIS,textFile+"2.eps");//TIS&&TOS
+  double nSel_pipi=myFitter1D.fit_resonant_Data("D2pipimumu",cut_pipimumu,q2Cut+"&&"+cut_Trigger_TIS,textFile+"2.eps");//TIS&&TOS
 
   double nTot_norm = myFitter1D.fit_normalization_Data(cut_norm_Kpimumu+"&&"+q2RangeNormalizationMode+"&&"+cut_Trigger_TIS,textFile+"3.eps");  //TIS
-  double nTot_pipi=myFitter1D.fit_resonant_Data(cut_norm_pipimumu+"&&"+q2Cut+"&&"+cut_Trigger_TIS,textFile+"4.eps"); //TIS
+  double nTot_pipi=myFitter1D.fit_resonant_Data("D2pipimumu",cut_norm_pipimumu,q2Cut+"&&"+cut_Trigger_TIS,textFile+"4.eps"); //TIS
   
   double Eff_norm = nSel_norm/nTot_norm;
   double Eff_pipi = nSel_pipi/nTot_pipi;
@@ -8084,7 +8084,7 @@ std::pair<double,double> fitMC(TString file,TString treeName, TString cut, TStri
   tree->SetBranchStatus("isMatchedCandidate",1);
 
 
-  RooRealVar Dst_DTF_D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1800., 1950.,"MeV");
+  RooRealVar Dst_DTF_D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1780., 1940.,"MeV");
 
 
   TFile* fOut = new TFile("temp.root","RECREATE");
@@ -8123,7 +8123,8 @@ std::pair<double,double> fitMC(TString file,TString treeName, TString cut, TStri
   w->pdf("sum")->plotOn(mesframe) ;
   w->pdf("sum")->plotOn(mesframe,Components(*w->pdf("Signal")),LineStyle(kDashed),LineColor(kRed)) ;
   w->pdf("sum")->plotOn(mesframe,Components(*w->pdf("CombinatoricBkg")),LineStyle(kDashed),LineColor(kBlack)) ;
-  
+  w->pdf("sum")->paramOn(mesframe,Parameters(RooArgSet(*w->var("nSig"),*w->var("nbkg"))),Layout(.6,.93,.90));
+
 
   mesframe->Draw()  ;
   // c1->Print("../img/EfficiencyStudies/TriggerEffTagAndProbe/calibrationFits/"+namePlot+".eps");
@@ -8142,6 +8143,81 @@ std::pair<double,double> fitMC(TString file,TString treeName, TString cut, TStri
   return signalYield;
 
 } 
+
+
+std::pair<double,double> fitMC_alternativeModel(TString file,TString treeName, TString cut, TString namePlot){
+
+
+  TFile* fileIn;
+  fileIn= new TFile(file,"OPEN");
+  TTree* tree = (TTree*) fileIn->Get(treeName);
+
+  tree->SetBranchStatus("*",0);
+  tree->SetBranchStatus("Dst_DTF_D0_M",1);
+  tree->SetBranchStatus("D_DiMuon_Mass",1);
+  tree->SetBranchStatus("D_TRUE_DiMuon_Mass",1);
+  tree->SetBranchStatus("mu0_MuonNShared",1);
+  tree->SetBranchStatus("mu1_MuonNShared",1);
+  tree->SetBranchStatus("deltaM",1);
+  tree->SetBranchStatus("Dst_BKGCAT",1);
+  tree->SetBranchStatus("totCandidates",1);
+  tree->SetBranchStatus("isSelectedMultipleCandidate",1);
+  tree->SetBranchStatus("isMatchedCandidate",1);
+
+
+  RooRealVar Dst_DTF_D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1780., 1940.,"MeV");
+
+
+  TFile* fOut = new TFile("temp.root","RECREATE");
+  TTree* cutTree = tree->CopyTree(cut);
+  RooDataSet* data = new RooDataSet("data", "data", cutTree, RooArgSet(Dst_DTF_D0_M));
+  TCanvas* c1= new TCanvas("test");
+
+  RooRealVar lambda("lambda_","lambda",0,-1,1);
+
+
+  RooWorkspace* w = new RooWorkspace(namePlot,kTRUE) ;
+  w->import(Dst_DTF_D0_M);
+  w->factory("Gaussian::gauss1(Dst_DTF_D0_M,mean[1870,1760,1980],width[15,7,30])");
+  w->factory("Gaussian::gauss2(Dst_DTF_D0_M,mean,width2[3,2,50])");
+  w->factory("SUM::SigPDF(f[0.5,0,1]*gauss1,gauss2)") ;
+
+  w->factory("Exponential::expBkg(Dst_DTF_D0_M,p[0,0,0])");
+  w->factory("SUM::sum(nSig[10000,0,100000]*SigPDF,nbkg[5000,0,200000]*expBkg)") ;
+
+
+  // --- Perform extended ML fit of composite PDF to data ---                                                                                                                                 
+  RooFitResult *result = w->pdf("sum")->fitTo(*data) ;
+  //result->Print();                                                                                                                                                                          
+
+  // --- Plot toy data and composite PDF overlaid ---                                                                                                                                         
+  RooPlot* mesframe = w->var("Dst_DTF_D0_M")->frame() ;
+  data->plotOn(mesframe) ;
+  w->pdf("sum")->plotOn(mesframe) ;
+  w->pdf("sum")->plotOn(mesframe,Components(*w->pdf("SigPDF")),LineStyle(kDashed),LineColor(kGreen+3)) ;
+  w->pdf("sum")->plotOn(mesframe,Components(*w->pdf("expBkg")),LineStyle(kDashed),LineColor(kViolet)) ;
+  //RooArgSet set (nSig,nbkg);
+  w->pdf("sum")->paramOn(mesframe,Parameters(RooArgSet(*w->var("nSig"),*w->var("nbkg"))),Layout(.6,.93,.90));
+
+  mesframe->Draw()  ;
+  // c1->Print("../img/EfficiencyStudies/TriggerEffTagAndProbe/calibrationFits/"+namePlot+".eps");
+  TString path = "../img/EfficiencyStudies/strippingEfficiency/withFit/";
+  c1->Print(path+namePlot+".eps");
+
+  fOut->Close();
+  std::pair<double,double> signalYield =std::make_pair(w->var("nSig")->getVal(),w->var("nSig")->getError());
+
+  delete fOut;
+  delete result;
+  delete tree;
+  delete c1;
+  w->Delete();
+
+  return signalYield;
+
+} 
+
+
 
 std::pair<double,double> getMCYield(TString fIn,TString nameTree, TString cut_sel) {
 
@@ -8162,6 +8238,7 @@ std::pair<double,double> getMCYield(TString fIn,TString nameTree, TString cut_se
 void drawRecoAndStrippingEfficiencyWithFit(bool useFit=true,TString additionalCut=""){
 
   //if useFit is set to 0, also efficiency with just counting is possible where a BKGCAT cut can be specified with additionalCut
+  dcastyle();
 
   TString cutSel,cutNorm;
   std::pair<double,double> nNorm;
@@ -8194,7 +8271,7 @@ void drawRecoAndStrippingEfficiencyWithFit(bool useFit=true,TString additionalCu
 
     nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/MCTruthTuple_DstD2Kpimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]));
 
-    if(useFit) nSel=fitMC(data_file,"DecayTree",cutSel,"Kpimumu_"+TString::Format("D_TRUE_DiMuon_Mass_%.0f_D_TRUE_DiMuon_Mass_%.0f",rangesKpi_low[j],rangesKpi_high[j]));
+    if(useFit) nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_Kpimumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangesKpi_low[j],rangesKpi_high[j]));
     else nSel=getMCYield(data_file,"DecayTree",cutSel);
 
     Eff=nSel.first/nNorm.first;
@@ -8213,7 +8290,7 @@ void drawRecoAndStrippingEfficiencyWithFit(bool useFit=true,TString additionalCu
     cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]);
 
     nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MCTruthTuple_DstD2KKmumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]));
-    if(useFit)nSel=fitMC(data_file,"DecayTree",cutSel,"KKmumu_"+TString::Format("D_TRUE_DiMuon_Mass_%.0f_D_TRUE_DiMuon_Mass_%.0f",rangesKK_low[j],rangesKK_high[j]));
+    if(useFit)nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_KKmumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangesKK_low[j],rangesKK_high[j]));
     else nSel=getMCYield(data_file,"DecayTree",cutSel);
 
     Eff=nSel.first/nNorm.first;
@@ -8238,7 +8315,114 @@ void drawRecoAndStrippingEfficiencyWithFit(bool useFit=true,TString additionalCu
     cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]);
     
     nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MCTruthTuple_DstD2pipimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]));
-    if(useFit) nSel=fitMC(data_file,"DecayTree",cutSel,"pipimumu_"+TString::Format("D_TRUE_DiMuon_Mass_%.0f_D_TRUE_DiMuon_Mass_%.0f",rangespipi_low[j],rangespipi_high[j]));
+    if(useFit) nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_pipimumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangespipi_low[j],rangespipi_high[j]));
+    else nSel=getMCYield(data_file,"DecayTree",cutSel);
+
+    Eff=nSel.first/nNorm.first;
+    dEff=1/nNorm.first* TMath::Sqrt(nSel.first* (1- (nSel.first/nNorm.first) ) );                                                                                                           
+
+    //dEff= TMath::Sqrt((nSel.second/nNorm.first)*(nSel.second/nNorm.first) + (nSel.first*nNorm.second/(nNorm.first*nNorm.first))*(nSel.first*nNorm.second/(nNorm.first*nNorm.first)) );
+    strippingEff_pipi->SetBinContent(j+1,Eff);
+    strippingEff_pipi->SetBinError(j+1,dEff);
+  
+    strippingRelativeEff_pipi->SetBinContent(j+1,Eff/strippingEff_Kpi->GetBinContent(1));
+    strippingRelativeEff_pipi->SetBinError(j+1,TMath::Sqrt( TMath::Power( (dEff/strippingEff_Kpi->GetBinContent(1)),2) +
+							    TMath::Power( (Eff*strippingEff_Kpi->GetBinError(1))/(strippingEff_Kpi->GetBinContent(1)*strippingEff_Kpi->GetBinContent(1)),2) ));          
+  }
+  fOut->cd();
+ 
+  strippingEff_Kpi->Write();
+  strippingEff_KK->Write();
+  strippingEff_pipi->Write();
+  strippingRelativeEff_pipi->Write();
+  strippingRelativeEff_pipi->Write();
+  fOut->Write();
+
+
+  }
+
+void drawRecoAndStrippingEfficiencyWithFit_alternativeFitModel(bool useFit=true,TString additionalCut=""){ //for systematic studies
+
+  //if useFit is set to 0, also efficiency with just counting is possible where a BKGCAT cut can be specified with additionalCut
+  dcastyle();
+
+
+  TString cutSel,cutNorm;
+  std::pair<double,double> nNorm;
+  std::pair<double,double> nSel;
+  double Eff,dEff;
+  TString data_file;
+  TString qualityCut = "mu0_MuonNShared==0&&mu1_MuonNShared==0&&deltaM>144.5&&deltaM<146.5";
+  if(additionalCut!="") qualityCut+="&&"+additionalCut;
+
+  TString nameTarget="../img/EfficiencyStudies/strippingEfficiency/RecoAndStrippingEfficiency";
+  if(useFit) nameTarget+="_fitted";
+  if(additionalCut!="") nameTarget+="_"+additionalCut;
+
+
+  TFile* fOut= new TFile(nameTarget+"_alternativeFitModel.root","RECREATE");
+
+  TH1D * strippingEff_KK = new TH1D("strippingEff_KK","strippingEff_KK",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D * strippingEff_pipi = new TH1D("strippingEff_pipi","strippingEff_pipi",sizeof(binspipi)/sizeof(double)-1,binspipi);
+  TH1D * strippingEff_Kpi = new TH1D("strippingEff_Kpi","strippingEff_Kpi",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
+
+  TH1D * strippingRelativeEff_KK = new TH1D("strippingRelativeEff_KK","strippingRelativeEff_KK",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D * strippingRelativeEff_pipi = new TH1D("strippingRelativeEff_pipi","strippingRelativeEff_pipi",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+
+  for(int j=0; j<rangesKpi_low.size();++j){
+
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/MC12_DstD2Kpimumu_matched_andMultCand.root";
+    // cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]);
+    cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]);
+
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/MCTruthTuple_DstD2Kpimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]));
+
+    if(useFit) nSel=fitMC_alternativeModel(data_file,"DecayTree",cutSel,"fitMC_alternativeModel_Kpimumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangesKpi_low[j],rangesKpi_high[j]));
+    else nSel=getMCYield(data_file,"DecayTree",cutSel);
+
+    Eff=nSel.first/nNorm.first;
+    dEff=1/nNorm.first* TMath::Sqrt(nSel.first* (1- (nSel.first/nNorm.first) ) );                                                                                                           
+
+    //dEff= TMath::Sqrt((nSel.second/nNorm.first)*(nSel.second/nNorm.first) + (nSel.first*nNorm.second/(nNorm.first*nNorm.first))*(nSel.first*nNorm.second/(nNorm.first*nNorm.first)) );
+    strippingEff_Kpi->SetBinContent(j+1,Eff);
+    strippingEff_Kpi->SetBinError(j+1,dEff);
+            
+  }
+
+  for(int j=0; j<rangesKK_low.size();++j){
+
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MC12_DstD2KKmumu_matched_andMultCand.root";
+    //cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]);
+    cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]);
+
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MCTruthTuple_DstD2KKmumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]));
+    if(useFit)nSel=fitMC_alternativeModel(data_file,"DecayTree",cutSel,"fitMC_alternativeModel_KKmumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangesKK_low[j],rangesKK_high[j]));
+    else nSel=getMCYield(data_file,"DecayTree",cutSel);
+
+    Eff=nSel.first/nNorm.first;
+    dEff=1/nNorm.first* TMath::Sqrt(nSel.first* (1- (nSel.first/nNorm.first) ) );                                                                                                           
+    cout<<"result "<<j<<"  "<<nNorm.first<<"  "<<nSel.first<<"  "<<Eff<<"  "<<dEff<<endl;
+
+    //dEff= TMath::Sqrt((nSel.second/nNorm.first)*(nSel.second/nNorm.first) + (nSel.first*nNorm.second/(nNorm.first*nNorm.first))*(nSel.first*nNorm.second/(nNorm.first*nNorm.first)) );
+    strippingEff_KK->SetBinContent(j+1,Eff);
+    strippingEff_KK->SetBinError(j+1,dEff);
+
+    strippingRelativeEff_KK->SetBinContent(j+1,Eff/strippingEff_Kpi->GetBinContent(1));
+    strippingRelativeEff_KK->SetBinError(j+1,TMath::Sqrt( TMath::Power( (dEff/strippingEff_Kpi->GetBinContent(1)),2) +
+							    TMath::Power( (Eff*strippingEff_Kpi->GetBinError(1))/(strippingEff_Kpi->GetBinContent(1)*strippingEff_Kpi->GetBinContent(1)),2) ));  
+  
+            
+  }
+
+  for(int j=0; j<rangespipi_low.size();++j){
+
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu_matched_andMultCand.root";
+    //cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]);
+    cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]);
+    
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MCTruthTuple_DstD2pipimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]));
+    if(useFit) nSel=fitMC_alternativeModel(data_file,"DecayTree",cutSel,"fitMC_alternativeModel_pipimumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangespipi_low[j],rangespipi_high[j]));
     else nSel=getMCYield(data_file,"DecayTree",cutSel);
 
     Eff=nSel.first/nNorm.first;
@@ -8266,6 +8450,7 @@ void drawRecoAndStrippingEfficiencyWithFit(bool useFit=true,TString additionalCu
 
 
 
+
 void compareDifferentRecoAndStrippingEfficiencies(){
 
   TString pathToFiles = "/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/strippingEfficiency/";
@@ -8277,6 +8462,7 @@ void compareDifferentRecoAndStrippingEfficiencies(){
   TFile* fitted_andMatched = new TFile(pathToFiles+"RecoAndStrippingEfficiency_fitted_isMatchedCandidate.root","OPEN");
   TFile* fitted_matchedAndSelectedMultCand = new TFile(pathToFiles+"RecoAndStrippingEfficiency_fitted_isMatchedCandidate&&isSelectedMultipleCandidate.root","OPEN");
   TFile* fitted_withGhosts = new TFile(pathToFiles+"RecoAndStrippingEfficiency_fitted_(Dst_BKGCAT<11||Dst_BKGCAT==60).root","OPEN");
+  //TFile* fitted_withGhosts = new TFile(pathToFiles+"RecoAndStrippingEfficiency_fitted_withGhosts.root","OPEN");
 
 
   TH1D * fitted_KK_withGhosts= (TH1D*)fitted_withGhosts->Get("strippingRelativeEff_KK");
@@ -8854,7 +9040,7 @@ std::pair<double,double> fitDsPhiPi(TString file,TString treeName, TString cut, 
 
   RooWorkspace* w = new RooWorkspace(namePlot,kTRUE) ;
   w->import(D_M);
-  w->factory("Gaussian::gauss1(D_M,mean[1970,1960,1980],width[15,7,20])");
+  w->factory("Gaussian::gauss1(D_M,mean[1970,1860,1980],width[15,7,20])");
   w->factory("Gaussian::gauss2(D_M,mean,width2[3,2,20])");
   w->factory("SUM::SigPDF(f[0.5,0,1]*gauss1,gauss2)") ;
 
@@ -10126,7 +10312,7 @@ void MC_HltTrigger_efficiency(double ghostProbCut,double hadronPID,double muonPI
 void drawTotalEfficiency(){
 
   TFile* fGenLevel = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/GenLevelCutEfficiency/generatorLevelCutEfficiency.root","OPEN");
-  TFile* fStripping= new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/strippingEfficiency/RecoAndStrippingEfficiency_Dst_BKGCAT<11.root","OPEN");
+  TFile* fStripping= new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/strippingEfficiency/RecoAndStrippingEfficiency_fitted_(Dst_BKGCAT<11||Dst_BKGCAT==60).root","OPEN");
   //TFile* fPID = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/totalPIDEfficiency_default.root","OPEN");
   TFile *fMuonPID = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/finalMuonPIDEfficiency_default.root","READ");
   TFile *fHadronPID = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/finalHadronPIDEfficiency_default.root","READ");
@@ -10136,6 +10322,15 @@ void drawTotalEfficiency(){
   TFile* fHLT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MCBDT_and_Hlt_EfficienciesnoGhosts.root","OPEN");
   TFile* fBDT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MCBDT_and_Hlt_EfficienciesnoGhosts.root","OPEN");
 
+
+  double sysL0 = 0.013;
+  double sysBDT = 0.014;
+  double sysMonPID=0.006 ;
+  double sysHadPID =0.005 ;
+  double sysReco = 0.009;
+    
+  TString bins[5]={"<525","525-565","565-950","950-1100",">1100"};
+  
 
   dcastyle();
   
@@ -10168,6 +10363,9 @@ void drawTotalEfficiency(){
  
   TH1* totalRelEff_KKmumu = new TH1D("totalRelEff_KKmumu","rel PID Eff KKmumu in bins of dimuon mass",sizeof(binsKK)/sizeof(double)-1,binsKK);
   TH1* totalRelEff_pipimumu = new TH1D("totalRelEff_pipimumu","rel PID Eff pipimumu in bins of dimuon mass",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+  TH1* totalRelEff_KKmumu_onlyStatError = new TH1D("totalRelEff_KKmumu_onlyStatError","rel PID Eff KKmumu in bins of dimuon mass",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1* totalRelEff_pipimumu_onlyStatError = new TH1D("totalRelEff_pipimumu_onlyStatError","rel PID Eff pipimumu in bins of dimuon mass",sizeof(binspipi)/sizeof(double)-1,binspipi);
 
 
   TCanvas* cPID = new TCanvas("cMuonPID","cMuonID");
@@ -10248,68 +10446,72 @@ void drawTotalEfficiency(){
     //totalEff *= relEffBDTKKmumu->GetBinContent(i+1);
     //totalEff *= relEffTriggerKKmumu->GetBinContent(i+1);
     totalEff *= relEffHltAndBDTKKmumu->GetBinContent(i+1);
-    myfile<<"bin "<<i<<" relative eff  "<<totalEff<<endl;
+    myfile<<bins[i]<<std::setprecision(3)<<" &  "<<totalEff;
 
     dTotalEff = TMath::Power(totalRelMuonPIDEff_KKmumu->GetBinError(i+1)/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(totalRelHadronPIDEff_KKmumu->GetBinError(i+1)/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(genLevelRelativeEff_KK->GetBinError(i+1)/genLevelRelativeEff_KK->GetBinContent(i+1),2);
-    dTotalEff += TMath::Power(strippingRelativeEff_KK->GetBinError(i+1)/genLevelRelativeEff_KK->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(strippingRelativeEff_KK->GetBinError(i+1)/strippingRelativeEff_KK->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(L0Trigger_RelativeEff_KKmumu->GetBinError(i+1)/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1),2);
     //dTotalEff += TMath::Power(relEffBDTKKmumu->GetBinError(i+1)/relEffBDTKKmumu->GetBinContent(i+1),2);
     //dTotalEff += TMath::Power(relEffTriggerKKmumu->GetBinError(i+1)/relEffTriggerKKmumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(relEffHltAndBDTKKmumu->GetBinError(i+1)/relEffHltAndBDTKKmumu->GetBinContent(i+1),2);
     
-    myfile<<"bin "<<i<<" relative statistical uncertainty "<<TMath::Sqrt(dTotalEff)<<endl;
+    myfile<<" & "<<TMath::Sqrt(dTotalEff)*100;
  
- 
-    //systematics
-    dTotalEff += TMath::Power(0.02/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1),2);
-    dTotalEff += TMath::Power(0.015/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
-    dTotalEff += TMath::Power(0.01/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
-    dTotalEff += TMath::Power(0.014/relEffBDTKKmumu->GetBinContent(i+1),2);
-    dTotalEff += TMath::Power(0.022/totalEff,2);
+    totalRelEff_KKmumu_onlyStatError->SetBinContent(i+1,totalEff);
+    totalRelEff_KKmumu_onlyStatError->SetBinError(i+1,TMath::Sqrt(dTotalEff)*totalEff);
 
-    dTotalEff_sys += TMath::Power(0.02/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1),2);
-    dTotalEff_sys += TMath::Power(0.015/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
-    dTotalEff_sys += TMath::Power(0.01/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
-    dTotalEff_sys += TMath::Power(0.014/relEffBDTKKmumu->GetBinContent(i+1),2);
-    dTotalEff_sys += TMath::Power(0.022/totalEff,2);
+    //systematics
+    dTotalEff += TMath::Power(sysL0/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysMonPID/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysHadPID/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysBDT/relEffBDTKKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysReco/strippingRelativeEff_KK->GetBinContent(i+1),2);
+
+    dTotalEff_sys += TMath::Power(sysL0/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysMonPID/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysHadPID/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysBDT/relEffBDTKKmumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysReco/strippingRelativeEff_KK->GetBinContent(i+1),2);
     
-    myfile<<"bin "<<i<<" relative systematic uncertainty "<<TMath::Sqrt(dTotalEff_sys)<<endl;
-    myfile<<"bin "<<i<<" relative total uncertainty "<<TMath::Sqrt(dTotalEff)<<endl;
+    myfile<<" & "<<TMath::Sqrt(dTotalEff_sys)*100;
+    myfile<<" & "<<TMath::Sqrt(dTotalEff)*100<<endl;
   
     dTotalEff = TMath::Sqrt(dTotalEff)*totalEff;
 
     totalRelEff_KKmumu->SetBinContent(i+1,totalEff); 
     totalRelEff_KKmumu->SetBinError(i+1,dTotalEff);
-    
+ 
     myfile<<"bin "<<i<<" muon PID "<<totalRelMuonPIDEff_KKmumu->GetBinContent(i+1)<<"+-"<<totalRelMuonPIDEff_KKmumu->GetBinError(i+1)
 	  <<" dR/R stat ="<<totalRelMuonPIDEff_KKmumu->GetBinError(i+1)/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1)
-          <<" dR/R sys ="<<0.015/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1)<<endl;
+          <<" dR/R sys ="<<sysMonPID/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" hadron PID "<<totalRelHadronPIDEff_KKmumu->GetBinContent(i+1)<<"+-"<<totalRelHadronPIDEff_KKmumu->GetBinError(i+1)
 	  <<" dR/R stat ="<<totalRelHadronPIDEff_KKmumu->GetBinError(i+1)/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1)
-	  <<" dR/R sys ="<<0.01/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1)<<endl;
+	  <<" dR/R sys ="<<sysHadPID/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" genlevel "<<genLevelRelativeEff_KK->GetBinContent(i+1)<<"+-"<<genLevelRelativeEff_KK->GetBinError(i+1)
 	  <<" dR/R ="<<genLevelRelativeEff_KK->GetBinError(i+1)/genLevelRelativeEff_KK->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" strip "<<strippingRelativeEff_KK->GetBinContent(i+1)<<"+-"<<strippingRelativeEff_KK->GetBinError(i+1)
-	  <<" dR/R ="<<strippingRelativeEff_KK->GetBinError(i+1)/strippingRelativeEff_KK->GetBinContent(i+1)<<endl;
+	  <<" dR/R ="<<strippingRelativeEff_KK->GetBinError(i+1)/strippingRelativeEff_KK->GetBinContent(i+1)
+	  <<" dR/R sys ="<<sysReco/strippingRelativeEff_KK->GetBinContent(i+1)<<endl;    
     myfile<<"bin "<<i<<" L0 "<<L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1)<<"+-"<<L0Trigger_RelativeEff_KKmumu->GetBinError(i+1)
 	  <<" dR/R stat="<<L0Trigger_RelativeEff_KKmumu->GetBinError(i+1)/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1)
-	  <<" dR/R sys ="<<0.02/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1)<<endl;
+	  <<" dR/R sys ="<<sysL0/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" BDT "<<relEffBDTKKmumu->GetBinContent(i+1)<<"+-"<<relEffBDTKKmumu->GetBinError(i+1)
 	  <<" dR/R stat="<<relEffBDTKKmumu->GetBinError(i+1)/relEffBDTKKmumu->GetBinContent(i+1)
-	  <<" dR/R sys="<<0.014/relEffBDTKKmumu->GetBinContent(i+1)<<endl;
+	  <<" dR/R sys="<<sysBDT/relEffBDTKKmumu->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" HLT "<<relEffTriggerKKmumu->GetBinContent(i+1)<<"+-"<<relEffTriggerKKmumu->GetBinError(i+1)
 	  <<" dR/R ="<<relEffTriggerKKmumu->GetBinError(i+1)/relEffTriggerKKmumu->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" total "<<totalRelEff_KKmumu->GetBinContent(i+1)<<"+-"<<totalRelEff_KKmumu->GetBinError(i+1)
-	  <<" dR/R ="<<totalRelEff_KKmumu->GetBinError(i+1)/totalRelEff_KKmumu->GetBinContent(i+1)
-    <<" dR/R add. sys = "<<0.022/totalRelEff_KKmumu->GetBinContent(i+1)<<endl;
+	  <<" dR/R ="<<totalRelEff_KKmumu->GetBinError(i+1)/totalRelEff_KKmumu->GetBinContent(i+1)<<std::endl;
+      //<<" dR/R add. sys = "<<0.022/totalRelEff_KKmumu->GetBinContent(i+1)<<endl;
 
    
   }
 
-  myfile<<"D->pipimumu"<<endl;
 
+
+  myfile<<"D->pipimumu"<<endl;
 
   for(int i=0; i<rangespipi_low.size();++i){
 
@@ -10325,36 +10527,38 @@ void drawTotalEfficiency(){
     //totalEff *= relEffBDTpipimumu->GetBinContent(i+1);
     //totalEff *= relEffTriggerpipimumu->GetBinContent(i+1);
     totalEff *= relEffHltAndBDTpipimumu->GetBinContent(i+1);
-    myfile<<"bin "<<i<<" relative eff  "<<totalEff<<endl;
+    myfile<<bins[i]<<std::setprecision(3)<<" &  "<<totalEff;
 
     dTotalEff = TMath::Power(totalRelMuonPIDEff_pipimumu->GetBinError(i+1)/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(totalRelHadronPIDEff_pipimumu->GetBinError(i+1)/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(genLevelRelativeEff_pipi->GetBinError(i+1)/genLevelRelativeEff_pipi->GetBinContent(i+1),2);
-    dTotalEff += TMath::Power(strippingRelativeEff_pipi->GetBinError(i+1)/genLevelRelativeEff_pipi->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(strippingRelativeEff_pipi->GetBinError(i+1)/strippingRelativeEff_pipi->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(L0Trigger_RelativeEff_pipimumu->GetBinError(i+1)/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1),2);
     //dTotalEff += TMath::Power(relEffBDTpipimumu->GetBinError(i+1)/relEffBDTpipimumu->GetBinContent(i+1),2);
     //dTotalEff += TMath::Power(relEffTriggerpipimumu->GetBinError(i+1)/relEffTriggerpipimumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(relEffHltAndBDTpipimumu->GetBinError(i+1)/relEffHltAndBDTpipimumu->GetBinContent(i+1),2);
     
-    myfile<<"bin "<<i<<" relative statistical uncertainty "<<TMath::Sqrt(dTotalEff)<<endl;
+    myfile<<" & "<<TMath::Sqrt(dTotalEff)*100;
  
- 
-    //systematics
-    dTotalEff += TMath::Power(0.02/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1),2);
-    dTotalEff += TMath::Power(0.015/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
-    dTotalEff += TMath::Power(0.01/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
-    dTotalEff += TMath::Power(0.014/relEffBDTpipimumu->GetBinContent(i+1),2);
-    dTotalEff += TMath::Power(0.022/totalEff,2);
+    totalRelEff_pipimumu_onlyStatError->SetBinContent(i+1,totalEff);
+    totalRelEff_pipimumu_onlyStatError->SetBinError(i+1,TMath::Sqrt(dTotalEff)*totalEff);
 
-    dTotalEff_sys += TMath::Power(0.02/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1),2);
-    dTotalEff_sys += TMath::Power(0.015/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
-    dTotalEff_sys += TMath::Power(0.01/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
-    dTotalEff_sys += TMath::Power(0.014/relEffBDTpipimumu->GetBinContent(i+1),2);
-    dTotalEff_sys += TMath::Power(0.022/totalEff,2);
-    
-    myfile<<"bin "<<i<<" relative systematic uncertainty "<<TMath::Sqrt(dTotalEff_sys)<<endl;
-    myfile<<"bin "<<i<<" relative total uncertainty "<<TMath::Sqrt(dTotalEff)<<endl;
-  
+    //systematics
+    dTotalEff += TMath::Power(sysL0/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysMonPID/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysHadPID/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysBDT/relEffBDTpipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysReco/strippingRelativeEff_pipi->GetBinContent(i+1),2);
+
+    dTotalEff_sys += TMath::Power(sysL0/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysMonPID/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysHadPID/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysBDT/relEffBDTpipimumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysReco/strippingRelativeEff_pipi->GetBinContent(i+1),2);
+
+    myfile<<" & "<<TMath::Sqrt(dTotalEff_sys)*100;
+    myfile<<" & "<<TMath::Sqrt(dTotalEff)*100<<endl;
+
     dTotalEff = TMath::Sqrt(dTotalEff)*totalEff;
 
     totalRelEff_pipimumu->SetBinContent(i+1,totalEff); 
@@ -10362,26 +10566,28 @@ void drawTotalEfficiency(){
     
     myfile<<"bin "<<i<<" muon PID "<<totalRelMuonPIDEff_pipimumu->GetBinContent(i+1)<<"+-"<<totalRelMuonPIDEff_pipimumu->GetBinError(i+1)
 	  <<" dR/R stat ="<<totalRelMuonPIDEff_pipimumu->GetBinError(i+1)/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1)
-          <<" dR/R sys ="<<0.015/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1)<<endl;
+          <<" dR/R sys ="<<sysMonPID/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" hadron PID "<<totalRelHadronPIDEff_pipimumu->GetBinContent(i+1)<<"+-"<<totalRelHadronPIDEff_pipimumu->GetBinError(i+1)
 	  <<" dR/R stat ="<<totalRelHadronPIDEff_pipimumu->GetBinError(i+1)/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1)
-	  <<" dR/R sys ="<<0.01/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1)<<endl;
+	  <<" dR/R sys ="<<sysHadPID/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" genlevel "<<genLevelRelativeEff_pipi->GetBinContent(i+1)<<"+-"<<genLevelRelativeEff_pipi->GetBinError(i+1)
 	  <<" dR/R ="<<genLevelRelativeEff_pipi->GetBinError(i+1)/genLevelRelativeEff_pipi->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" strip "<<strippingRelativeEff_pipi->GetBinContent(i+1)<<"+-"<<strippingRelativeEff_pipi->GetBinError(i+1)
-	  <<" dR/R ="<<strippingRelativeEff_pipi->GetBinError(i+1)/strippingRelativeEff_pipi->GetBinContent(i+1)<<endl;
+	  <<" dR/R ="<<strippingRelativeEff_pipi->GetBinError(i+1)/strippingRelativeEff_pipi->GetBinContent(i+1)
+	  <<" dR/R sys ="<<sysReco/strippingRelativeEff_pipi->GetBinContent(i+1)<<endl;    
     myfile<<"bin "<<i<<" L0 "<<L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1)<<"+-"<<L0Trigger_RelativeEff_pipimumu->GetBinError(i+1)
 	  <<" dR/R stat="<<L0Trigger_RelativeEff_pipimumu->GetBinError(i+1)/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1)
-	  <<" dR/R sys ="<<0.02/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1)<<endl;
+	  <<" dR/R sys ="<<sysL0/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" BDT "<<relEffBDTpipimumu->GetBinContent(i+1)<<"+-"<<relEffBDTpipimumu->GetBinError(i+1)
 	  <<" dR/R stat="<<relEffBDTpipimumu->GetBinError(i+1)/relEffBDTpipimumu->GetBinContent(i+1)
-	  <<" dR/R sys="<<0.014/relEffBDTpipimumu->GetBinContent(i+1)<<endl;
+	  <<" dR/R sys="<<sysBDT/relEffBDTpipimumu->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" HLT "<<relEffTriggerpipimumu->GetBinContent(i+1)<<"+-"<<relEffTriggerpipimumu->GetBinError(i+1)
 	  <<" dR/R ="<<relEffTriggerpipimumu->GetBinError(i+1)/relEffTriggerpipimumu->GetBinContent(i+1)<<endl;
     myfile<<"bin "<<i<<" total "<<totalRelEff_pipimumu->GetBinContent(i+1)<<"+-"<<totalRelEff_pipimumu->GetBinError(i+1)
-	  <<" dR/R ="<<totalRelEff_pipimumu->GetBinError(i+1)/totalRelEff_pipimumu->GetBinContent(i+1)
-    <<" dR/R add. sys = "<<0.022/totalRelEff_pipimumu->GetBinContent(i+1)<<endl;
-    
+	  <<" dR/R ="<<totalRelEff_pipimumu->GetBinError(i+1)/totalRelEff_pipimumu->GetBinContent(i+1)<<std::endl;
+      //<<" dR/R add. sys = "<<0.022/totalRelEff_pipimumu->GetBinContent(i+1)<<endl;
+
+   
   }
 
 
@@ -10402,6 +10608,10 @@ void drawTotalEfficiency(){
   fOut_final->cd();
   totalRelEff_KKmumu->Write();
   totalRelEff_pipimumu->Write();
+
+  totalRelEff_pipimumu_onlyStatError->Write();
+  totalRelEff_KKmumu_onlyStatError->Write();
+
   fOut_final->Write();
   fOut_final->Close();
  
