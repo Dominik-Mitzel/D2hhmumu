@@ -8,6 +8,13 @@ class D2hhmumuFitter_Applications {
   D2hhmumuFitter_Applications(TString m_kind, TString m_year);
   ~D2hhmumuFitter_Applications();
 
+  ///////////////////////////////////////////////////
+  //
+  // class to manage everything related to the fitter
+  //
+  ///////////////////////////////////////////////////
+
+
   TString year;
   TString kind;
   TString targetFolder;
@@ -34,21 +41,25 @@ class D2hhmumuFitter_Applications {
 
   void saveModelConfig(TString dataCut,TString misIDCut);
   void compare_1D_and_2D_fit(TString dataCut,TString nomalizationCut,TString misIDCut);
-  void compare_misID_shapes(TString dataCut);
-  void compare_misID_shapes_2D();
   void ExtractExpectedLimit();
   void runFull1DFits(TString dataCut,TString misIDCut);
   void runFullResonant1DFits(TString dataCut,TString misIDCut);
   void constrainCombBkgShapes(TString dataCut,TString misIDCut);
   void studyNormalizationFits(TString dataCut,TString misIDCut, bool doNSharedCut); 
-  void studyTriggerEfficiencyNormalizationMode();
-  void studyTISEfficiencyNormalizationModeBinned();
-  void plotRelativeEfficiencies(TString dataCut);
 
   void drawMisIDShapes(TString cut);
   void drawMCSignalShapes(TString cut);
+
+  //for systematics studies
   void studyResolutionScale(TString cut);
   void performAllToyStudies();
+  void studyCombBkgShape();    
+  void compare_misID_shapes(TString dataCut);
+  void draw_misID_shapes_singlePlot() ;
   
+  //obsolet
+  void studyTriggerEfficiencyNormalizationMode();
+  void studyTISEfficiencyNormalizationModeBinned();
+
 };
   

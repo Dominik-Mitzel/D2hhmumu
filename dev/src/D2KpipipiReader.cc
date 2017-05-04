@@ -312,7 +312,7 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
   fChain->SetBranchStatus("mu0_L0ElectronDecision_TIS",0);
 
   fChain->SetBranchStatus("mu0_L0HadronDecision_TOS",0);
-  fChain->SetBranchStatus("mu0_L0MuonDecision_TOS",0);
+  //fChain->SetBranchStatus("mu0_L0MuonDecision_TOS",0);
   fChain->SetBranchStatus("mu0_L0DiMuonDecision_TOS",0);
   fChain->SetBranchStatus("mu0_L0PhotonDecision_TOS",0);
   fChain->SetBranchStatus("mu0_L0ElectronDecision_TOS",0);
@@ -324,7 +324,7 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
   fChain->SetBranchStatus("mu1_L0ElectronDecision_TIS",0);
 
   fChain->SetBranchStatus("mu1_L0HadronDecision_TOS",0);
-  fChain->SetBranchStatus("mu1_L0MuonDecision_TOS",0);
+  //fChain->SetBranchStatus("mu1_L0MuonDecision_TOS",0);
   fChain->SetBranchStatus("mu1_L0DiMuonDecision_TOS",0);
   fChain->SetBranchStatus("mu1_L0PhotonDecision_TOS",0);
   fChain->SetBranchStatus("mu1_L0ElectronDecision_TOS",0);
@@ -336,7 +336,7 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
   fChain->SetBranchStatus("h1_L0ElectronDecision_TIS",0);
 
   fChain->SetBranchStatus("h0_L0HadronDecision_TOS",0);
-  fChain->SetBranchStatus("h0_L0MuonDecision_TOS",0);
+  //fChain->SetBranchStatus("h0_L0MuonDecision_TOS",0);
   fChain->SetBranchStatus("h0_L0DiMuonDecision_TOS",0);
   fChain->SetBranchStatus("h0_L0PhotonDecision_TOS",0);
   fChain->SetBranchStatus("h0_L0ElectronDecision_TOS",0);
@@ -349,13 +349,13 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
 
 
   fChain->SetBranchStatus("h0_L0HadronDecision_TOS",0);
-  fChain->SetBranchStatus("h0_L0MuonDecision_TOS",0);
+  //fChain->SetBranchStatus("h0_L0MuonDecision_TOS",0);
   fChain->SetBranchStatus("h0_L0DiMuonDecision_TOS",0);
   fChain->SetBranchStatus("h0_L0PhotonDecision_TOS",0);
   fChain->SetBranchStatus("h0_L0ElectronDecision_TOS",0);
 
-  fChain->SetBranchStatus("mu0_Hlt1TrackMuonDecision_Dec",0);
-  fChain->SetBranchStatus("mu1_Hlt1TrackMuonDecision_Dec",0);
+  //fChain->SetBranchStatus("mu0_Hlt1TrackMuonDecision_Dec",0);
+  //fChain->SetBranchStatus("mu1_Hlt1TrackMuonDecision_Dec",0);
 
   fChain->SetBranchStatus("mu0_L0MuonDecision_TIS",0);
   fChain->SetBranchStatus("mu1_L0MuonDecision_TIS",0);
@@ -364,12 +364,12 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
   fChain->SetBranchStatus("h1_L0MuonDecision_TIS",0);
   fChain->SetBranchStatus("h1_L0DiMuonDecision_TIS",0);
 
-  fChain->SetBranchStatus("mu0_L0MuonDecision_TOS",0);
-  fChain->SetBranchStatus("mu1_L0MuonDecision_TOS",0);
-  fChain->SetBranchStatus("mu0_L0DiMuonDecision_TOS",0);
-  fChain->SetBranchStatus("mu1_L0DiMuonDecision_TOS",0);
-  fChain->SetBranchStatus("h1_L0MuonDecision_TOS",0);
-  fChain->SetBranchStatus("h1_L0DiMuonDecision_TOS",0);
+  //fChain->SetBranchStatus("mu0_L0MuonDecision_TOS",0);
+  //fChain->SetBranchStatus("mu1_L0MuonDecision_TOS",0);
+  //fChain->SetBranchStatus("mu0_L0DiMuonDecision_TOS",0);
+  //fChain->SetBranchStatus("mu1_L0DiMuonDecision_TOS",0);
+  //fChain->SetBranchStatus("h1_L0MuonDecision_TOS",0);
+  //fChain->SetBranchStatus("h1_L0DiMuonDecision_TOS",0);
 
   TRandom3* generator = new TRandom3(runNumber); //Seed is RunNumber of first event                                                                                                       
 
@@ -422,7 +422,9 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
   double mup_MuonNShared;
   double mup_TRACK_GhostProb;
   double mup_TRACK_CHI2NDOF;
-
+  bool mup_L0MuonDecision_TOS;
+  bool mup_Hlt1TrackMuonDecision_TOS;
+  
   double hp_PT;
   double hp_PX;
   double hp_PY;
@@ -517,6 +519,10 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
     (*it)->Branch("mu0_MuonNShared",&mup_MuonNShared);
     (*it)->Branch("mu0_TRACK_GhostProb",&mup_TRACK_GhostProb);
     (*it)->Branch("mu0_TRACK_CHI2NDOF",&mup_TRACK_CHI2NDOF);
+    (*it)->Branch("mu0_L0MuonDecision_TOS",&mup_L0MuonDecision_TOS);
+    (*it)->Branch("mu0_Hlt1TrackMuonDecision_TOS",&mup_Hlt1TrackMuonDecision_TOS);
+
+
 
     (*it)->Branch("mu1_PT",&mu1_PT);
     (*it)->Branch("mu1_PX",&mu1_PX);
@@ -546,6 +552,8 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
     (*it)->Branch("mu1_MuonNShared",&mu1_MuonNShared);
     (*it)->Branch("mu1_TRACK_GhostProb",&mu1_TRACK_GhostProb);
     (*it)->Branch("mu1_TRACK_CHI2NDOF",&mu1_TRACK_CHI2NDOF);
+    (*it)->Branch("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+    (*it)->Branch("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
 
     (*it)->Branch("h0_PT",&h0_PT);
     (*it)->Branch("h0_PX",&h0_PX);
@@ -623,6 +631,12 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
 
     (*it)->Branch("D_DiMuon_Mass",&D_DiMuon_Mass);
 
+    (*it)->Branch("D_Hlt2CharmHadD02HHHHDst_K3piDecision_TOS",&D_Hlt2CharmHadD02HHHHDst_K3piDecision_TOS);
+    (*it)->Branch("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS);
+    (*it)->Branch("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+    
+    
+
   }
 
 
@@ -670,6 +684,9 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
 	mup_MuonNShared=mu0_MuonNShared;
 	mup_TRACK_GhostProb= mu0_TRACK_GhostProb;
 	mup_TRACK_CHI2NDOF=mu0_TRACK_CHI2NDOF;
+	mup_L0MuonDecision_TOS=mu0_L0MuonDecision_TOS;
+	mup_Hlt1TrackMuonDecision_TOS=mu0_Hlt1TrackMuonDecision_TOS;
+
 
 	hp_PT = h1_PT;
 	hp_PX= h1_PX;
@@ -739,6 +756,8 @@ void D2KpipipiReader::createRandomizedSubsample(TString name) {//randomize pion 
 	mup_MuonNShared=h1_MuonNShared;
 	mup_TRACK_GhostProb= h1_TRACK_GhostProb;
 	mup_TRACK_CHI2NDOF=h1_TRACK_CHI2NDOF;
+	mup_L0MuonDecision_TOS=h1_L0MuonDecision_TOS;
+	mup_Hlt1TrackMuonDecision_TOS=h1_Hlt1TrackMuonDecision_TOS;
 
 	hp_PT = mu0_PT;
 	hp_PX= mu0_PX;

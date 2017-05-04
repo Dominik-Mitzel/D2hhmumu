@@ -696,6 +696,7 @@ bool Dst_L0DiMuonDecision_Dec,Dst_L0MuonDecision_Dec,Dst_L0HadronDecision_Dec,Ds
   theTree->SetBranchAddress( "Slowpi_cosh", &user_Slowpi_cosh);
   theTree->SetBranchAddress( "D_ENDVERTEX_CHI2", & user_D_ENDVERTEX_CHI2);
   theTree->SetBranchAddress( "Dst_Coneptasy", & user_Dst_Coneptasy);
+  //theTree->SetBranchAddress( "Dst_ptasy_1.50", & user_Dst_Coneptasy);
   theTree->SetBranchAddress( "mu0_ProbNNghost", & user_mu0_ProbNNghost);
   theTree->SetBranchAddress( "mu1_ProbNNghost", & user_mu1_ProbNNghost);
   theTree->SetBranchAddress( "h0_ProbNNghost", & user_h0_ProbNNghost);
@@ -816,7 +817,10 @@ bool Dst_L0DiMuonDecision_Dec,Dst_L0MuonDecision_Dec,Dst_L0HadronDecision_Dec,Ds
    theTree->SetBranchAddress("h1_TRACK_Eta", &user_h1_TRACK_Eta);
    theTree->SetBranchAddress("h0_TRACK_Eta", &user_h0_TRACK_Eta);
    theTree->SetBranchAddress("Slowpi_TRACK_Eta", &user_Slowpi_TRACK_Eta);
-   
+   theTree->SetBranchAddress("mu0_MC_MOTHER_ID", &mu0_MC_MOTHER_ID );
+   theTree->SetBranchAddress("h0_MC_MOTHER_ID", &h0_MC_MOTHER_ID );
+   theTree->SetBranchAddress("h1_MC_MOTHER_ID", &h1_MC_MOTHER_ID );
+
 
   
 
@@ -1035,6 +1039,7 @@ bool Dst_L0DiMuonDecision_Dec,Dst_L0MuonDecision_Dec,Dst_L0HadronDecision_Dec,Ds
   Tree->Branch("mumu_PT", &mumu_PT);
   Tree->Branch("nCandidate",&nCandidate);
   Tree->Branch("totCandidates",&totCandidates);
+  Tree->Branch( "Slowpi_PT", &user_Slowpi_PT );
 
   Tree->Branch("D_Hlt1TrackAllL0Decision_TIS",&D_Hlt1TrackAllL0Decision_TIS);
   Tree->Branch("D_Hlt1L0AnyDecision_TIS,",&D_Hlt1L0AnyDecision_TIS);
@@ -1153,7 +1158,9 @@ bool Dst_L0DiMuonDecision_Dec,Dst_L0MuonDecision_Dec,Dst_L0HadronDecision_Dec,Ds
    Tree->Branch("h1_TRACK_Eta", &user_h1_TRACK_Eta);
    Tree->Branch("h0_TRACK_Eta", &user_h0_TRACK_Eta);
    Tree->Branch("Slowpi_TRACK_Eta", &user_Slowpi_TRACK_Eta);
-
+   Tree->Branch("mu0_MC_MOTHER_ID", &mu0_MC_MOTHER_ID );
+   Tree->Branch("h0_MC_MOTHER_ID", &h0_MC_MOTHER_ID );
+   Tree->Branch("h1_MC_MOTHER_ID", &h1_MC_MOTHER_ID );
   }
 
   TLorentzVector h0_hypK,h0_hypPi,h0_hypMu;
@@ -1672,6 +1679,7 @@ void Application_D2pipimumu(TString treeName, TString fileIn, TString fileOut, i
   theTree->SetBranchAddress( "Slowpi_cosh", &user_Slowpi_cosh);
   theTree->SetBranchAddress( "D_ENDVERTEX_CHI2", & user_D_ENDVERTEX_CHI2);
   theTree->SetBranchAddress( "Dst_Coneptasy", & user_Dst_Coneptasy);
+  //theTree->SetBranchAddress( "Dst_ptasy_1.50", & user_Dst_Coneptasy);
   theTree->SetBranchAddress( "mu0_ProbNNghost", & user_mu0_ProbNNghost);
   theTree->SetBranchAddress( "mu1_ProbNNghost", & user_mu1_ProbNNghost);
   theTree->SetBranchAddress( "h0_ProbNNghost", & user_h0_ProbNNghost);
@@ -1749,6 +1757,7 @@ void Application_D2pipimumu(TString treeName, TString fileIn, TString fileOut, i
    theTree->SetBranchAddress("h0_TRUEORIGINVERTEX_Z", &h0_TRUEORIGINVERTEX_Z);
    theTree->SetBranchAddress("h0_TRUEISSTABLE", &h0_TRUEISSTABLE);
    theTree->SetBranchAddress("h0_TRUETAU", &h0_TRUETAU);
+   theTree->SetBranchAddress("h0_MC_MOTHER_ID", &h0_MC_MOTHER_ID );
    theTree->SetBranchAddress("h1_TRUEID", &h1_TRUEID);
    theTree->SetBranchAddress("h1_TRUEP_E", &h1_TRUEP_E);
    theTree->SetBranchAddress("h1_TRUEP_X", &h1_TRUEP_X);
@@ -1759,6 +1768,7 @@ void Application_D2pipimumu(TString treeName, TString fileIn, TString fileOut, i
    theTree->SetBranchAddress("h1_TRUEORIGINVERTEX_Y", &h1_TRUEORIGINVERTEX_Y);
    theTree->SetBranchAddress("h1_TRUEORIGINVERTEX_Z", &h1_TRUEORIGINVERTEX_Z);
    theTree->SetBranchAddress("h1_TRUETAU", &h1_TRUETAU );
+   theTree->SetBranchAddress("h1_MC_MOTHER_ID", &h1_MC_MOTHER_ID );
    theTree->SetBranchAddress("mu0_TRUEID", &mu0_TRUEID);
    theTree->SetBranchAddress("mu0_TRUEP_E", &mu0_TRUEP_E);
    theTree->SetBranchAddress("mu0_TRUEP_X", &mu0_TRUEP_X);
@@ -1769,6 +1779,7 @@ void Application_D2pipimumu(TString treeName, TString fileIn, TString fileOut, i
    theTree->SetBranchAddress("mu0_TRUEORIGINVERTEX_Y", &mu0_TRUEORIGINVERTEX_Y);
    theTree->SetBranchAddress("mu0_TRUEORIGINVERTEX_Z", &mu0_TRUEORIGINVERTEX_Z);
    theTree->SetBranchAddress("mu0_TRUETAU", &mu0_TRUETAU);
+   theTree->SetBranchAddress("mu0_MC_MOTHER_ID", &mu0_MC_MOTHER_ID );
    theTree->SetBranchAddress("mu1_TRUEID", &mu1_TRUEID );
    theTree->SetBranchAddress("mu1_MC_MOTHER_ID", &mu1_MC_MOTHER_ID );
    theTree->SetBranchAddress("mu1_TRUEP_E", &mu1_TRUEP_E);
@@ -2047,6 +2058,7 @@ void Application_D2pipimumu(TString treeName, TString fileIn, TString fileOut, i
    Tree->Branch("h0_TRUEORIGINVERTEX_Z", &h0_TRUEORIGINVERTEX_Z);
    Tree->Branch("h0_TRUEISSTABLE", &h0_TRUEISSTABLE);
    Tree->Branch("h0_TRUETAU", &h0_TRUETAU);
+   Tree->Branch("h0_MC_MOTHER_ID", &h0_MC_MOTHER_ID );
    Tree->Branch("h1_TRUEID", &h1_TRUEID);
    Tree->Branch("h1_TRUEP_E", &h1_TRUEP_E);
    Tree->Branch("h1_TRUEP_X", &h1_TRUEP_X);
@@ -2057,6 +2069,7 @@ void Application_D2pipimumu(TString treeName, TString fileIn, TString fileOut, i
    Tree->Branch("h1_TRUEORIGINVERTEX_Y", &h1_TRUEORIGINVERTEX_Y);
    Tree->Branch("h1_TRUEORIGINVERTEX_Z", &h1_TRUEORIGINVERTEX_Z);
    Tree->Branch("h1_TRUETAU", &h1_TRUETAU);
+   Tree->Branch("h1_MC_MOTHER_ID", &h1_MC_MOTHER_ID );
    Tree->Branch("mu0_TRUEID", &mu0_TRUEID);
    Tree->Branch("mu0_TRUEP_E", &mu0_TRUEP_E);
    Tree->Branch("mu0_TRUEP_X", &mu0_TRUEP_X);
@@ -2067,6 +2080,7 @@ void Application_D2pipimumu(TString treeName, TString fileIn, TString fileOut, i
    Tree->Branch("mu0_TRUEORIGINVERTEX_Y", &mu0_TRUEORIGINVERTEX_Y);
    Tree->Branch("mu0_TRUEORIGINVERTEX_Z", &mu0_TRUEORIGINVERTEX_Z);
    Tree->Branch("mu0_TRUETAU", &mu0_TRUETAU);
+   Tree->Branch("mu0_MC_MOTHER_ID", &mu0_MC_MOTHER_ID );
    Tree->Branch("mu1_TRUEID", &mu1_TRUEID );
    Tree->Branch("mu1_MC_MOTHER_ID", &mu1_MC_MOTHER_ID );
    Tree->Branch("mu1_TRUEP_E", &mu1_TRUEP_E);
@@ -2237,8 +2251,10 @@ void D2KKmumuCrossapplication(){
   myChain1->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT_odd.root");
   myChain1->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT_even.root");
   myChain1->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT.root");
+  */
+
+  /*
   
-    
   //signal sideband                                                                                                                                                                          
   Application_D2KKmumu("sideband/DecayTree_odd","D2KKmumu_PreselectedSubsample.root","sideband_D2KKmumu_BDT_odd.root",1);
   Application_D2KKmumu("sideband/DecayTree_even","D2KKmumu_PreselectedSubsample.root","sideband_D2KKmumu_BDT_even.root",2);
@@ -2247,7 +2263,7 @@ void D2KKmumuCrossapplication(){
   myChain2->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2KKmumu_BDT_even.root");
   myChain2->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2KKmumu_BDT.root");
   
-  
+  */
   //signal MC                                                                                                                                                                                
   
   Application_D2KKmumu("DecayTree_odd","D2KKmumu_MCtrainingSample.root","MC_D2KKmumu_BDT_odd.root",1,true);
@@ -2258,7 +2274,7 @@ void D2KKmumuCrossapplication(){
   myChain3->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2KKmumu_BDT_even.root");
   myChain3->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2KKmumu_BDT.root");
  
-  */ 
+   
     
   
   /////////////////////////////
@@ -2267,7 +2283,8 @@ void D2KKmumuCrossapplication(){
   
   ////////////////////////////
   
-  /*
+  /*  
+
   //normalization mode data
   Application_D2KKmumu("data/DecayTree_odd","D2Kpimumu_PreselectedSubsample.root","D2Kpimumu_D2KKmumuBDT_odd.root",1,false,true);
   Application_D2KKmumu("data/DecayTree_even","D2Kpimumu_PreselectedSubsample.root","D2Kpimumu_D2KKmumuBDT_even.root",2,false,true);
@@ -2276,9 +2293,9 @@ void D2KKmumuCrossapplication(){
   myChain4->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT_odd.root");
   myChain4->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT_even.root");
   myChain4->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT.root");
-  
-
   */
+
+  
     
   /*
   //normalization mode sideband                                                                                                                                                                           
@@ -2289,9 +2306,9 @@ void D2KKmumuCrossapplication(){
   myChain7->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT_even.root");
   myChain7->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT.root");
 
+  */
   
-  
-  //nomrmalization MC                                                                                                                                          
+  //nommalization MC                                                                                                                                          
                                                                                                                                                           
   Application_D2KKmumu("DecayTree_odd","D2Kpimumu_MCtrainingSample.root","MC_D2Kpimumu_D2KKmumuBDT_odd.root",1,true,true);
   Application_D2KKmumu("DecayTree_even","D2Kpimumu_MCtrainingSample.root","MC_D2Kpimumu_D2KKmumuBDT_even.root",2,true,true);
@@ -2300,7 +2317,7 @@ void D2KKmumuCrossapplication(){
   myChain10->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2KKmumuBDT_odd.root");
   myChain10->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2KKmumuBDT_even.root");
   myChain10->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2KKmumuBDT.root");
-  */ 
+   
 
 
   
@@ -2310,27 +2327,31 @@ void D2KKmumuCrossapplication(){
 
   //////////////////////////// 
   
-    
+  /*
+      
   //mis ID bkg Data                                                                                                                                                            
   Application_D2KKmumu("data/DecayTree_odd","D2Kpipipi_PreselectedRandomizedSubsample.root","D2Kpipipi_D2KKmumuBDT_odd.root",1,false,true,false); 
   Application_D2KKmumu("data/DecayTree_even","D2Kpipipi_PreselectedRandomizedSubsample.root","D2Kpipipi_D2KKmumuBDT_even.root",2,false,true,false);                                 
   TChain* myChain8= new TChain("BDT_Tree");                                                                                                              
   myChain8->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2KKmumuBDT_odd.root");        
   myChain8->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2KKmumuBDT_even.root");                                                    
-  myChain8->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2KKmumuBDT_new.root");    
-  
-  
+  myChain8->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2KKmumuBDT_Randomized.root");    
+ 
+  */
+
+  /*
   //Application_D2KKmumu("data/DecayTree_odd","D2KKpipi_PreselectedSubsample.root","D2KKpipi_D2KKmumuBDT_odd.root",1,false,false,false);
   //Application_D2KKmumu("data/DecayTree_even","D2KKpipi_PreselectedSubsample.root","D2KKpipi_D2KKmumuBDT_even.root",2,false,false,false);
   //TChain* myChain11= new TChain("BDT_Tree");
   //myChain11->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKpipi_D2KKmumuBDT_odd.root");
   //myChain11->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKpipi_D2KKmumuBDT_even.root");
-  //myChain11->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKpipi_D2KKmumuBDT_new.root");
+  //myChain11->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKpipi_D2KKmumuBDT.root");
     
+  */ 
+ 
   
-  /*
   //mis ID bkg MC 
-
+  /*
   Application_D2KKmumu("DecayTree_odd","D2KKpipi_MCtrainingSample.root","MC_D2KKpipi_D2KKmumuBDT_odd.root",1,true,false,false);
   Application_D2KKmumu("DecayTree_even","D2KKpipi_MCtrainingSample.root","MC_D2KKpipi_D2KKmumuBDT_even.root",2,true,false,false);
   TChain* myChain5= new TChain("BDT_Tree");
@@ -2344,8 +2365,8 @@ void D2KKmumuCrossapplication(){
   myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpipipi_D2KKmumuBDT_odd.root");
   myChain6->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpipipi_D2KKmumuBDT_even.root");
   myChain6->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpipipi_D2KKmumuBDT.root");  
+  
   */
- 
   std::cout << "==> TMVAClassificationApplication is done!"  << std::endl;
   
   }
@@ -2364,7 +2385,7 @@ void D2pipimumuCrossapplication(){
 
   //////////////////////////// 
   
-  /*  
+  /* 
     
   Application_D2pipimumu("data/DecayTree_odd","D2pipimumu_PreselectedSubsample.root","D2pipimumu_BDT_odd.root",1);
   Application_D2pipimumu("data/DecayTree_even","D2pipimumu_PreselectedSubsample.root","D2pipimumu_BDT_even.root",2);
@@ -2373,20 +2394,7 @@ void D2pipimumuCrossapplication(){
   myChain1->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT_odd.root");
   myChain1->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT_even.root");
   myChain1->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT.root");
-  
   */
-  /*
-  ///NO CUTS                                                                                                                                                                                  
-  Application_D2pipimumu("data/DecayTree_odd","D2pipimumu_PreselectedSubsample_noCuts.root","D2pipimumu_D2pipimumuBDT_noCuts_odd.root",1,false,true);
-  Application_D2pipimumu("data/DecayTree_even","D2pipimumu_PreselectedSubsample_noCuts.root","D2pipimumu_D2pipimumuBDT_noCuts_even.root",2,false,true);
-
-  TChain* myChain5= new TChain("BDT_Tree");
-  myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2pipimumu_D2pipimumuBDT_noCuts_odd.root");
-  myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2pipimumu_D2pipimumuBDT_noCuts_even.root");
-  myChain5->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2pipimumu_D2pipimumuBDT_noCuts.root");
-  */
-
-
   /*
   //signal sideband                                                                                                                                                                          
   Application_D2pipimumu("sideband/DecayTree_odd","D2pipimumu_PreselectedSubsample.root","sideband_D2pipimumu_BDT_odd.root",1);
@@ -2395,10 +2403,10 @@ void D2pipimumuCrossapplication(){
   myChain2->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2pipimumu_BDT_odd.root");
   myChain2->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2pipimumu_BDT_even.root");
   myChain2->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2pipimumu_BDT.root");
-  
   */
+  
   //signal MC                                                                                                                                                                         
-  /*
+  /*  
   Application_D2pipimumu("DecayTree_odd","D2pipimumu_MCtrainingSample.root","MC_D2pipimumu_BDT_odd.root",1,true);
   Application_D2pipimumu("DecayTree_even","D2pipimumu_MCtrainingSample.root","MC_D2pipimumu_BDT_even.root",2,true);
 
@@ -2412,9 +2420,9 @@ void D2pipimumuCrossapplication(){
   // Normalization Mode      //
   ////////////////////////////
   
-  /*
-  //normalization mode data
   
+  //normalization mode data
+  /*
   Application_D2pipimumu("data/DecayTree_odd","D2Kpimumu_PreselectedSubsample.root","D2Kpimumu_D2pipimumuBDT_odd.root",1,false,true);
   Application_D2pipimumu("data/DecayTree_even","D2Kpimumu_PreselectedSubsample.root","D2Kpimumu_D2pipimumuBDT_even.root",2,false,true);
 
@@ -2423,20 +2431,9 @@ void D2pipimumuCrossapplication(){
   myChain4->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT_even.root");
   myChain4->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT.root");
   */
-  
-  
-  /*
-  ///NO CUTS                                                                                                                                                                                  
-  Application_D2pipimumu("data/DecayTree_odd","D2Kpimumu_PreselectedSubsample_noCuts.root","D2Kpimumu_D2pipimumuBDT_noCuts_odd.root",1,false,true);
-  Application_D2pipimumu("data/DecayTree_even","D2Kpimumu_PreselectedSubsample_noCuts.root","D2Kpimumu_D2pipimumuBDT_noCuts_even.root",2,false,true);
 
-  TChain* myChain4= new TChain("BDT_Tree");
-  myChain4->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2pipimumuBDT_noCuts_odd.root");
-  myChain4->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2pipimumuBDT_noCuts_even.root");
-  myChain4->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/D2Kpimumu_D2pipimumuBDT_noCuts.root");
-  */
-  /* 
-  //normalization mode sideband                                                                                                                                                                           
+  //normalization mode sideband                                                                                                                                                         
+  /*                  
   Application_D2KKmumu("sideband/DecayTree_odd","D2Kpimumu_PreselectedSubsample.root","sideband_D2Kpimumu_D2KKmumuBDT_odd.root",1);
   Application_D2KKmumu("sideband/DecayTree_even","D2Kpimumu_PreselectedSubsample.root","sideband_D2Kpimumu_D2KKmumuBDT_even.root",2);
   TChain* myChain7= new TChain("BDT_Tree");
@@ -2444,9 +2441,11 @@ void D2pipimumuCrossapplication(){
   myChain7->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT_even.root");
   myChain7->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/sideband_D2Kpimumu_D2KKmumuBDT.root");
     
-
+  */
+  
   //nomrmalization MC                                                                                                                                          
-                                                                                                                                                          
+  /*
+                                                                                                                                                        
   Application_D2pipimumu("DecayTree_odd","D2Kpimumu_MCtrainingSample.root","MC_D2Kpimumu_D2pipimumuBDT_odd.root",1,true,true);
   Application_D2pipimumu("DecayTree_even","D2Kpimumu_MCtrainingSample.root","MC_D2Kpimumu_D2pipimumuBDT_even.root",2,true,true);
 
@@ -2462,24 +2461,25 @@ void D2pipimumuCrossapplication(){
   // misID D2hhhh  Mode      //                                                                                                                           
 
   //////////////////////////// 
-
-  
+ 
+  /*
   Application_D2pipimumu("data/DecayTree_odd","D2pipipipi_PreselectedRandomizedSubsample.root","D2pipipipi_D2pipimumuBDT_odd.root",1,false,false,false);
   Application_D2pipimumu("data/DecayTree_even","D2pipipipi_PreselectedRandomizedSubsample.root","D2pipipipi_D2pipimumuBDT_even.root",2,false,false,false);
   TChain* myChain11= new TChain("BDT_Tree");
   myChain11->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_D2pipimumuBDT_odd.root");
   myChain11->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_D2pipimumuBDT_even.root");
-  myChain11->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_D2pipimumuBDT_new.root");
+  myChain11->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_D2pipimumuBDT_Randomized.root");
+  */
 
    
+  //ADDED TRIGGER INFO 27.4.17
   //mis ID bkg Data                                                                                                                                                            
-  Application_D2pipimumu("data/DecayTree_odd","D2Kpipipi_PreselectedRandomizedSubsample.root","D2Kpipipi_D2pipimumuBDT_odd.root",1,false,true,false); 
-  Application_D2pipimumu("data/DecayTree_even","D2Kpipipi_PreselectedRandomizedSubsample.root","D2Kpipipi_D2pipimumuBDT_even.root",2,false,true,false);   
+  Application_D2pipimumu("data/DecayTree_odd","D2Kpipipi_PreselectedRandomizedSubsample_withTrigger.root","D2Kpipipi_D2pipimumuBDT_odd.root",1,false,true,false); 
+  Application_D2pipimumu("data/DecayTree_even","D2Kpipipi_PreselectedRandomizedSubsample_withTrigger.root","D2Kpipipi_D2pipimumuBDT_even.root",2,false,true,false);   
   TChain* myChain8= new TChain("BDT_Tree");                                                                                                              
   myChain8->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2pipimumuBDT_odd.root");        
   myChain8->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2pipimumuBDT_even.root");                                                    
-  myChain8->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2pipimumuBDT_new.root");     
-  
+  myChain8->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2pipimumuBDT_Randomized_withTrigger.root");     
   
   /*    
   //mis ID bkg MC 
@@ -2489,9 +2489,7 @@ void D2pipimumuCrossapplication(){
   TChain* myChain5= new TChain("BDT_Tree");
   myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2pipipipi_D2pipimumuBDT_odd.root");
   myChain5->Add("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2pipipipi_D2pipimumuBDT_even.root");
-  myChain5->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2pipipipi_D2pipimumuBDT.root");
-
-  
+  myChain5->Merge("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2pipipipi_D2pipimumuBDT.root");  
   
   Application_D2pipimumu("DecayTree_odd","D2Kpipipi_MCtrainingSample.root","MC_D2Kpipipi_D2pipimumuBDT_odd.root",1,true,true,false); 
   Application_D2pipimumu("DecayTree_even","D2Kpipipi_MCtrainingSample.root","MC_D2Kpipipi_D2pipimumuBDT_even.root",2,true,true,false);  
@@ -2639,6 +2637,8 @@ void CrossapplicationForEfficiencyStudiesNoTruthmatching(){
 
   //////////////////////////// 
   
+
+  // these are the full q2 ranges, so no splitting is performed
   std::vector<double> rangesKpi_low = {200};
   std::vector<double> rangesKpi_high = {1600};
   std::vector<double> rangespipi_low = {200};

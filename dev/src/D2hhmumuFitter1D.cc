@@ -12,17 +12,21 @@
 #include "RooMinuit.h"
 #include "RooGenericPdf.h" 
 #include "dcastyle.h"
+#include <iostream>
+#include <iomanip>
+#include <limits>
+
 //#include "StandardHypoTestInvDemo.C"
  
 using namespace std;
 using namespace RooFit ;
 
-//this class is is a fitter for Dst->D(hhmumu)pi decays.
+//this class is a fitter for Dst->D(hhmumu)pi decays.
 //
 //
 //
 
-D2hhmumuFitter1D::D2hhmumuFitter1D():
+D2hhmumuFitter1D::D2hhmumuFitter1D(TString results):
 
 
   EffRatio("EffRatio","Efficieny ratio",1,0,3),
@@ -116,6 +120,9 @@ D2hhmumuFitter1D::D2hhmumuFitter1D():
    Nsig_blinding.setVal(Nsig_offset);
    BFsig_blinding.setVal(BFsig_offset);
 
+   if(results=="") myFile.open("../FitResults/defaultResults.txt");
+   else  myFile.open("../FitResults/"+results);
+
  }
 
  void D2hhmumuFitter1D::setPathToSignalMC(TString path){
@@ -145,7 +152,11 @@ void D2hhmumuFitter1D::setPathToKpipipiData(TString path){
 void D2hhmumuFitter1D::setPathToHHpipiData(TString path){
   pathToHHpipiData = path;
 }
-D2hhmumuFitter1D::~D2hhmumuFitter1D(){}
+D2hhmumuFitter1D::~D2hhmumuFitter1D(){
+
+  myFile.close();
+
+}
 
 
 void D2hhmumuFitter1D::setKpimumuStartParameters(){                                                                                                                             
@@ -172,7 +183,7 @@ void D2hhmumuFitter1D::setpipimumuStartParameters(){
 void D2hhmumuFitter1D::fit_MC(TString cut,bool fixShape,TString namePlot,TString xLabel,TString legend){
 
   //observables                                                                                                                                                                       
-  RooRealVar D0_M("Dst_DTF_D0_M",xLabel, 1830., 1900.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M",xLabel, 1830., 1900.,"MeV/c^{2}");
   RooRealVar nSignal("nSignal","#signal events ",100000,0,1000000,"MeV");
 
   ///create Model with desired components                                                                                                                                                
@@ -221,6 +232,13 @@ void D2hhmumuFitter1D::fit_MC(TString cut,bool fixShape,TString namePlot,TString
   tree->SetBranchStatus("mu0_L0MuonDecision_TOS",1);
   tree->SetBranchStatus("mu1_L0MuonDecision_TOS",1);
   tree->SetBranchStatus("Polarity",1);
+  tree->SetBranchStatus("Dst_BKGCAT",1);
+
+  tree->SetBranchStatus("D_Hlt1TrackAllL0Decision_TOS",1);
+  tree->SetBranchStatus("mu1_Hlt1TrackMuonDecision_TOS",1);
+  tree->SetBranchStatus("mu0_Hlt1TrackMuonDecision_TOS",1);
+  tree->SetBranchStatus("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",1);
+  tree->SetBranchStatus("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",1);
 
 
   //apply cuts if needed     
@@ -252,7 +270,7 @@ void D2hhmumuFitter1D::fit_MC(TString cut,bool fixShape,TString namePlot,TString
   frame_m->SetTitle("");
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(28));
 
-  finalPDF->plotOn(frame_m,LineColor(kRed),LineWidth(1));
+  finalPDF->plotOn(frame_m,Name("finalPDF"),LineColor(kRed),LineWidth(1));
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(28));
   //finalPDF->paramOn(frame_m);
   frame_m->Draw();
@@ -273,7 +291,14 @@ void D2hhmumuFitter1D::fit_MC(TString cut,bool fixShape,TString namePlot,TString
   latex.SetNDC();
   latex.SetTextSize(0.035);
   latex.SetTextAlign(13);  //align at top
-  latex.DrawLatex(.58,.85,legend);
+  latex.DrawLatex(.58,.88,legend);
+
+  TLegend *leg = new TLegend(0.7,0.5,0.9,0.8);
+  //leg->SetHeader("LHCb");
+  leg->SetTextFont(132);
+  leg->AddEntry(frame_m->findObject("data"),"Simulations","EP");
+  leg->AddEntry(frame_m->findObject("finalPDF"),"Fit","L");
+  leg->Draw("");
 
 
   c1->Draw();
@@ -289,16 +314,32 @@ void D2hhmumuFitter1D::fit_MC(TString cut,bool fixShape,TString namePlot,TString
   // write the workspace in the file                                                                                                                                                       
   //  TString fileName = "MC_model1D.root";
   // m_ws.writeToFile(fileName,true);
+
+
   m_ws.writeToFile("../D2KKmumu/img/MC_WS_"+cut+".root",true);
   //  cout << "model written to file " << fileName << endl;
 
+  myFile<<std::fixed<<std::endl;
+  myFile<<" MC signal shape #D0_M_xi# #D0_M_lambda# #D0_M_gamma# #D0_M_delta# "<<std::endl;
+  myFile<<std::setprecision(2);
+  myFile<<" & "<<m_ws.var("D0_M_xi")->getVal()<<"$\\pm$"
+	<<m_ws.var("D0_M_xi")->getError()
+	<<" & "<<m_ws.var("D0_M_lambda")->getVal()
+ 	<<"$\\pm$"<<m_ws.var("D0_M_lambda")->getError()
+    	<<" & "<<m_ws.var("D0_M_gamma")->getVal()
+	<<"$\\pm$"<<m_ws.var("D0_M_gamma")->getError()
+	<<" & "<<m_ws.var("D0_M_delta")->getVal()
+	<<"$\\pm$"<<m_ws.var("D0_M_delta")->getError()<<"\\\\"<<std::endl;
+  
+
   if(fixShape){
-    D0_M_xi.setConstant();                                                                                                                                                               
+    D0_M_xi.setConstant();                                                                                                                                            
     D0_M_lambda.setConstant();
     D0_M_gamma.setConstant();
     D0_M_delta.setConstant();
   }
   
+
   delete tree;
   delete cutTree;
 
@@ -310,7 +351,7 @@ void D2hhmumuFitter1D::fit_MC(TString cut,bool fixShape,TString namePlot,TString
 void D2hhmumuFitter1D::fit_normalization_MC(TString cut="",bool fixShape = true,TString namePlot=""){
 
   //observables                                                                                                                                                                            
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(K#pi#mu#mu)", 1830., 1900.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(K#pi#mu#mu)", 1830., 1900.,"MeV/c^{2}");
   RooRealVar nSignal("nSignal","#signal events ",100000,0,1000000,"MeV");
 
   ///create Model with desired components                                                                                                                                                  
@@ -342,12 +383,9 @@ void D2hhmumuFitter1D::fit_normalization_MC(TString cut="",bool fixShape = true,
   tree->SetBranchStatus("mu1_MuonNShared",1);
   tree->SetBranchStatus("h0_PIDK",1);
   tree->SetBranchStatus("h1_PIDK",1);
-
   tree->SetBranchStatus("Polarity",1);
-
   tree->SetBranchStatus("mu0_P",1);
   tree->SetBranchStatus("mu1_P",1);
-
   tree->SetBranchStatus("mu0_ProbNNghost",1);
   tree->SetBranchStatus("mu1_ProbNNghost",1);
   tree->SetBranchStatus("h0_ProbNNghost",1);
@@ -355,9 +393,18 @@ void D2hhmumuFitter1D::fit_normalization_MC(TString cut="",bool fixShape = true,
   tree->SetBranchStatus("Slowpi_ProbNNghost",1);
   tree->SetBranchStatus("h1_ProbNNpi",1);
   tree->SetBranchStatus("h0_ProbNNk",1);
-
+  tree->SetBranchStatus("h1_ProbNNk",1);
+  tree->SetBranchStatus("h0_ProbNNpi",1);
   tree->SetBranchStatus("mu0_L0MuonDecision_TOS",1);
   tree->SetBranchStatus("mu1_L0MuonDecision_TOS",1);
+  tree->SetBranchStatus("Dst_BKGCAT",1);
+  tree->SetBranchStatus("D_Hlt1TrackAllL0Decision_TOS",1);
+  tree->SetBranchStatus("mu1_Hlt1TrackMuonDecision_TOS",1);
+  tree->SetBranchStatus("mu0_Hlt1TrackMuonDecision_TOS",1);
+  tree->SetBranchStatus("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",1);
+  tree->SetBranchStatus("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",1);
+
+
 
   //tree->SetBranchStatus("",1);
 
@@ -385,11 +432,18 @@ void D2hhmumuFitter1D::fit_normalization_MC(TString cut="",bool fixShape = true,
   RooPlot* frame_m= D0_M.frame();
   frame_m->SetTitle("");
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(28));
-
-  finalPDF->plotOn(frame_m,LineColor(kRed),LineWidth(1));
+  finalPDF->plotOn(frame_m,Name("finalPDF"),LineColor(kRed),LineWidth(2));
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(28));
   //finalPDF->paramOn(frame_m);
   frame_m->Draw();
+
+  TLegend *leg = new TLegend(0.7,0.7,0.9,0.9);
+  //leg->SetHeader("LHCb");
+  leg->SetTextFont(132);
+  leg->AddEntry(frame_m->findObject("data"),"Simulations","EP");
+  leg->AddEntry(frame_m->findObject("finalPDF"),"Fit","L");
+  leg->Draw("");
+  
 
   c1->cd(2);
   RooPlot* frame_m2 = D0_M.frame(Title("")) ;
@@ -416,14 +470,28 @@ void D2hhmumuFitter1D::fit_normalization_MC(TString cut="",bool fixShape = true,
   // m_ws.writeToFile(fileName,true);
   m_ws.writeToFile("../D2KKmumu/img/MC_WS_"+cut+".root",true);
   //  cout << "model written to file " << fileName << endl;
+  
+  
+  myFile<<" normalization mode MC signal shape #D0_M_xi_norm# #D0_M_lambda_norm# #D0_M_gamma_norm# #D0_M_delta_norm#  "<<std::endl;
+  myFile<<std::setprecision(2);
+  myFile<<" & "<<m_ws.var("D0_M_xi_norm")->getVal()<<"$\\pm$"
+	<<m_ws.var("D0_M_xi_norm")->getError()
+	<<" & "<<m_ws.var("D0_M_lambda_norm")->getVal()
+ 	<<"$\\pm$"<<m_ws.var("D0_M_lambda_norm")->getError()
+    	<<" & "<<m_ws.var("D0_M_gamma_norm")->getVal()
+	<<"$\\pm$"<<m_ws.var("D0_M_gamma_norm")->getError()
+	<<" & "<<m_ws.var("D0_M_delta_norm")->getVal()
+	<<"$\\pm$"<<m_ws.var("D0_M_delta_norm")->getError()<<"\\\\"<<std::endl;
+
 
   if(fixShape){
-    D0_M_xi_norm.setConstant();                                                                                                                                                         
+    D0_M_xi_norm.setConstant();                                                                                                                                               
     D0_M_lambda_norm.setConstant();
     D0_M_gamma_norm.setConstant();
     D0_M_delta_norm.setConstant();
   }
-  
+
+
   delete tree;
   delete cutTree;
 
@@ -434,10 +502,10 @@ void D2hhmumuFitter1D::fit_normalization_MC(TString cut="",bool fixShape = true,
 }
 
 
-void D2hhmumuFitter1D::fit_Kpipipi_misID(TString cut="",bool fixShape=false,TString namePlot=""){
+void D2hhmumuFitter1D::fit_Kpipipi_misID(TString cut,bool fixShape,TString namePlot, bool fixCombBkgShape){
 
 
-  RooRealVar D0_M("misID_mD_OS", "m_{K#pi#mu#mu}(K#pi#pi#pi)", 1770., 1920.,"MeV");
+  RooRealVar D0_M("misID_mD_OS", "m_{K#pi#mu#mu}(K#pi#pi#pi)", 1770., 1920.,"MeV/c^{2}");
   D0_M.setRange(1770,1920);
                                      
   TFile* file;
@@ -456,6 +524,14 @@ void D2hhmumuFitter1D::fit_Kpipipi_misID(TString cut="",bool fixShape=false,TStr
   tree->SetBranchStatus("mu0_MuonNShared",1);
   tree->SetBranchStatus("mu1_MuonNShared",1);
 
+  tree->SetBranchStatus("mu0_Hlt1TrackMuonDecision_TOS",1);
+  tree->SetBranchStatus("mu1_Hlt1TrackMuonDecision_TOS",1);
+  tree->SetBranchStatus("D_Hlt1TrackAllL0Decision_TOS",1);
+
+  tree->SetBranchStatus("mu0_L0MuonDecision_TOS",1);
+  tree->SetBranchStatus("mu1_L0MuonDecision_TOS",1);
+
+
   tree->SetBranchStatus("mu0_ProbNNghost",1);
   tree->SetBranchStatus("mu1_ProbNNghost",1);
   tree->SetBranchStatus("h0_ProbNNghost",1);
@@ -470,10 +546,12 @@ void D2hhmumuFitter1D::fit_Kpipipi_misID(TString cut="",bool fixShape=false,TStr
 
   D0_M_chebyB.setVal(0);
   D0_M_chebyB.setConstant();
-  
-  //REMOVED FOR SYSTEMTIC STUDIES
-  D0_M_chebyA.setVal(0);
-  D0_M_chebyA.setConstant();
+
+  //allow to let the comb bkg free for systematic study
+  if(fixCombBkgShape) {
+    D0_M_chebyA.setVal(0);
+    D0_M_chebyA.setConstant();
+  }
 
   TFile* file_temp =  new TFile("temp.root","RECREATE");
 
@@ -492,7 +570,7 @@ void D2hhmumuFitter1D::fit_Kpipipi_misID(TString cut="",bool fixShape=false,TStr
   std::string components="D2hhhhBkg CombinatoricBkg"; 
   RooAbsPdf* finalPDF = myModel->Model(components);
   RooFitResult *result;
-  result = finalPDF->fitTo(*data,Save(kTRUE),Extended(kTRUE),NumCPU(3),Minos(kFALSE) );
+  result = finalPDF->fitTo(*data,Save(kTRUE),Extended(kTRUE),NumCPU(6),Minos(kFALSE) );
 
   cout << "result is --------------- "<<endl;
   result->Print();
@@ -506,12 +584,21 @@ void D2hhmumuFitter1D::fit_Kpipipi_misID(TString cut="",bool fixShape=false,TStr
   RooPlot* frame_m= D0_M.frame();
   frame_m->SetTitle("");
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(30));
-  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("D2hhhhBkg")),LineColor(kGreen+3),LineStyle(kDashed),LineWidth(1));
-  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(1));
-  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(1));
+  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("D2hhhhBkg")),LineColor(kGreen+3),LineStyle(10),LineWidth(3),Name("PDFMisID"));
+  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(3),Name("PDFComb"));
+  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(3),Name("totalPDF"));
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(30));
   //finalPDF->paramOn(frame_m);
   frame_m->Draw();
+
+  TLegend *leg = new TLegend(0.7,0.5,0.9,0.8);
+  //leg->SetHeader();                                                         
+  leg->SetTextFont(132);
+  leg->AddEntry(frame_m->findObject("data"),"Data","EP");
+  leg->AddEntry(frame_m->findObject("totalPDF"),"Total PDF","L");
+  leg->AddEntry(frame_m->findObject("PDFMisID"),"D^{0}#rightarrow K^{-}#pi^{+}#pi^{-}#pi^{+}","L");
+  leg->AddEntry(frame_m->findObject("PDFComb"),"Comb. Bkg","L");
+  leg->Draw("");
   
   c1->cd(2);
   RooPlot* frame_m2 = D0_M.frame(Title("")) ;
@@ -534,6 +621,19 @@ void D2hhmumuFitter1D::fit_Kpipipi_misID(TString cut="",bool fixShape=false,TStr
    D0_M_gamma_bkg_norm.setVal(myModel->GetWorkspace().var("D0_M_gamma_bkg_norm")->getValV() );
    D0_M_delta_bkg_norm.setVal(myModel->GetWorkspace().var("D0_M_delta_bkg_norm")->getValV() );
 
+   RooWorkspace m_ws = myModel->GetWorkspace();
+
+   myFile<<"D->Kpipipi misID shape #D0_M_xi_bkg_norm# #D0_M_lambda_bkg_norm# #D0_M_gamma_bkg_norm# #D0_M_delta_bkg_norm#"<<std::endl;
+   myFile<<" & "<<m_ws.var("D0_M_xi_bkg_norm")->getVal()<<"$\\pm$"
+	<<m_ws.var("D0_M_xi_bkg_norm")->getError()
+	 <<" & "<<m_ws.var("D0_M_lambda_bkg_norm")->getVal()
+ 	<<"$\\pm$"<<m_ws.var("D0_M_lambda_bkg_norm")->getError()
+	 <<" & "<<m_ws.var("D0_M_gamma_bkg_norm")->getVal()
+	<<"$\\pm$"<<m_ws.var("D0_M_gamma_bkg_norm")->getError()
+	 <<" & "<<m_ws.var("D0_M_delta_bkg_norm")->getVal()
+	<<"$\\pm$"<<m_ws.var("D0_M_delta_bkg_norm")->getError()<<"\\\\"<<std::endl;
+ 
+
   if(fixShape){
 
      D0_M_xi_bkg_norm.setConstant();                                                                            
@@ -549,10 +649,10 @@ void D2hhmumuFitter1D::fit_Kpipipi_misID(TString cut="",bool fixShape=false,TStr
 
 
 }
-void D2hhmumuFitter1D::fit_HHpipi_misID(TString cut,bool fixShape,TString namePlot,TString xLabel,TString legend){
+void D2hhmumuFitter1D::fit_HHpipi_misID(TString cut,bool fixShape,TString namePlot,TString xLabel,TString legend, bool fixCombBkgShape){
 
 
-  RooRealVar D0_M("misID_mD_OS", xLabel, 1780., 1920.,"MeV");
+  RooRealVar D0_M("misID_mD_OS", xLabel, 1780., 1920.,"MeV/c^{2}");
   D0_M.setRange(1780,1920);
                                        
   TFile* file;
@@ -583,10 +683,11 @@ void D2hhmumuFitter1D::fit_HHpipi_misID(TString cut,bool fixShape,TString namePl
   D0_M_chebyB.setVal(0);
   D0_M_chebyB.setConstant();
 
-  ////REMOVE FOR SYSTEMATICS STUDY. UNCOMMENT LATER 
-  D0_M_chebyA.setVal(0);
-  D0_M_chebyA.setVal(0);
-  //D0_M_chebyA.setConstant();
+  ////Allow for free comb bkg shape for systematic studies 
+  if(fixCombBkgShape) {
+    D0_M_chebyA.setVal(0);
+    D0_M_chebyA.setConstant();
+  }
 
   TFile* file_temp =  new TFile("temp.root","RECREATE");
 
@@ -616,14 +717,23 @@ void D2hhmumuFitter1D::fit_HHpipi_misID(TString cut,bool fixShape,TString namePl
   c1->cd(1);
   RooPlot* frame_m= D0_M.frame();
   frame_m->SetTitle("");
-  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(28));
-  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("D2hhhhBkg")),LineColor(kGreen+3),LineStyle(kDashed),LineWidth(2));
-  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
-  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(2));
+  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(28),Name("data"));
+  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("D2hhhhBkg")),LineColor(kGreen+3),LineStyle(10),LineWidth(3),Name("PDFMisID"));
+  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(3),Name("PDFComb"));
+  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(3),Name("totalPDF"));
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(28));
   //finalPDF->paramOn(frame_m);
   frame_m->Draw();
   
+  TLegend *leg = new TLegend(0.7,0.5,0.9,0.8);
+  //leg->SetHeader("LHCb");                                                                                                                                                              
+  leg->SetTextFont(132);
+  leg->AddEntry(frame_m->findObject("data"),"Data","EP");
+  leg->AddEntry(frame_m->findObject("totalPDF"),"Total PDF","L");
+  leg->AddEntry(frame_m->findObject("PDFMisID"),"D^{0}#rightarrow h^{-}h^{+}#pi^{-}#pi^{+}","L");
+  leg->AddEntry(frame_m->findObject("PDFComb"),"Comb. Bkg","L");
+  leg->Draw("");
+
   c1->cd(2);
   RooPlot* frame_m2 = D0_M.frame(Title("")) ;
   finalPDF->paramOn(frame_m2,Layout(.2,.80,.90));
@@ -640,17 +750,33 @@ void D2hhmumuFitter1D::fit_HHpipi_misID(TString cut,bool fixShape,TString namePl
   latex.SetNDC();
   latex.SetTextSize(0.035);
   latex.SetTextAlign(11);  //align at top                                                                                      
-  latex.DrawLatex(.58,.85,legend);
+  latex.DrawLatex(.58,.88,legend);
 
   std::cout<<"nentries"<<tree->GetEntries()<<std::endl;
   c1->Draw();
   //c1->Print("../D2KKmumu/img/misID_fit_"+cut+".eps");
   c1->Print(namePlot);
 
-   D0_M_xi_bkg.setVal(myModel->GetWorkspace().var("D0_M_xi_bkg")->getValV() );
-   D0_M_lambda_bkg.setVal(myModel->GetWorkspace().var("D0_M_lambda_bkg")->getValV() );
-   D0_M_gamma_bkg.setVal(myModel->GetWorkspace().var("D0_M_gamma_bkg")->getValV() );
-   D0_M_delta_bkg.setVal(myModel->GetWorkspace().var("D0_M_delta_bkg")->getValV() );
+  D0_M_xi_bkg.setVal(myModel->GetWorkspace().var("D0_M_xi_bkg")->getValV() );
+  D0_M_lambda_bkg.setVal(myModel->GetWorkspace().var("D0_M_lambda_bkg")->getValV() );
+  D0_M_gamma_bkg.setVal(myModel->GetWorkspace().var("D0_M_gamma_bkg")->getValV() );
+  D0_M_delta_bkg.setVal(myModel->GetWorkspace().var("D0_M_delta_bkg")->getValV() );
+
+
+
+
+   RooWorkspace m_ws = myModel->GetWorkspace();
+
+   myFile<<"D->hhpipi misID shape parameters #D0_M_xi_bkg# #D0_M_lambda_bkg# #D0_M_gamma_bkg# #D0_M_delta_bkg#"<<std::endl;
+   myFile<<" & "<<m_ws.var("D0_M_xi_bkg")->getVal()<<"$\\pm$"
+	<<m_ws.var("D0_M_xi_bkg")->getError()
+	 <<" & "<<m_ws.var("D0_M_lambda_bkg")->getVal()
+ 	<<"$\\pm$"<<m_ws.var("D0_M_lambda_bkg")->getError()
+	 <<" & "<<m_ws.var("D0_M_gamma_bkg")->getVal()
+	<<"$\\pm$"<<m_ws.var("D0_M_gamma_bkg")->getError()
+	 <<" & "<<m_ws.var("D0_M_delta_bkg")->getVal()
+	<<"$\\pm$"<<m_ws.var("D0_M_delta_bkg")->getError()<<"\\\\"<<std::endl;
+
 
   if(fixShape){
 
@@ -748,7 +874,7 @@ void D2hhmumuFitter1D::fit_Kpipipi_misID_fromHistogramm(TString cut="",bool fixS
 double D2hhmumuFitter1D::fit_normalization_Data(TString cut="",TString namePlot=""){
  
   //observables                                                                                                                                                                             
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(K#pi#mu#mu)", 1810.,1940.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(K^{-}#pi^{+}#mu^{+}#mu^{-})", 1810.,1940.,"MeV/c^{2}");
   TString dmRange = "&&deltaM>144.5&&deltaM<146.5";
   //TString dmRange = "&&deltaM>150&&deltaM<160";
 
@@ -760,10 +886,6 @@ double D2hhmumuFitter1D::fit_normalization_Data(TString cut="",TString namePlot=
 
   //ResolutionScale.setVal(1.093);ResolutionScale.setConstant(); 
    //globalShift.setVal(1.0005);globalShift.setConstant();
-
-  //NOT RELEVANT RIGHT NOW AS EXPO BKG IS TAKEN
-   //D0_M_chebyB.setRange(0,0);  
-   D0_M_chebyA.setRange(0,0);  
 
   ///create Model with desired components                                                                                                                                                   
   D2hhmumuModel1D* myModel= new D2hhmumuModel1D();
@@ -801,8 +923,6 @@ double D2hhmumuFitter1D::fit_normalization_Data(TString cut="",TString namePlot=
   tree->SetBranchStatus("mu1_MuonNShared",1);
   tree->SetBranchStatus("h0_PIDK",1);
   tree->SetBranchStatus("h1_PIDK",1);
-  tree->SetBranchStatus("D_PT",1);
-  tree->SetBranchStatus("D_PZ",1);
   tree->SetBranchStatus("mHH",1);
 
   tree->SetBranchStatus("mu0_L0MuonDecision_TOS",1);
@@ -866,29 +986,37 @@ double D2hhmumuFitter1D::fit_normalization_Data(TString cut="",TString namePlot=
 
   RooPlot* frame_m= D0_M.frame();
   frame_m->SetTitle("");
-  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(34));
-  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("Signal")),LineColor(kRed),LineStyle(kDashed),LineWidth(2));
-  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(2));
-  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("D2hhhhBkg")),LineColor(kGreen+3),LineStyle(kDashed),LineWidth(2));
-  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(2)); 
-  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(34));
-  finalPDF->paramOn(frame_m,Layout(.20,.45,.90));
-  frame_m->getAttFill()->SetFillStyle(0);
-  frame_m->getAttLine("tot_paramBox")->SetLineWidth(0);
-  frame_m->getAttLine("tot_paramBox")->SetLineColor(0);
-  frame_m->getAttText()->SetTextSize(0.02) ; 
+  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(26));
+  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("Signal")),LineStyle(kDashed),LineColor(kRed),LineWidth(3),Name("PDFSignal"));  
+  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("Signal")),FillColor(kRed),DrawOption("F"),VLines(),FillStyle(3002)); 
+  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("CombinatoricExpoBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(3),Name("PDFComb"));
+  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("D2hhhhBkg")),LineColor(kGreen+3),LineStyle(kDashed),LineWidth(3),Name("PDFMisID"));
+  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(3),Name("PDFTotal")); 
+  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(26));
+  //finalPDF->paramOn(frame_m,Layout(.20,.45,.90));
+  //frame_m->getAttFill()->SetFillStyle(0);
+  //frame_m->getAttLine("tot_paramBox")->SetLineWidth(0);
+  //frame_m->getAttLine("tot_paramBox")->SetLineColor(0);
+  //frame_m->getAttText()->SetTextSize(0.02) ; 
+
 
   frame_m->Draw();
 
-  c1->cd(2);
-  RooPlot* frame_m2 = D0_M.frame(Title("")) ;
-  finalPDF->paramOn(frame_m2,Layout(.2,.80,.90));
-  frame_m2->Draw();
- 
+  TLegend *leg = new TLegend(0.6,0.5,0.9,0.8);
+  //leg->SetHeader("LHCb");
+  leg->SetTextFont(132);
+  leg->AddEntry(frame_m->findObject("data"),"Data","EP");
+  leg->AddEntry(frame_m->findObject("PDFTotal"),"Total PDF","L");
+  leg->AddEntry(frame_m->findObject("PDFSignal"),"D^{0}#rightarrow K^{-}#pi^{+}#mu^{-}#mu^{+}","L");
+  leg->AddEntry(frame_m->findObject("PDFMisID"),"D^{0}#rightarrow K^{-}#pi^{+}#pi^{-}#pi^{+}","L");
+  leg->AddEntry(frame_m->findObject("PDFComb"),"Comb. Bkg","L");
+  leg->Draw("");
+
+
   RooHist* hpull = frame_m->pullHist() ;
   RooPlot* frame_m3 = D0_M.frame(Title("Pull Distribution")) ;
   frame_m3->addPlotable(hpull,"BX") ;
-  c1->cd(3);
+  c1->cd(2);
   frame_m3->Draw();
  
   std::cout<<"nentries"<<tree->GetEntries()<<std::endl;	
@@ -897,6 +1025,30 @@ double D2hhmumuFitter1D::fit_normalization_Data(TString cut="",TString namePlot=
   c1->Print("../D2KKmumu/img/normalization_fit_"+cut+".eps");
   c1->Print(namePlot);
 
+  myFile<<std::fixed<<std::endl;
+  myFile<<std::setprecision(1);
+  myFile<<"norm mode data fit #nSignal# #nD2hhhhBkg# #nCombinatoricBkg# "<<std::endl;
+  myFile<<m_ws.var("nSignal")->getVal() <<"$\\pm$"
+	<<m_ws.var("nSignal")->getError()<< " & "
+	<<m_ws.var("nD2hhhhBkg")->getVal() <<"$\\pm$"
+	<<m_ws.var("nD2hhhhBkg")->getError()<< " & "
+	<<m_ws.var("nCombinatoricBkg")->getVal() <<"$\\pm$"
+	<<m_ws.var("nCombinatoricBkg")->getError()<<" & "
+	<<std::setprecision(2)
+	<<m_ws.var("ResolutionScale")->getVal()<<"$\\pm$"
+	<<m_ws.var("ResolutionScale")->getError()<<" & "
+	<<std::setprecision(4)
+	<<m_ws.var("globalShift")->getVal()<<"$\\pm$"
+	<<m_ws.var("globalShift")->getError()<<"\\\\"
+	<<std::endl;
+  
+  myFile<<std::setprecision(2);  
+  myFile<<" MC data differences" <<std::endl;
+  myFile<<  m_ws.var("ResolutionScale")->getVal()<<"$\\pm$"<<m_ws.var("ResolutionScale")->getError()
+	<<" & "<< m_ws.var("globalShift")->getVal()<<"$\\pm$"<<m_ws.var("globalShift")->getError()<<std::endl;
+  myFile<<std::setprecision(3);
+  myFile<<" norm mode exponential coefficienct " <<std::endl;
+  myFile<< m_ws.var("D0_M_ExpoLambda_norm")->getVal()<<"$\\pm$"<<m_ws.var("D0_M_ExpoLambda_norm")->getError()<<"\\\\"<< std::endl;
 
   //fix scale factor for MC - data differences
   ResolutionScale.setVal(myModel->GetWorkspace().var("ResolutionScale")->getValV() );
@@ -917,7 +1069,7 @@ double D2hhmumuFitter1D::fit_normalization_Data(TString cut="",TString namePlot=
 
 double D2hhmumuFitter1D::fit_resonant_Data(TString kind, TString cut,TString q2Range,TString namePlot,TString xLabel,TString legend, bool bkgShapeFromInvertedBDTCut){
   //observables                                                                                                                                                                             
-  RooRealVar D0_M("Dst_DTF_D0_M",xLabel, 1810., 1940.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M",xLabel, 1810., 1940.,"MeV/c^{2}");
   TString dmRange = "&&deltaM>144.5&&deltaM<146.5";
   //TString dmRange = "&&deltaM>150.";
 
@@ -938,7 +1090,7 @@ double D2hhmumuFitter1D::fit_resonant_Data(TString kind, TString cut,TString q2R
     if(kind=="D2pipimumu") bkgExponent = fit_invertedBDT_data("mu0_ProbNNmu>.5&&mu1_ProbNNmu>.5&&BDT<.4",q2Range,namePlot.Remove(namePlot.Sizeof()-5)+"_invertedBDTCut.eps","","");
     namePlot+=".eps";
   }
-  else bkgExponent=0;
+  else bkgExponent=-3e-4;
 
 
   D0_M_ExpoLambda.setVal(bkgExponent);
@@ -1024,7 +1176,7 @@ double D2hhmumuFitter1D::fit_resonant_Data(TString kind, TString cut,TString q2R
 
   //do the fit 
   RooFitResult *result;
-  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(6),Minos(kTRUE));
+  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(8),Minos(kTRUE));
   m_ws.import(*result);
   cout << "result is --------------- "<<endl;
   result->Print();
@@ -1039,27 +1191,38 @@ double D2hhmumuFitter1D::fit_resonant_Data(TString kind, TString cut,TString q2R
   
   ///Plot                                                                                                                                                                 ///----------                                                                                                                                                                
   TCanvas* c1= new TCanvas("canvas");
-  //c1->Divide(2,2);
   dcastyle();
   CreateSubPad(c1,0.25);
   c1->cd(1);
 
   RooPlot* frame_m= D0_M.frame();
   frame_m->SetTitle("");
-  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(26));
-  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("Signal")),LineColor(kRed),LineStyle(kDashed),LineWidth(2.5));
-  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("CombinatoricExpoBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(2.5));
-  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("D2hhhhBkg")),LineColor(kGreen+3),LineStyle(kDashed),LineWidth(2.5));
-  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(2.5)); 
+  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(26),Name("data"));
+  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("Signal")),LineColor(kRed),LineStyle(kDashed),LineWidth(3),Name("PDFSignal"));
+  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("CombinatoricExpoBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(3),Name("PDFComb"));
+  m_ws.pdf("tot")->plotOn(frame_m,Components(*m_ws.pdf("D2hhhhBkg")),LineColor(kGreen+3),LineStyle(kDashed),LineWidth(3),Name("PDFMisID"));
+  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(3),Name("PDFTotal")); 
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(26));
   finalPDF->paramOn(frame_m,Layout(.1,.4,.90));
   frame_m->Draw();
 
-  c1->cd(2);
-  RooPlot* frame_m2 = D0_M.frame(Title("")) ;
-  finalPDF->paramOn(frame_m2,Layout(.2,.80,.90));
-  frame_m2->Draw();
+  TLegend *leg = new TLegend(0.6,0.5,0.9,0.8);
+  //leg->SetHeader("LHCb");                                                                                                                                                              
+  leg->SetTextFont(132);
+  leg->AddEntry(frame_m->findObject("data"),"Data","EP");
+  leg->AddEntry(frame_m->findObject("PDFTotal"),"Total PDF","L");
+  if(kind=="D2KKmumu"){
+    leg->AddEntry(frame_m->findObject("PDFSignal"),"D^{0}#rightarrow K^{-}K^{+}#mu^{-}#mu^{+}","L");
+    leg->AddEntry(frame_m->findObject("PDFMisID"),"D^{0}#rightarrow K^{-}K^{+}#pi^{-}#pi^{+}","L");
+  }
+  if(kind=="D2pipimumu"){
+    leg->AddEntry(frame_m->findObject("PDFSignal"),"D^{0}#rightarrow #pi^{-}#pi^{+}#mu^{-}#mu^{+}","L");
+    leg->AddEntry(frame_m->findObject("PDFMisID"),"D^{0}#rightarrow #pi^{-}#pi^{+}#pi^{-}#pi^{+}","L");
+  }
+  leg->AddEntry(frame_m->findObject("PDFComb"),"Comb. Bkg","L");
+  leg->Draw("");
  
+
   RooHist* hpull = frame_m->pullHist() ;
   RooPlot* frame_m3 = D0_M.frame(Title("Pull Distribution")) ;
   frame_m3->addPlotable(hpull,"BX") ;
@@ -1102,7 +1265,7 @@ double D2hhmumuFitter1D::fit_resonant_Data(TString kind, TString cut,TString q2R
 double D2hhmumuFitter1D::fit_HHpipi(TString cut="",TString namePlot=""){
  
   //observables                                                                                                                                                                             
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1820., 1920.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1820., 1920.,"MeV/c^{2}");
   TString dmRange = "&&deltaM>144.5&&deltaM<146.5";
 
   //allow for MC Data differences in resolution and global mass shift
@@ -1157,7 +1320,7 @@ double D2hhmumuFitter1D::fit_HHpipi(TString cut="",TString namePlot=""){
 
   //do the fit 
   RooFitResult *result;
-  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(3));
+  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(8));
   m_ws.import(*result);
   cout << "result is --------------- "<<endl;
   //result->Print();
@@ -1215,18 +1378,20 @@ void D2hhmumuFitter1D::fit_Data(TString kind, TString cut,TString q2Range,TStrin
 
   double bkgExponent;
 
+
+  //apply a fit to the comb background in the dm abd BDT sideband and fit the exponential
   if(bkgShapeFromInvertedBDTCut){  
     if(kind=="D2KKmumu") bkgExponent = fit_invertedBDT_data("mu0_ProbNNmu>.5&&mu1_ProbNNmu>.5&&BDT<.4",q2Range,namePlot.Remove(namePlot.Sizeof()-5)+"_invertedBDTCut.eps","","");
-    if(kind=="D2pipimumu") bkgExponent = fit_invertedBDT_data("mu0_ProbNNmu>.5&&mu1_ProbNNmu>.5&&BDT<.4&&BDT>-.5",q2Range,namePlot.Remove(namePlot.Sizeof()-5)+"_invertedBDTCut.eps","","");
+    if(kind=="D2pipimumu") bkgExponent = fit_invertedBDT_data("mu0_ProbNNmu>.5&&mu1_ProbNNmu>.5&&BDT<.4",q2Range,namePlot.Remove(namePlot.Sizeof()-5)+"_invertedBDTCut.eps","","");
     namePlot+=".eps";
   }
-  else bkgExponent=0;
+  else bkgExponent=-3e-4;
 
   D0_M_ExpoLambda.setVal(bkgExponent);
   D0_M_ExpoLambda.setConstant();
  
   //observables                                                                                                                                                                             
-  RooRealVar D0_M("Dst_DTF_D0_M",xLabel, 1810., 1940.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M",xLabel, 1810., 1940.,"MeV/c^{2}");
   TString dmRange = "&&deltaM>144.5&&deltaM<146.5";
  
   //get data to fit                                                                                                                                                                          
@@ -1252,42 +1417,39 @@ void D2hhmumuFitter1D::fit_Data(TString kind, TString cut,TString q2Range,TStrin
   RooDataSet* data = new RooDataSet("data", "data", cutTree, RooArgSet(D0_M));
 
 
-  //get efficiency Ratio
-
-  EfficiencyCalculator myEfficiency(kind);
-  double relEff = myEfficiency.getMCRelativeSigToNormEfficiency(cut,"",q2Range,"D_DiMuon_Mass>675&&D_DiMuon_Mass<875");
-
   ///////////////////////
   //                   //
   //   fit the yield   //
   //                   //
   ///////////////////////
 
-
   D2hhmumuModel1D* myModel= new D2hhmumuModel1D();
   RooWorkspace m_ws = initializeModel(myModel,D0_M); //get a workspace with all PDFs                                                                                                        
   m_ws.SetName("m_ws");
   m_ws.import(*data);
+  
+  double sigMin=-20;
+  double sigMax=2000;
+  double sigStart=10;
 
-  RooRealVar nSignal("nSignal","number of signal events",10,-20,2000);                                                                                       
+  // RooRealVar nSignal("nSignal","number of signal events",10,-20,2000);                                                                                       
+  RooRealVar nSignal("nSignal","number of signal events",sigStart,sigMin,sigMax);
   RooRealVar nCombinatoricBkg("nCombinatoricBkg","number of combinatorial bkg events",10,0,3000);                                                   
   RooRealVar nD2hhhhBkg("nD2hhhhBkg","number of misidentified D2hhhh background",5,0,200);                                              
   RooRealVar nSignal_blind("nSignal_blind","number of signal events blind",nSignal.getVal()+Nsig_blinding.getVal(),nSignal.getMin()+Nsig_blinding.getVal(),nSignal.getMax()+Nsig_blinding.getVal());
-
 
   m_ws.import(nCombinatoricBkg);
   m_ws.import(nD2hhhhBkg);
   m_ws.import(nSignal_blind);                                                                                                                                   
   m_ws.import(Nsig_blinding);
-  m_ws.factory("expr::yield('nSignal_blind-Nsig_blinding',nSignal_blind,Nsig_blinding)");                                                                                   m_ws.factory("SUM::tot(yield*Signal,nCombinatoricBkg*CombinatoricExpoBkg,nD2hhhhBkg*D2hhhhBkg)");
+  m_ws.factory("expr::yield('nSignal_blind-Nsig_blinding',nSignal_blind,Nsig_blinding)");                                                                                  
+  m_ws.factory("SUM::tot(yield*Signal,nCombinatoricBkg*CombinatoricExpoBkg,nD2hhhhBkg*D2hhhhBkg)");
  
-  RooAbsPdf* finalPDF = m_ws.pdf("tot");                                                                                                                                                
+  RooAbsPdf* finalPDF = m_ws.pdf("tot");
   m_ws.import(*finalPDF);
- 
-  RooFitResult *result;                                                                                                                                                                  
-  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(3),Minos(kTRUE));                                                                                                                                 
-  m_ws.import(*result);                                                                                                                                                                  
-  cout << "result is --------------- "<<endl;                                                                                                                                            
+  RooFitResult *result;
+  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(8),Minos(kTRUE));                                                                                                                                 
+  m_ws.import(*result);                                                                                                                                                                 cout << "result is --------------- "<<endl;                                                                                                                                            
   result->Print();                                                                                                                                                                       
  
   dcastyle();
@@ -1306,27 +1468,29 @@ void D2hhmumuFitter1D::fit_Data(TString kind, TString cut,TString q2Range,TStrin
   TCanvas* c1= new TCanvas("canvas");
   CreateSubPad(c1,0.25);
  
+  TBox * blindingbox = new TBox();
+  blindingbox->SetFillColor(0);
+
   c1->cd(2);                                                                                                                                    
   RooHist* hpull = frame_m->pullHist() ;
   RooPlot* frame_m3 = D0_M.frame(Title("Pull Distribution")) ;
   frame_m3->addPlotable(hpull,"BX") ;
   frame_m3->Draw();
+  blindingbox->DrawBox(1830.,frame_m3->GetMinimum()*0.97,1900.,frame_m3->GetMaximum()*0.97);
  
   c1->cd(1);
-  TBox * blindingbox = new TBox();
-  blindingbox->SetFillColor(0);
-  RooPlot* frame_m2= D0_M.frame();
+   RooPlot* frame_m2= D0_M.frame();
   data->plotOn(frame_m2,Name("data"),CutRange("lowersideband,uppersideband"),MarkerSize(0.5),Binning(26));                
 
   m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("CombinatoricExpoBkg")),LineStyle(kDashed),Range("lowersideband,uppersideband"),LineColor(kBlue),LineWidth(2.5),Normalization(sidebands,RooAbsReal::NumEvent));                                  
-  m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("D2hhhhBkg")),LineStyle(kDashed),Range("lowersideband,uppersideband"),LineColor(kGreen+3),LineWidth(2.5),Normalization(sidebands,RooAbsReal::NumEvent));                                  
+  m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("D2hhhhBkg")),LineStyle(10),Range("lowersideband,uppersideband"),LineColor(kGreen+3),LineWidth(2.5),Normalization(sidebands,RooAbsReal::NumEvent));                                  
 
   finalPDF->plotOn(frame_m2,Range("lowersideband,uppersideband"),LineColor(kBlack),LineWidth(2.5),Normalization(sidebands,RooAbsReal::NumEvent));                                  
 
-  blindingbox->DrawBox(1830.,0.0,1900.,frame_m->GetMaximum()*0.97);
   RooArgSet set(nCombinatoricBkg,nD2hhhhBkg,D0_M_ExpoLambda);
-  finalPDF->paramOn(frame_m2,Layout(.2,.8,.92),Parameters(set)) ;
+  //finalPDF->paramOn(frame_m2,Layout(.2,.8,.92),Parameters(set)) ;
   frame_m2->Draw();
+  blindingbox->DrawBox(1830.,0.01,1900.,frame_m2->GetMaximum()*0.4);
   
   TLatex latex;
   latex.SetNDC();
@@ -1336,6 +1500,21 @@ void D2hhmumuFitter1D::fit_Data(TString kind, TString cut,TString q2Range,TStrin
 
   c1->Draw();
   c1->Print(namePlot);
+
+  //Write results to file
+  
+  myFile<<std::fixed;
+  myFile<<" data signal fit #nSignal_blind# #nD2hhhhBkg# #nCombinatoricBkg#  "<<std::endl;
+  myFile<<std::setprecision(1);
+  myFile//<<" & "<<m_ws.var("nSignal_blind")->getVal()<<"$\\pm$"
+	<<" & blind $\\pm$"
+	<<m_ws.var("nSignal_blind")->getError()
+    	<<" & "<<m_ws.var("nD2hhhhBkg")->getVal()
+	<<"$\\pm$"<<m_ws.var("nD2hhhhBkg")->getError()
+	<<" & "<<m_ws.var("nCombinatoricBkg")->getVal()
+ 	<<"$\\pm$"<<m_ws.var("nCombinatoricBkg")->getError()
+	<<"&&\\\\"<<std::endl;
+  
   
 
   ///////////////////////////
@@ -1344,41 +1523,376 @@ void D2hhmumuFitter1D::fit_Data(TString kind, TString cut,TString q2Range,TStrin
   //                       //
   ///////////////////////////
 
-                                                                                                                                                                                        
-  //redfintion of PDF in terms of BR                                                                                                                                      
+  std::cout<<q2Range<<std::endl;
+
+  //load  efficiency Ratio
+
+  int q2Bin = 0;
+  if(q2Range=="D_DiMuon_Mass<525") q2Bin=1;
+  if(q2Range=="D_DiMuon_Mass>525&&D_DiMuon_Mass<565") q2Bin=2;
+  if(q2Range=="D_DiMuon_Mass>565") q2Bin=3;
+  if(q2Range=="D_DiMuon_Mass>950&&D_DiMuon_Mass<1100") q2Bin=4;
+  if(q2Range=="D_DiMuon_Mass>1100") q2Bin=5;
+
+  std::cout<<q2Bin<<std::endl;
+
+
+  if(q2Bin==0){
+    std::cout<<"--------------------------------------------------------"<<std::endl;
+    std::cout<<"-----     ERROR: COULD NOT LOAD EFFICIENCY       -------"<<std::endl;
+    std::cout<<"----------Q2 RANGE NOT KNOWN             ---------------"<<std::endl;
+    std::cout<<"--------------------------------------------------------"<<std::endl;
+    return;
+  }
+
+
+  TFile *fIn = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/totalEfficiency/totalRelativeEfficiency.root");
+  TH1D* EffHisto;
+  if(kind=="D2KKmumu") EffHisto = (TH1D*)fIn->Get("totalRelEff_KKmumu");
+  else EffHisto = (TH1D*)fIn->Get("totalRelEff_pipimumu");
+
+  double relEff = EffHisto->GetBinContent(q2Bin);
+  double drelEff= EffHisto->GetBinError(q2Bin);
+
+
+  D2hhmumuModel1D* myModel_Br= new D2hhmumuModel1D();
+  RooWorkspace m_ws_Br = initializeModel(myModel_Br,D0_M); //get a workspace with all PDFs                                                                                                          
+  m_ws_Br.SetName("m_ws_Br");
+  m_ws_Br.import(*data);
+
+  RooRealVar nCombinatoricBkg2("nCombinatoricBkg2","number of combinatorial bkg events",10,0,3000);
+  RooRealVar nD2hhhhBkg2("nD2hhhhBkg2","number of misidentified D2hhhh background",5,0,200);
+
+  m_ws_Br.import(nCombinatoricBkg2);
+  m_ws_Br.import(nD2hhhhBkg2);
+
   EffRatio.setVal(relEff); EffRatio.setConstant();                                                                                                             
-  std::cout<<"nnorm "<< nNorm.getVal() <<std::endl;                                                                                                         
-  nNorm.setVal(nNorm.getVal()*1);                                                                                                                                       
-  nNorm.setConstant();                                                                                                         
+  nNorm.setVal(nNorm.getVal());nNorm.setConstant();
   BFnorm.setVal(4.17e-6);BFnorm.setConstant();                                                                                                                                            
-  RooRealVar BFsig("BFsig","signal Branching fraction",1e-7,1e-9,1e-6);                  
+  double BFmin = sigMin/nNorm.getVal() /EffRatio.getVal() * BFnorm.getVal();
+  double BFmax = sigMax /nNorm.getVal() /EffRatio.getVal() * BFnorm.getVal();
+  double BFStart = sigStart/nNorm.getVal() /EffRatio.getVal() * BFnorm.getVal();
+
+  //RooRealVar BFsig("BFsig","signal Branching fraction",1e-7,-1e-9,1e-6);       
+  RooRealVar BFsig("BFsig","signal Branching fraction",BFStart,BFmin,BFmax);
   RooRealVar BFblind("BFblind","BFblind",BFsig.getVal()+BFsig_blinding.getVal(),BFsig.getMin()+BFsig_blinding.getVal(),BFsig.getMax()+BFsig_blinding.getVal());
   
-  std::cout<<"BFBLIND"<<BFblind.getVal()<<" "<< BFblind.getMin()  <<"  "<< BFblind.getMax()<<std::endl;
+  m_ws_Br.import(BFblind); // add nuissance parameters to the WS                                                                                                                      
+  m_ws_Br.import(BFsig);
+  m_ws_Br.import(BFsig_blinding);
+  m_ws_Br.import(EffRatio);                                                   
+  m_ws_Br.import(BFnorm); 
+  m_ws_Br.import(nNorm);                               
 
-  m_ws.import(BFblind); // add nuissance parameters to the WS                                                                                                                      
-  m_ws.import(BFsig);
-  m_ws.import(BFsig_blinding);
-  m_ws.import(EffRatio);                                                                                                                                         
-  m_ws.import(BFnorm);                                                                                                                                             m_ws.import(nNorm);                                                                                            
-  
-  m_ws.factory("expr::sig_yield('nNorm*((BFblind-BFsig_blinding)/BFnorm)*EffRatio',nNorm,BFblind,BFsig_blinding,BFnorm,EffRatio)");    
-  m_ws.factory("SUM::tot_pdf(nCombinatoricBkg*CombinatoricExpoBkg,sig_yield*Signal,nD2hhhhBkg*D2hhhhBkg)");                                               
-        
-  RooAbsPdf* finalPDF2 = m_ws.pdf("tot_pdf");                        
+  m_ws_Br.factory("expr::sig_yield('nNorm*((BFblind-BFsig_blinding)/BFnorm)*EffRatio',nNorm,BFblind,BFsig_blinding,BFnorm,EffRatio)");    
+  m_ws_Br.factory("SUM::tot_pdf(sig_yield*Signal,nD2hhhhBkg2*D2hhhhBkg,nCombinatoricBkg2*CombinatoricExpoBkg)");                                               
+
+  RooAbsPdf* finalPDF2 = m_ws_Br.pdf("tot_pdf");
+  m_ws_Br.import(*finalPDF2);
+
   RooFitResult *result2;                                                                                                                                                              
-  //result2 = finalPDF2->fitTo(*data,Save(kTRUE),NumCPU(6),Minos(kTRUE));                                                                                                
-  //result2->Print();
-  //result2->Print("test.eps");
+
+  result2 = finalPDF2->fitTo(*data,Save(kTRUE),NumCPU(6),Minos(kTRUE));                                                                                                
+  result2->Print();
+  
+  myFile<<" data signal fit #BF blind#  "<<std::endl;
+  myFile<<std::scientific;
+  myFile<<std::setprecision(2);
+  myFile//<<" & "<<m_ws_Br.var("BFblind")->getVal()<<"$\\pm$"
+        <<" & blind & "
+        <<m_ws_Br.var("BFblind")->getError()
+	<<" & X & X & 10.01" //systematic uncertainty missing!
+        <<"\\\\"<<std::endl;
+  
 }
+
+
+void D2hhmumuFitter1D::fit_unblinded_Data(TString kind, TString cut,TString q2Range,TString namePlot,TString xLabel,TString legend,bool bkgShapeFromInvertedBDTCut){
+
+  double bkgExponent;
+
+
+  //apply a fit to the comb background in the dm abd BDT sideband and fit the exponential
+  if(bkgShapeFromInvertedBDTCut){  
+    if(kind=="D2KKmumu") bkgExponent = fit_invertedBDT_data("mu0_ProbNNmu>.5&&mu1_ProbNNmu>.5&&BDT<.4",q2Range,namePlot.Remove(namePlot.Sizeof()-5)+"_invertedBDTCut.eps","","");
+    if(kind=="D2pipimumu") bkgExponent = fit_invertedBDT_data("mu0_ProbNNmu>.5&&mu1_ProbNNmu>.5&&BDT<.4",q2Range,namePlot.Remove(namePlot.Sizeof()-5)+"_invertedBDTCut.eps","","");
+    // namePlot+=".eps";
+  }
+  else bkgExponent=-3e-4;
+  //now it is getting ugly. Fot the systematic study the hardcoded default value has to be changed
+  //bkgExponent=-14e-4;
+
+  //ResolutionScale.setRange(0.9,1.2); 
+  //globalShift.setRange(0.9,1.2);
+
+  D0_M_ExpoLambda.setVal(bkgExponent);
+  D0_M_ExpoLambda.setConstant();
+  
+  
+  //observables                                                                                                                                                                             
+  RooRealVar D0_M("Dst_DTF_D0_M",xLabel, 1810., 1940.,"MeV/c^{2}");
+  TString dmRange = "&&deltaM>144.5&&deltaM<146.5";
+ 
+  //get data to fit                                                                                                                                                                          
+  TFile* file;
+  file= new TFile(pathToSignalData,"OPEN");
+  TTree* tree = (TTree*) file->Get("BDT_Tree");
+  tree->SetBranchStatus("*",0);
+  tree->SetBranchStatus("Dst_DTF_D0_M",1);
+  tree->SetBranchStatus("deltaM",1);
+  tree->SetBranchStatus("BDT",1);
+  tree->SetBranchStatus("mu0_ProbNNmu",1);
+  tree->SetBranchStatus("mu1_ProbNNmu",1);
+  tree->SetBranchStatus("D_DiMuon_Mass",1);
+  tree->SetBranchStatus("nTracks",1);
+  tree->SetBranchStatus("mu0_MuonNShared",1);
+  tree->SetBranchStatus("mu1_MuonNShared",1);
+
+
+  //apply cuts if needed                   
+
+  TTree* cutTree = tree->CopyTree(cut+dmRange+"&&"+q2Range);
+  RooArgList list =  RooArgList( D0_M );
+  RooDataSet* data = new RooDataSet("data", "data", cutTree, RooArgSet(D0_M));
+
+
+  ///////////////////////
+  //                   //
+  //   fit the yield   //
+  //                   //
+  ///////////////////////
+
+  D2hhmumuModel1D* myModel= new D2hhmumuModel1D();
+  RooWorkspace m_ws = initializeModel(myModel,D0_M); //get a workspace with all PDFs                                                                                                        
+  m_ws.SetName("m_ws");
+  m_ws.import(*data);
+  
+  double sigMin=-20;
+  double sigMax=2000;
+  double sigStart=10;
+
+  // RooRealVar nSignal("nSignal","number of signal events",10,-20,2000);                                                                                       
+  RooRealVar nSignal("nSignal","number of signal events",sigStart,sigMin,sigMax);
+  RooRealVar nCombinatoricBkg("nCombinatoricBkg","number of combinatorial bkg events",10,0,3000);                                                   
+  RooRealVar nD2hhhhBkg("nD2hhhhBkg","number of misidentified D2hhhh background",5,0,200);                                              
+  
+  m_ws.import(nCombinatoricBkg);
+  m_ws.import(nD2hhhhBkg);
+  m_ws.import(nSignal);                                                                                                                                   
+  m_ws.factory("SUM::tot(nSignal*Signal,nCombinatoricBkg*CombinatoricExpoBkg,nD2hhhhBkg*D2hhhhBkg)");
+ 
+  RooAbsPdf* finalPDF = m_ws.pdf("tot");
+  m_ws.import(*finalPDF);
+  RooFitResult *result;
+  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(8),Minos(kTRUE));                                                                                                                                 
+  m_ws.import(*result);                                                                                                                                                                 cout << "result is --------------- "<<endl;                                                                                                                                        
+  result->Print();                                                                                                                                                                       
+ 
+  dcastyle();
+  
+  RooPlot* frame_m= D0_M.frame();                                                                                                                                          
+  frame_m->SetTitle("");                                                                                                                                                    
+  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(26));
+  finalPDF->plotOn(frame_m,LineColor(kRed),LineWidth(2.5) );                                  
+
+  TCanvas* c1= new TCanvas("canvas");
+  CreateSubPad(c1,0.25);
+
+  c1->cd(2);                                                                                                                                    
+  RooHist* hpull = frame_m->pullHist() ;
+  RooPlot* frame_m3 = D0_M.frame(Title("Pull Distribution")) ;
+  frame_m3->addPlotable(hpull,"BX") ;
+  frame_m3->Draw();
+ 
+  c1->cd(1);
+   RooPlot* frame_m2= D0_M.frame();
+   data->plotOn(frame_m2,Name("data"),MarkerSize(0.5),Binning(26));                
+   m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("CombinatoricExpoBkg")),LineStyle(kDashed),LineColor(kBlue),LineWidth(3),Name("PDFComb"));                                  
+   m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("D2hhhhBkg")),LineStyle(10),LineColor(kGreen+3),LineWidth(3),Name("PDFMisID"));                                  
+   m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("Signal")),LineStyle(kDashed),LineColor(kRed),LineWidth(3),Name("PDFSignal"));  
+   m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("Signal")),FillColor(kRed),DrawOption("F"),VLines(),FillStyle(3002));  
+   finalPDF->plotOn(frame_m2,LineColor(kBlack),LineWidth(3),Name("PDFTotal"));                                  
+
+  RooArgSet set(nCombinatoricBkg,nD2hhhhBkg,D0_M_ExpoLambda);
+  //finalPDF->paramOn(frame_m2,Layout(.2,.8,.92),Parameters(set)) ;
+  frame_m2->Draw();
+  
+  TLatex latex;
+  latex.SetNDC();
+  latex.SetTextSize(0.035);
+  latex.SetTextAlign(13);  //align at top                                                                                                          
+  latex.DrawLatex(.58,.88,legend);
+
+  TLegend *leg = new TLegend(0.6,0.5,0.9,0.8);
+  //leg->SetHeader("LHCb");                                                                                                                                                              
+  leg->SetTextFont(132);
+  leg->AddEntry(frame_m2->findObject("data"),"Data","EP");
+  leg->AddEntry(frame_m2->findObject("PDFTotal"),"Total PDF","L");
+  if(kind=="D2KKmumu"){
+    leg->AddEntry(frame_m2->findObject("PDFSignal"),"D^{0}#rightarrow K^{-}K^{+}#mu^{-}#mu^{+}","L");
+    leg->AddEntry(frame_m2->findObject("PDFMisID"),"D^{0}#rightarrow K^{-}K^{+}#pi^{-}#pi^{+}","L");
+  }
+  if(kind=="D2pipimumu"){
+    leg->AddEntry(frame_m2->findObject("PDFSignal"),"D^{0}#rightarrow #pi^{-}#pi^{+}#mu^{-}#mu^{+}","L");
+    leg->AddEntry(frame_m2->findObject("PDFMisID"),"D^{0}#rightarrow #pi^{-}#pi^{+}#pi^{-}#pi^{+}","L");
+  }
+  leg->AddEntry(frame_m2->findObject("PDFComb"),"Comb. Bkg","L");
+  leg->Draw("");
+
+
+  c1->Draw();
+  c1->Print(namePlot+".eps");
+
+
+  //Draw publication plots
+
+  TCanvas* cPub= new TCanvas("canvas_pub");
+ 
+  cPub->cd(1);
+  frame_m2->Draw();
+  
+  //TLatex latex;
+  latex.SetNDC();
+  latex.SetTextSize(0.035);
+  latex.SetTextAlign(13);  //align at top                                                                                                          
+  latex.DrawLatex(.58,.88,legend);
+  latex.SetTextSize(0.05);
+  latex.DrawLatex(.25,.88,"LHCb");
+
+  /*
+  TLegend *leg2 = new TLegend(0.6,0.5,0.9,0.8);
+  leg2->SetHeader("LHCb");                                                                                                                                                      
+  leg->SetTextFont(132);
+  leg->AddEntry(frame_m2->findObject("data"),"Data","EP");
+  leg->AddEntry(frame_m2->findObject("PDFTotal"),"Total PDF","L");
+  if(kind=="D2KKmumu"){
+    leg->AddEntry(frame_m2->findObject("PDFSignal"),"D^{0}#rightarrow K^{-}K^{+}#mu^{-}#mu^{+}","L");
+    leg->AddEntry(frame_m2->findObject("PDFMisID"),"D^{0}#rightarrow K^{-}K^{+}#pi^{-}#pi^{+}","L");
+  }
+  if(kind=="D2pipimumu"){
+    leg->AddEntry(frame_m2->findObject("PDFSignal"),"D^{0}#rightarrow #pi^{-}#pi^{+}#mu^{-}#mu^{+}","L");
+    leg->AddEntry(frame_m2->findObject("PDFMisID"),"D^{0}#rightarrow #pi^{-}#pi^{+}#pi^{-}#pi^{+}","L");
+  }
+  leg->AddEntry(frame_m2->findObject("PDFComb"),"Comb. Bkg","L");
+  leg->Draw("");
+  */
+  cPub->SaveAs(namePlot+".root");
+  cPub->SaveAs(namePlot+".C");
+  
+
+  //Write results to file
+  
+  myFile<<std::fixed;
+  myFile<<" data signal fit unblinded #nSignal# #nD2hhhhBkg# #nCombinatoricBkg#  "<<std::endl;
+  myFile<<std::setprecision(1);
+  myFile<<" & "<<m_ws.var("nSignal")->getVal()<<"$\\pm$"
+	<<m_ws.var("nSignal")->getError()
+    	<<" & "<<m_ws.var("nD2hhhhBkg")->getVal()
+	<<"$\\pm$"<<m_ws.var("nD2hhhhBkg")->getError()
+	<<" & "<<m_ws.var("nCombinatoricBkg")->getVal()
+ 	<<"$\\pm$"<<m_ws.var("nCombinatoricBkg")->getError()
+	<<"&& \\\\"<<std::endl;
+
+
+  ///////////////////////////
+  //                       //
+  //   FIT BR              //
+  //                       //
+  ///////////////////////////
+
+  std::cout<<q2Range<<std::endl;
+
+  //load  efficiency Ratio
+
+  int q2Bin = 0;
+  if(q2Range=="D_DiMuon_Mass<525") q2Bin=1;
+  if(q2Range=="D_DiMuon_Mass>525&&D_DiMuon_Mass<565") q2Bin=2;
+  if(q2Range=="D_DiMuon_Mass>565&&D_DiMuon_Mass<950") q2Bin=3;
+  if(q2Range=="D_DiMuon_Mass>565") q2Bin=3;
+  if(q2Range=="D_DiMuon_Mass>950&&D_DiMuon_Mass<1100") q2Bin=4;
+  if(q2Range=="D_DiMuon_Mass>1100") q2Bin=5;
+
+
+  if(q2Bin==0){
+    std::cout<<"--------------------------------------------------------"<<std::endl;
+    std::cout<<"-----     ERROR: COULD NOT LOAD EFFICIENCY       -------"<<std::endl;
+    std::cout<<"----------Q2 RANGE NOT KNOWN             ---------------"<<std::endl;
+    std::cout<<"--------------------------------------------------------"<<std::endl;
+    return;
+  }
+
+
+  TFile *fIn = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/totalEfficiency/totalRelativeEfficiency.root");
+  TH1D* EffHisto;
+  if(kind=="D2KKmumu") EffHisto = (TH1D*)fIn->Get("totalRelEff_KKmumu");
+  else EffHisto = (TH1D*)fIn->Get("totalRelEff_pipimumu");
+
+  double relEff = EffHisto->GetBinContent(q2Bin);
+  double drelEff= EffHisto->GetBinError(q2Bin);
+
+  std::cout<<"realtive Efficiency: "<<relEff<<std::endl;
+
+
+
+  D2hhmumuModel1D* myModel_Br= new D2hhmumuModel1D();
+  RooWorkspace m_ws_Br = initializeModel(myModel_Br,D0_M); //get a workspace with all PDFs                                                                                                          
+  m_ws_Br.SetName("m_ws_Br");
+  m_ws_Br.import(*data);
+
+  RooRealVar nCombinatoricBkg2("nCombinatoricBkg2","number of combinatorial bkg events",10,0,3000);
+  RooRealVar nD2hhhhBkg2("nD2hhhhBkg2","number of misidentified D2hhhh background",5,0,200);
+
+  m_ws_Br.import(nCombinatoricBkg2);
+  m_ws_Br.import(nD2hhhhBkg2);
+
+  EffRatio.setVal(relEff); EffRatio.setConstant();                                                                                                             
+  nNorm.setVal(nNorm.getVal());nNorm.setConstant();
+  BFnorm.setVal(4.17e-6);BFnorm.setConstant();                                                                                                                                            
+
+  double BFmin = sigMin/nNorm.getVal() /EffRatio.getVal() * BFnorm.getVal();
+  double BFmax = sigMax /nNorm.getVal() /EffRatio.getVal() * BFnorm.getVal();
+  double BFStart = sigStart/nNorm.getVal() /EffRatio.getVal() * BFnorm.getVal();
+
+  RooRealVar BFsig("BFsig","signal Branching fraction",BFStart,BFmin,BFmax);
+  
+  m_ws_Br.import(BFsig);
+  m_ws_Br.import(EffRatio);                                                   
+  m_ws_Br.import(BFnorm); 
+  m_ws_Br.import(nNorm);                               
+
+  m_ws_Br.factory("expr::sig_yield('nNorm*(BFsig/BFnorm)*EffRatio',nNorm,BFsig,BFnorm,EffRatio)");    
+  m_ws_Br.factory("SUM::tot_pdf(sig_yield*Signal,nD2hhhhBkg2*D2hhhhBkg,nCombinatoricBkg2*CombinatoricExpoBkg)");                                               
+
+  RooAbsPdf* finalPDF2 = m_ws_Br.pdf("tot_pdf");
+  m_ws_Br.import(*finalPDF2);
+
+  RooFitResult *result2;                                                                                                                                                              
+
+  result2 = finalPDF2->fitTo(*data,Save(kTRUE),NumCPU(6),Minos(kTRUE));                                                                                                
+  result2->Print();
+
+  std::cout<<"crosscheck: BF= "<<m_ws.var("nSignal")->getVal()/nNorm.getVal()/relEff*4.17e-6<<" +- "<<m_ws.var("nSignal")->getError()/m_ws.var("nSignal")->getVal() * m_ws.var("nSignal")->getVal()/nNorm.getVal()/relEff*4.17e-6<<std::endl;
+  
+  myFile<<" data signal fit unblindend  #BF#  "<<std::endl;
+  myFile<<std::setprecision(2);
+  myFile<<std::scientific;
+  myFile<<" & "<<m_ws_Br.var("BFsig")->getVal()<<" & "
+        <<m_ws_Br.var("BFsig")->getError()<<" & " 
+	<<m_ws_Br.var("BFsig")->getError()/m_ws_Br.var("BFsig")->getVal()
+	<<"& X & 10.01" //systematic uncertainty missing!  
+        <<"\\\\"<<std::endl;
+}
+
+
+
 
 double D2hhmumuFitter1D::fit_invertedBDT_data(TString cut,TString q2Range,TString namePlot,TString xLabel,TString legend){
 
   //observables                                                                                                                                                                             
-  RooRealVar D0_M("Dst_DTF_D0_M",xLabel, 1810., 1940.,"MeV");
-  //TString dmRange = "&&deltaM>144.5&&deltaM<146.5";
-  TString dmRange = "&&deltaM>150.";
- 
+  RooRealVar D0_M("Dst_DTF_D0_M",xLabel, 1810., 1940.,"MeV/c^{2}");
+
+  TString dmRange = "&&deltaM>150."; // go to dm mass sideband
+
   //get data to fit                                                                                                                                                                          
   TFile* file;
   file= new TFile(pathToSignalData,"OPEN");
@@ -1415,7 +1929,7 @@ double D2hhmumuFitter1D::fit_invertedBDT_data(TString cut,TString q2Range,TStrin
   m_ws.SetName("m_ws");
   m_ws.import(*data);
 
-  RooRealVar nSignal("nSignal","number of signal events",10,0,2000);                                                                                       
+  RooRealVar nSignal("nSignal","number of signal events",10,-200,2000);                                                                                       
   RooRealVar nCombinatoricBkg("nCombinatoricBkg","number of combinatorial bkg events",10,0,5000);                                                   
   RooRealVar nD2hhhhBkg("nD2hhhhBkg","number of misidentified D2hhhh background",5,0,2000);                                              
   RooRealVar nSignal_blind("nSignal_blind","number of signal events blind",nSignal.getVal()+Nsig_blinding.getVal(),nSignal.getMin()+Nsig_blinding.getVal(),nSignal.getMax()+Nsig_blinding.getVal());
@@ -1431,7 +1945,7 @@ double D2hhmumuFitter1D::fit_invertedBDT_data(TString cut,TString q2Range,TStrin
   m_ws.import(*finalPDF);
  
   RooFitResult *result;                                                                                                                                                                  
-  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(3),Minos(kTRUE));                                                                                                                                 
+  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(8),Minos(kTRUE));                                                                                                                                 
   m_ws.import(*result);                                                                                                                                                                  
   cout << "result is --------------- "<<endl;                                                                                                                                            
   result->Print();                                                                                                                                                                       
@@ -1447,7 +1961,7 @@ double D2hhmumuFitter1D::fit_invertedBDT_data(TString cut,TString q2Range,TStrin
   RooPlot* frame_m= D0_M.frame();                                                                                                                                          
   frame_m->SetTitle("");                                                                                                                                                    
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(26));
-  finalPDF->plotOn(frame_m,LineColor(kRed),LineWidth(2.5) );                                  
+  finalPDF->plotOn(frame_m,LineColor(kRed),LineWidth(3) );                                  
 
   TCanvas* c1= new TCanvas("canvas");
   CreateSubPad(c1,0.25);
@@ -1464,15 +1978,19 @@ double D2hhmumuFitter1D::fit_invertedBDT_data(TString cut,TString q2Range,TStrin
   RooPlot* frame_m2= D0_M.frame();
   data->plotOn(frame_m2,Name("data"),CutRange("lowersideband,uppersideband"),MarkerSize(0.5),Binning(26));                
 
-  m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("CombinatoricExpoBkg")),LineStyle(kDashed),Range("lowersideband,uppersideband"),LineColor(kBlue),LineWidth(2.5),Normalization(sidebands,RooAbsReal::NumEvent));                                  
-  m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("D2hhhhBkg")),LineStyle(kDashed),Range("lowersideband,uppersideband"),LineColor(kGreen+3),LineWidth(2.5),Normalization(sidebands,RooAbsReal::NumEvent));                                  
+  m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("CombinatoricExpoBkg")),LineStyle(kDashed),Range("lowersideband,uppersideband"),LineColor(kBlue),LineWidth(3),Normalization(sidebands,RooAbsReal::NumEvent));                                  
+  m_ws.pdf("tot")->plotOn(frame_m2,Components(*m_ws.pdf("D2hhhhBkg")),LineStyle(10),Range("lowersideband,uppersideband"),LineColor(kGreen+3),LineWidth(3),Normalization(sidebands,RooAbsReal::NumEvent));                                  
 
-  finalPDF->plotOn(frame_m2,Range("lowersideband,uppersideband"),LineColor(kBlack),LineWidth(2.5),Normalization(sidebands,RooAbsReal::NumEvent));                                  
+  finalPDF->plotOn(frame_m2,Range("lowersideband,uppersideband"),LineColor(kBlack),LineWidth(3),Normalization(sidebands,RooAbsReal::NumEvent));                                  
 
   blindingbox->DrawBox(1830.,0.0,1900.,frame_m->GetMaximum()*0.97);
   RooArgSet set(nCombinatoricBkg,nD2hhhhBkg,D0_M_ExpoLambda);
-  //finalPDF->paramOn(frame_m2,Layout(.2,.8,.92),Parameters(set)) ;
+  finalPDF->paramOn(frame_m2,Layout(.2,.8,.92),Parameters(set)) ;
   frame_m2->Draw();
+
+  myFile<<std::setprecision(4);
+  myFile<<" data signal fit #exponential#"<<std::endl;
+  myFile<<m_ws.var("D0_M_ExpoLambda")->getValV()<<"$\\pm$"<<m_ws.var("D0_M_ExpoLambda")->getError()<<"\\\\"<<std::endl;
   
   TLatex latex;
   latex.SetNDC();
@@ -1505,22 +2023,47 @@ void D2hhmumuFitter1D::fillModelConfig(TString kind, TString dataCut,TString mis
     xLabel_signal="m(#pi#pi#mu#mu)";
     xLabel_misID="m_{#pi#pi#mu#mu}(#pi#pi#pi#pi)";
   }
-  
-  
+
+  //remove the .root extension from fileName                                                                                                                                             
+  TString target = fileName.Remove(fileName.Sizeof()-6);
 
   //fix the mass shapes and get normalization 
-  this->fit_normalization_MC(dataCut,true);
-  this->fit_Kpipipi_misID(misIDCut,true); 
-  this->fit_normalization_Data(dataCut);  //neeeded to get nNorm
+  std::cout<<"*************************"<< target << std::endl;
+  std::cout<<"FITTING SIGNAL MC FOR "<< target << std::endl;
+  std::cout<<"*************************"<< target << std::endl;
 
-  this->fit_MC(dataCut+"&&"+q2Range,true);
-  this->fit_HHpipi_misID(misIDCut+"&&"+q2Range,true); //fix D2HHmumu shape
+  this->fit_MC(dataCut+"&&"+q2Range,true,target+"_MCFit.eps");
+
+  std::cout<<"*************************"<< target << std::endl;
+  std::cout<<"FITTING NORM MODE MC FOR "<< target << std::endl;
+  std::cout<<"*************************"<< target << std::endl;
+  this->fit_normalization_MC(dataCut,true,target+"_MCNormFit.eps");
+
+  std::cout<<"*************************"<< target << std::endl;
+  std::cout<<"FITTING K3pi DATA FOR "<< target << std::endl;
+  std::cout<<"*************************"<< target << std::endl;
+  this->fit_Kpipipi_misID(misIDCut,true,target+"_D2K3piFit.eps"); 
+
+  std::cout<<"*************************"<< target << std::endl;
+  std::cout<<"FITTING D2HHPIPI DATA FOR "<< target << std::endl;
+  std::cout<<"*************************"<< target << std::endl;
+  this->fit_HHpipi_misID(misIDCut+"&&"+q2Range,true,target+"_D2hhpipiFit.eps"); //fix D2HHmumu shape
+
+  std::cout<<"*************************"<< target << std::endl;
+  std::cout<<"FITTING NORM DATA FOR "<< target << std::endl;
+  std::cout<<"*************************"<< target << std::endl;
+  this->fit_normalization_Data(dataCut,target+"_NormFit.eps");  //neeeded to get nNorm
+
+  std::cout<<"*************************"<< target << std::endl;
+  std::cout<<"FITTING DATA FOR "<< target << std::endl;
+  std::cout<<"*************************"<< target << std::endl;
+  this->fit_Data(kind,dataCut,q2Range,target+"_DataFit.eps","","",true); //also run because Shape of CombBkg is fixed here
   
   std::cout<< "nnorm " << nNorm.getVal()  <<std::endl;
   std::cout<<" Filling model config for decay "<<kind<<" in q^2 range "<<q2Range<<" to "<<fileName<<std::endl;
 
   std::cout << "Filling workpace for cut: "<< dataCut << " to "<< fileName << std::endl;
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1810., 1940.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1810., 1940.,"MeV/c^{2}");
   TString dmRange = "&&deltaM>144.5&&deltaM<146.5";
  
   TFile* file;
@@ -1544,16 +2087,6 @@ void D2hhmumuFitter1D::fillModelConfig(TString kind, TString dataCut,TString mis
   m_ws.SetName("m_ws");
   m_ws.import(*data);
 
-  RooRealVar nCombinatoricBkg("nCombinatoricBkg","number of combinatorial bkg events",30,0,300);
-  RooRealVar nD2hhhhBkg("nD2hhhhBkg","number of misidentified D2hhhh background",2,0,50);
-  RooRealVar BFsig("BFsig","signal Branching fraction",1e-8,1e-9,1e-6);
-
-  D0_M_chebyA.setVal(0.);
-  D0_M_chebyA.setConstant(0.);
-  D0_M_chebyB.setVal(0.);
-  D0_M_chebyB.setConstant(0.);
-
-
   // add nuissance parameters to the WS                                                                                                                             
 
   //load the relative efficiency
@@ -1562,18 +2095,34 @@ void D2hhmumuFitter1D::fillModelConfig(TString kind, TString dataCut,TString mis
   if(kind=="D2KKmumu") EffHisto = (TH1D*)fIn->Get("totalRelEff_KKmumu");
   else EffHisto = (TH1D*)fIn->Get("totalRelEff_pipimumu");
 
-  std::cout<<"Load Efficiency File.. "<<std::endl;
+   std::cout<<"Load Efficiency File.. "<<std::endl;
 
   double relEff = EffHisto->GetBinContent(q2Bin+1);
   double drelEff= EffHisto->GetBinError(q2Bin+1);
 
-  std::cout<<"relative efficiency= "<<relEff<<" +- "<<drelEff<<::std::endl;
-  
+  //test!!
+  //relEff=1;
 
   EffRatio.setVal(relEff);
   BFnorm.setVal(4.17e-6);
   EffRatio.setError(drelEff);
   BFnorm.setError(4e-7);
+
+  double sigMin=-20;
+  double sigMax=2000;
+  double sigStart=10;
+
+  double BFmin = sigMin/nNorm.getVal() /EffRatio.getVal() * BFnorm.getVal();
+  double BFmax = sigMax /nNorm.getVal() /EffRatio.getVal() * BFnorm.getVal();
+  double BFStart = sigStart/nNorm.getVal() /EffRatio.getVal() * BFnorm.getVal();
+
+  //RooRealVar nCombinatoricBkg("nCombinatoricBkg","number of combinatorial bkg events",30,0,300);
+  RooRealVar nCombinatoricBkg("nCombinatoricBkg","number of combinatorial bkg events",30,-10,300);
+  //RooRealVar nD2hhhhBkg("nD2hhhhBkg","number of misidentified D2hhhh background",2,0,100);
+  RooRealVar nD2hhhhBkg("nD2hhhhBkg","number of misidentified D2hhhh background",2,-30,100);
+  RooRealVar BFsig("BFsig","signal Branching fraction",BFStart,BFmin,BFmax);
+
+  std::cout<<"relative efficiency= "<<relEff<<" +- "<<drelEff<<::std::endl;  
 
   //nNorm.setConstant();
   //BFnorm.setConstant();
@@ -1585,14 +2134,32 @@ void D2hhmumuFitter1D::fillModelConfig(TString kind, TString dataCut,TString mis
   m_ws.import(EffRatio);
   m_ws.import(BFnorm);
   m_ws.import(nNorm);
+
+  //delta Yield is uncertainty on signal yield
+  RooRealVar deltaYield("deltaYield","uncertainty on signal yield",1,0,3);
+  deltaYield.setVal(1.0);
+  //realtive uncertainty on ratio of yields 1.7%
   
-  m_ws.factory("expr::sig_yield('nNorm*BFsig/BFnorm*EffRatio',nNorm,BFsig,BFnorm,EffRatio)");
-  m_ws.factory("SUM::tot_pdf(nCombinatoricBkg*CombinatoricBkg,sig_yield*Signal,nD2hhhhBkg*D2hhhhBkg)");
+  if(kind=="D2pipimumu"){
+    deltaYield.setError(2.56e-2);
+  }
+
+  if(kind=="D2KKmumu"){ 
+    deltaYield.setError(2.57e-2); 
+  }
+
+  m_ws.import(deltaYield);
+  
+  m_ws.factory("expr::sig_yield('(nNorm*BFsig/BFnorm*EffRatio)*deltaYield',nNorm,BFsig,BFnorm,EffRatio,deltaYield)");
+  //m_ws.factory("expr::sig_yield('(nNorm*BFsig/BFnorm*EffRatio)',nNorm,BFsig,BFnorm,EffRatio)");
+  m_ws.factory("SUM::tot_pdf(nCombinatoricBkg*CombinatoricExpoBkg,sig_yield*Signal,nD2hhhhBkg*D2hhhhBkg)");
   m_ws.factory("Gaussian::constraintnNorm(nNorm0[1000,40000],nNorm,nNorm_err[1])");
   m_ws.factory("Gaussian::constraintEff(Eff0[0,2.5],EffRatio,EffRatio_err[1])");
   m_ws.factory("Gaussian::constraintBFnorm(BFnorm0[1e-6,1e-5],BFnorm,BFnorm_err[1])");
- 
-  m_ws.factory("PROD:model(tot_pdf,constraintnNorm,constraintEff,constraintBFnorm)"); 
+  m_ws.factory("Gaussian::constraintDeltaYield(deltaYield0[0,3],deltaYield,deltaYield_err[1])");
+
+  //m_ws.factory("PROD:model(tot_pdf,constraintnNorm,constraintEff,constraintBFnorm)"); 
+  m_ws.factory("PROD:model(tot_pdf,constraintnNorm,constraintEff,constraintBFnorm,constraintDeltaYield)"); 
 
   //set constraints to nuisance parameteres
   m_ws.var("nNorm0")->setVal(nNorm.getVal());
@@ -1608,6 +2175,9 @@ void D2hhmumuFitter1D::fillModelConfig(TString kind, TString dataCut,TString mis
   m_ws.var("BFnorm_err")->setVal(BFnorm.getError());
   m_ws.var("BFnorm0")->setConstant(true);
 
+  m_ws.var("deltaYield0")->setVal(1.0);
+  m_ws.var("deltaYield_err")->setVal(deltaYield.getError());
+  m_ws.var("deltaYield0")->setConstant(true);
 
   //RooAbsPdf* finalPDF2 = m_ws.pdf("model");
   //RooFitResult *result2;
@@ -1616,9 +2186,14 @@ void D2hhmumuFitter1D::fillModelConfig(TString kind, TString dataCut,TString mis
 
   m_ws.defineSet("obs","Dst_DTF_D0_M");                                                                                                                                          
   m_ws.defineSet("poi","BFsig");                                                                                                                                                 
-  m_ws.defineSet("nuispar","nCombinatoricBkg,nNorm,EffRatio,BFnorm,nD2hhhhBkg");                                                                                          
+  //m_ws.defineSet("nuispar","nCombinatoricBkg,nNorm,EffRatio,BFnorm,nD2hhhhBkg");                                                                                          
+  m_ws.defineSet("nuispar","nCombinatoricBkg,nNorm,EffRatio,BFnorm,nD2hhhhBkg,deltaYield");                                                                                          
   //create the Model config which is passes to limit calculator                                                                                                                           
-  m_ws.defineSet("gObs","nNorm0,Eff0,BFnorm0");
+  //m_ws.defineSet("gObs","nNorm0,Eff0,BFnorm0");
+  m_ws.defineSet("gObs","nNorm0,Eff0,BFnorm0,deltaYield0");
+
+  //RooAbsPdf* model = m_ws.pdf("model") ;  
+  //well model->fitTo(*data) ;
 
   RooStats::ModelConfig*  myModelConfig= new RooStats::ModelConfig("ModelConfig",&m_ws);                                                                                                     
   //myModelConfig->SetWorkspace(m_ws);                                                                                                                                            
@@ -1643,12 +2218,17 @@ void D2hhmumuFitter1D::fillModelConfig(TString kind, TString dataCut,TString mis
 
   // write the workspace in the file                                                                                                                                                      
   //TString fileName = "Data_model1D.root";                                                                                                                                                
+  
+  //add .root extension again
+  fileName+=".root";
+  
   m_ws.writeToFile(fileName,true);                                                                                                                                             
   cout << "model written to file " << fileName << endl;
   cout << "using following input parameter" << endl;
   cout << "nNorm= "<< m_ws.var("nNorm0")->getVal() << "+-" << m_ws.var("nNorm_err")->getVal() << endl;
   cout << "BFnorm= "<< m_ws.var("BFnorm0")->getVal() << "+-" << m_ws.var("BFnorm_err")->getVal() << endl;
   cout << "Eff= "<< m_ws.var("Eff0")->getVal() << "+-" << m_ws.var("EffRatio_err")->getVal() << endl;
+  cout << "BFmin= " << BFmin <<" BFmax "<<BFmax<<"  "<<BFStart<<std::endl; 
 
 
 }
@@ -1811,13 +2391,13 @@ void D2hhmumuFitter1D::makeToyStudy(TString kind, TString dataCut,TString q2Rang
 
   TFile* fOut = new TFile(targetFile,"RECREATE");
 
-  TH1* pullSigYield = new TH1D("pullSigYield","pull of signal yield",50,-5,5); 
-  TH1* pullMisIDYield = new TH1D("pullmsiIDYield","pull of misID yield",50,-5,5); 
-  TH1* pullCombYield = new TH1D("pullCombYield","pull of comb bkg yield",50,-5,5); 
+  TH1* pullSigYield = new TH1D("pullSigYield","pull of signal yield",30,-6,6); 
+  TH1* pullMisIDYield = new TH1D("pullmsiIDYield","pull of misID yield",30,-6,6); 
+  TH1* pullCombYield = new TH1D("pullCombYield","pull of comb bkg yield",30,-6,6); 
 
-  TH1* pullSigYield_symmetric = new TH1D("pullSigYield_symmetric","pull of signal yield",50,-5,5); 
-  TH1* pullMisIDYield_symmetric = new TH1D("pullmsiIDYield_symmetric","pull of misID yield",50,-5,5); 
-  TH1* pullCombYield_symmetric = new TH1D("pullCombYield_symmetric","pull of comb bkg yield",50,-5,5); 
+  TH1* pullSigYield_symmetric = new TH1D("pullSigYield_symmetric","pull of signal yield",30,-6,6); 
+  TH1* pullMisIDYield_symmetric = new TH1D("pullmsiIDYield_symmetric","pull of misID yield",30,-6,6); 
+  TH1* pullCombYield_symmetric = new TH1D("pullCombYield_symmetric","pull of comb bkg yield",30,-6,6); 
 
 
   TH1* SigYield = new TH1D("SigYield"," signal yield",50,nSig_exp - 5*TMath::Sqrt(nSig_exp),nSig_exp + 5*TMath::Sqrt(nSig_exp)); //+-5 sigma window
@@ -1843,7 +2423,7 @@ TH1* errorCombYield = new TH1D("errorCombYield","error of comb bkg yield",50,TMa
   TRandom3 generatorMisID(27031959);
 
   // std::cout << "Doing toy study for cut: "<< dataCut << " to "<< fileName << std::endl;
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1810., 1940.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1810., 1940.,"MeV/c^{2}");
 
   RooRealVar nCombinatoricBkg("nCombinatoricBkg","number of combinatorial bkg events",1,0,200);
   RooRealVar nD2hhhhBkg("nD2hhhhBkg","number of misidentified D2hhhh background",1,0,200);
@@ -1861,7 +2441,7 @@ TH1* errorCombYield = new TH1D("errorCombYield","error of comb bkg yield",50,TMa
   
   D2hhmumuModel1D* myModel;
 
-  while(i<10000){//100000
+  while(i<501){//100000
 
     ++i;
 
@@ -1875,10 +2455,11 @@ TH1* errorCombYield = new TH1D("errorCombYield","error of comb bkg yield",50,TMa
     //nCombinatoricBkg.setVal(nCombBkg_exp); nCombinatoricBkg.setRange(-ntot,ntot);
     //nD2hhhhBkg.setVal(nMisIDfluct); nD2hhhhBkg.setRange(-ntot,ntot);
     
-    nCombinatoricBkg.setVal(nCombBkg_exp); nCombinatoricBkg.setRange(0,ntot);
-    nD2hhhhBkg.setVal(nMisIDfluct); nD2hhhhBkg.setRange(0,ntot);
+    //only positive 
+    nCombinatoricBkg.setVal(nCombBkg_exp); nCombinatoricBkg.setRange(0,3*ntot);
+    nD2hhhhBkg.setVal(nMisIDfluct); nD2hhhhBkg.setRange(0,3*ntot);
   
-    nSigExp.setVal(nSig_exp); nSigExp.setRange(-ntot,ntot);
+    nSigExp.setVal(nSig_exp); nSigExp.setRange(-3*ntot,3*ntot);
       
     RooWorkspace m_ws = initializeModel(myModel,D0_M); //get a workspace with all PDFs                                                                                                     
     m_ws.SetName("m_ws");
@@ -1909,7 +2490,7 @@ TH1* errorCombYield = new TH1D("errorCombYield","error of comb bkg yield",50,TMa
     RooAbsReal* nll;
     RooMinuit* m;
 
-    nll = m_ws.pdf("tot_pdf")->createNLL(*ds_signal,NumCPU(3),Extended());
+    nll = m_ws.pdf("tot_pdf")->createNLL(*ds_signal,NumCPU(6),Extended());
     m = new RooMinuit(*nll);
     RooFitResult *result1 = 0;
     RooFitResult *result2 = 0;
@@ -1963,8 +2544,9 @@ TH1* errorCombYield = new TH1D("errorCombYield","error of comb bkg yield",50,TMa
     if((covarianceQuality !=3 || migradStatus!=0)) continue; //migrad and Hesse ok
 
     if(m_ws.var("nSigExp")->getAsymErrorLo()==0 || m_ws.var("nSigExp")->getAsymErrorHi()==0) continue;
-    if(m_ws.var("nD2hhhhBkg")->getAsymErrorLo()==0 || m_ws.var("nD2hhhhBkg")->getAsymErrorHi()==0) continue;
-    if(m_ws.var("nCombinatoricBkg")->getAsymErrorLo()==0 || m_ws.var("nCombinatoricBkg")->getAsymErrorHi()==0) continue; //minos ok
+    //right now, only ask for proper signal yield uncertainty
+    //if(m_ws.var("nD2hhhhBkg")->getAsymErrorLo()==0 || m_ws.var("nD2hhhhBkg")->getAsymErrorHi()==0) continue;
+    //if(m_ws.var("nCombinatoricBkg")->getAsymErrorLo()==0 || m_ws.var("nCombinatoricBkg")->getAsymErrorHi()==0) continue; //minos ok
 
     //pullSigYield->Fill( (m_ws.var("nSigExp")->getVal() - nSigfluct)/m_ws.var("nSigExp")->getError() );
 
@@ -1978,8 +2560,8 @@ TH1* errorCombYield = new TH1D("errorCombYield","error of comb bkg yield",50,TMa
 
     //// only converged fits are considered. Take negative assymetric error if pull is negative and positive error if pull is positive
 
-    /////////////////////////////////////////////////////
-    if(m_ws.var("nSigExp")->getVal() - nSigExp.getVal()>0){ //pull positive
+    /////////////////////////////////////////////////////m
+    if(m_ws.var("nSigExp")->getVal() - nSigExp.getVal()<0){ //pull positive !! inverted!!
       pull_sig =(m_ws.var("nSigExp")->getVal() - nSigExp.getVal() )/ m_ws.var("nSigExp")->getAsymErrorHi();
       errorSigYield->Fill( m_ws.var("nSigExp")->getAsymErrorHi());
     }
@@ -2018,10 +2600,6 @@ TH1* errorCombYield = new TH1D("errorCombYield","error of comb bkg yield",50,TMa
     pullMisIDYield_symmetric->Fill( (m_ws.var("nD2hhhhBkg")->getVal() - nD2hhhhBkg.getVal() )/m_ws.var("nD2hhhhBkg")->getError() );
     pullCombYield_symmetric->Fill( (m_ws.var("nCombinatoricBkg")->getVal() - nCombinatoricBkg.getVal() )/m_ws.var("nCombinatoricBkg")->getError() );
 
-    //SigYield->Fill( m_ws.var("nSigExp")->getVal() );
-    //MisIDYield->Fill( m_ws.var("nD2hhhhBkg")->getVal() );
-    //CombYield->Fill( m_ws.var("nCombinatoricBkg")->getVal());
-
     //errorSigYield->Fill( m_ws.var("nSigExp")->getError() );
     //errorMisIDYield->Fill( m_ws.var("nD2hhhhBkg")->getError() );
     //errorCombYield->Fill( m_ws.var("nCombinatoricBkg")->getError() );
@@ -2036,21 +2614,21 @@ TH1* errorCombYield = new TH1D("errorCombYield","error of comb bkg yield",50,TMa
   c->Divide(3,3);
   c->cd(1);
   pullSigYield->Draw();
-  pullSigYield->Fit("gaus");
+  //pullSigYield->Fit("gaus");
   c->cd(2);
   SigYield->Draw();
   c->cd(3);
   errorSigYield->Draw();
   c->cd(4);
   pullMisIDYield->Draw();
-  pullMisIDYield->Fit("gaus");
+  //pullMisIDYield->Fit("gaus");
   c->cd(5);
   MisIDYield->Draw();
   c->cd(6);
   errorMisIDYield->Draw();
   c->cd(7);
   pullCombYield->Draw();
-  pullCombYield->Fit("gaus");
+  //pullCombYield->Fit("gaus");
   c->cd(8);
   CombYield->Draw();
   c->cd(9);
@@ -2086,38 +2664,27 @@ void D2hhmumuFitter1D::makeSimpleToyStudy(TString kind, TString dataCut,TString 
    
   //fix the mass shapes and get normalization                                                                                                                                            
   std::cout<<"Beginning toy study: data cut "<< dataCut << " with expected yields: nsig = "<< nSig_exp <<  "ncombbkg = "<< nCombBkg_exp<<  "nmisID = "<< nMisID_exp <<std::endl;   
-
-  TH1* pullSigYield = new TH1D("pullSigYield","pull of signal yield",50,-5,5); 
-  TH1* pullMisIDYield = new TH1D("pullmsiIDYield","pull of misID yield",50,-5,5); 
-  TH1* pullCombYield = new TH1D("pullCombYield","pull of comb bkg yield",50,-5,5); 
-  TH1* SigYield = new TH1D("SigYield"," signal yield",50,nSig_exp - 5*TMath::Sqrt(nSig_exp),nSig_exp + 5*TMath::Sqrt(nSig_exp)); //+-5 sigma window
-  TH1* MisIDYield = new TH1D("misIDYield"," misID yield",50,nMisID_exp - 5*TMath::Sqrt(nMisID_exp),nMisID_exp + 5*TMath::Sqrt(nMisID_exp)); 
-  TH1* CombYield = new TH1D("CombYield"," comb bkg yield",50,nCombBkg_exp - 5*TMath::Sqrt(nCombBkg_exp),nCombBkg_exp + 5*TMath::Sqrt(nCombBkg_exp)); 
-  TH1* errorSigYield = new TH1D("errorSigYield","error of signal yield",50,TMath::Sqrt(nSig_exp) - 5*TMath::Sqrt(TMath::Sqrt(nSig_exp)),TMath::Sqrt(nSig_exp) + 5*TMath::Sqrt(TMath::Sqrt(nSig_exp))); 
-TH1* errorMisIDYield = new TH1D("errormsiIDYield","error of misID yield",50,TMath::Sqrt(nMisID_exp) - 5*TMath::Sqrt(TMath::Sqrt(nMisID_exp)),TMath::Sqrt(nMisID_exp) + 5*TMath::Sqrt(TMath::Sqrt(nMisID_exp)));
-TH1* errorCombYield = new TH1D("errorCombYield","error of comb bkg yield",50,TMath::Sqrt(nCombBkg_exp) - 5*TMath::Sqrt(TMath::Sqrt(nCombBkg_exp)),TMath::Sqrt(nCombBkg_exp) + 5*TMath::Sqrt(TMath::Sqrt(nCombBkg_exp))); 
   
- this->fit_MC(dataCut+"&&"+q2Range,true,"test1.eps");
- this->fit_normalization_MC(dataCut,true,"test2.eps");
- this->fit_Kpipipi_misID(misIDCut,true,"test3.eps");
- this->fit_normalization_Data(dataCut,"test4.eps");  //all shapes fixed
- this->fit_HHpipi_misID(misIDCut+"&&"+q2Range,true,"test5.eps");
- this->fit_Data(kind,dataCut,q2Range,"test6.eps","","",true);
-
+  this->fit_MC(dataCut+"&&"+q2Range,true,"test1.eps");
+  this->fit_normalization_MC(dataCut,true,"test2.eps");
+  this->fit_Kpipipi_misID(misIDCut,true,"test3.eps");
+  this->fit_normalization_Data(dataCut,"test4.eps");  //all shapes fixed
+  this->fit_HHpipi_misID(misIDCut+"&&"+q2Range,true,"test5.eps");
+  this->fit_Data(kind,dataCut,q2Range,"test6.eps","","",true);
 
   std::cout<<"    SHAPES FIXED        "<<std::endl;
   
   // std::cout << "Doing toy study for cut: "<< dataCut << " to "<< fileName << std::endl;
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1780., 1950.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1810., 1940.,"MeV");
 
   D2hhmumuModel1D* myModel= new D2hhmumuModel1D();
   RooWorkspace m_ws = initializeModel(myModel,D0_M); //get a workspace with all PDFs                                                                              \
                                                                                                                                                                    
   m_ws.SetName("m_ws");
 
-  RooRealVar nSignal("nSignal","number of signal events",nSig_exp,-20,2000);
-  RooRealVar nCombinatoricBkg("nCombinatoricBkg","number of combinatorial bkg events",nCombBkg_exp,0,3000);
-  RooRealVar nD2hhhhBkg("nD2hhhhBkg","number of misidentified D2hhhh background",nMisID_exp,0,200);
+  RooRealVar nSignal("nSignal","number of signal events",nSig_exp,-200,2000);
+  RooRealVar nCombinatoricBkg("nCombinatoricBkg","number of combinatorial bkg events",nCombBkg_exp,-200,3000);
+  RooRealVar nD2hhhhBkg("nD2hhhhBkg","number of misidentified D2hhhh background",nMisID_exp,-200,200);
 
   m_ws.import(nCombinatoricBkg);
   m_ws.import(nD2hhhhBkg);
@@ -2126,188 +2693,15 @@ TH1* errorCombYield = new TH1D("errorCombYield","error of comb bkg yield",50,TMa
 
   RooAbsPdf* finalPDF = m_ws.pdf("tot");   
 
+  RooMCStudy* mcstudy = new RooMCStudy(*m_ws.pdf("tot"),D0_M,Binned(kFALSE),Silence(),Extended(),
+				       FitOptions(Save(kTRUE),PrintEvalErrors(0))) ;
+  mcstudy->generateAndFit(1000) ;
 
-
-  int i=1;
-
-  RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
-
-
-  RooDataSet* data;
-
-
-  while(i<100){//100000
-
-    ++i;
-
-    data=(RooDataSet*)finalPDF->generate(RooArgSet(D0_M),nSig_exp+nCombBkg_exp+nMisID_exp);
-    finalPDF->fitTo(*data,Save(kTRUE),Minos(kTRUE),NumCPU(3));
-    
-      /*
-    int maxentries = 2;
-    int tries = 0;
-    int migradStatus = -1;
-    int covarianceQuality = -1;
-
-    RooAbsReal* nll;
-    RooMinuit* m;
-
-    nll = m_ws.pdf("tot_pdf")->createNLL(*ds_signal,NumCPU(3),Extended());
-    m = new RooMinuit(*nll);
-    RooFitResult *result1 = 0;
-    RooFitResult *result2 = 0;
-    RooFitResult *result3 = 0;
-    
-
-    while (tries <maxentries && (covarianceQuality !=3 || migradStatus!=0)){
-     
-      m->migrad();
-      result1 = m->save();
-      migradStatus = result1->status();
-
-      if(migradStatus!=0 && tries<maxentries)
-      std::cout<<"skpip HESSE due to bad MIGRAD status."<<std::endl;
-      else
-      {
-	m->hesse();
-	result2 = m->save();
-	covarianceQuality = result2->covQual();
-
-      }
-
-      if( (migradStatus!=0 || covarianceQuality !=3)  && tries<maxentries)
-	std::cout<<"skpip MINOS due to bad HESSE status."<<std::endl;
-      else
-	{
-	  m->minos();
-	  result3 = m->save();
-	  
-	}
- 
-      tries++;
-      }
-
-   //RooFitResult *result = m_ws.pdf("tot_pdf")->fitTo(*ds_signal,Save(kTRUE),Minos(kTRUE),NumCPU(3));
-           
-    if(result3!=0)result3->Print();
-
-    m->Delete();
-    nll->Delete();
-    delete result1;
-    delete result2;
-    delete result3;
-    delete myModel;
-    
-    ds_signal->reset();
-    ds_misID->reset();
-    ds_combinatorial->reset();
-
-    std::cout<<"covarianceQuality"<<covarianceQuality << " migradStatus  "<< migradStatus<< std::endl;
-    if((covarianceQuality !=3 || migradStatus!=0)) continue; //migrad and Hesse ok
-
-      */
-
-    if(m_ws.var("nSignal")->getAsymErrorLo()==0 || m_ws.var("nSignal")->getAsymErrorHi()==0) continue;
-    if(m_ws.var("nD2hhhhBkg")->getAsymErrorLo()==0 || m_ws.var("nD2hhhhBkg")->getAsymErrorHi()==0) continue;
-    if(m_ws.var("nCombinatoricBkg")->getAsymErrorLo()==0 || m_ws.var("nCombinatoricBkg")->getAsymErrorHi()==0) continue; //minos ok
-    //if(m_ws.var("D0_M_chebyA")->getAsymErrorLo()==0 || m_ws.var("D0_M_chebyA")->getAsymErrorHi()==0) continue; //minos ok                                                         
-
-    //pullSigYield->Fill( (m_ws.var("nSignal")->getVal() - nSig_exp)/m_ws.var("nSignal")->getError() );
-
-    double pull_sig=0;
-    double pull_combBkg=0;
-    double pull_hhhhbkg=0;
-
-
-    std::cout<<"nSignal "<< m_ws.var("nSignal")->getVal()  << "symm Error " << m_ws.var("nSignal")->getError() << "low " << TMath::Abs( m_ws.var("nSignal")->getAsymErrorLo()) << "high " << m_ws.var("nSignal")->getAsymErrorHi() <<std::endl; 
-
-
-    //// only converged fits are considered. Take negative assymetric error if pull is negative and positive error if pull is positive
-
-    /////////////////////////////////////////////////////
-    if(m_ws.var("nSignal")->getVal() - nSig_exp>0){ //pull positive
-      pull_sig =(m_ws.var("nSignal")->getVal() - nSig_exp )/ m_ws.var("nSignal")->getAsymErrorHi();
-      errorSigYield->Fill( m_ws.var("nSignal")->getAsymErrorHi());
-    }
-    else  {//pull negative
-      pull_sig = (m_ws.var("nSignal")->getVal() - nSig_exp)/TMath::Abs( m_ws.var("nSignal")->getAsymErrorLo());
-      errorSigYield->Fill(TMath::Abs( m_ws.var("nSignal")->getAsymErrorLo()));
-    }
-    pullSigYield->Fill(pull_sig);
-    SigYield->Fill( m_ws.var("nSignal")->getVal() ); 
-
-    /////////////////////////////////////////////////////////
-    if(m_ws.var("nD2hhhhBkg")->getVal() - nMisID_exp >0 ) {
-      pull_hhhhbkg = (m_ws.var("nD2hhhhBkg")->getVal() - nMisID_exp )/m_ws.var("nD2hhhhBkg")->getAsymErrorHi();
-      errorMisIDYield->Fill(m_ws.var("nD2hhhhBkg")->getAsymErrorHi());
-    }
-    else{
-      pull_hhhhbkg = (m_ws.var("nD2hhhhBkg")->getVal() - nMisID_exp )/TMath::Abs(m_ws.var("nD2hhhhBkg")->getAsymErrorLo());
-      errorMisIDYield->Fill(TMath::Abs(m_ws.var("nD2hhhhBkg")->getAsymErrorLo()));
-    }
-    pullMisIDYield->Fill(pull_hhhhbkg);
-    MisIDYield->Fill(m_ws.var("nD2hhhhBkg")->getVal() );
-
-    ////////////////////////////////////////////////////////////
-    if(m_ws.var("nCombinatoricBkg")->getVal() - nCombBkg_exp >0){
-      pull_combBkg = (m_ws.var("nCombinatoricBkg")->getVal() - nCombBkg_exp )/m_ws.var("nCombinatoricBkg")->getAsymErrorHi();
-      errorCombYield->Fill(m_ws.var("nCombinatoricBkg")->getAsymErrorHi());
-        }
-    else{
-      pull_combBkg = (m_ws.var("nCombinatoricBkg")->getVal() - nCombBkg_exp )/TMath::Abs(m_ws.var("nCombinatoricBkg")->getAsymErrorLo());
-      errorCombYield->Fill(TMath::Abs(m_ws.var("nCombinatoricBkg")->getAsymErrorLo()));
-    }
-    pullCombYield->Fill(pull_combBkg);
-    CombYield->Fill( m_ws.var("nCombinatoricBkg")->getVal() );
-
-    //pullSigYield->Fill( (m_ws.var("nSigExp")->getVal() - nSigExp.getVal() )/m_ws.var("nSigExp")->getError() ); 
-    //pullMisIDYield->Fill( (m_ws.var("nD2hhhhBkg")->getVal() - nD2hhhhBkg.getVal() )/m_ws.var("nD2hhhhBkg")->getError() );
-    //pullCombYield->Fill( (m_ws.var("nCombinatoricBkg")->getVal() - nCombinatoricBkg.getVal() )/m_ws.var("nCombinatoricBkg")->getError() );
-
-    //SigYield->Fill( m_ws.var("nSigExp")->getVal() );
-    //MisIDYield->Fill( m_ws.var("nD2hhhhBkg")->getVal() );
-    //CombYield->Fill( m_ws.var("nCombinatoricBkg")->getVal());
-
-    //errorSigYield->Fill( m_ws.var("nSigExp")->getError() );
-    //errorMisIDYield->Fill( m_ws.var("nD2hhhhBkg")->getError() );
-    //errorCombYield->Fill( m_ws.var("nCombinatoricBkg")->getError() );
-
-   }  
-
-  gStyle->SetPalette(1) ;
-  //gStyle->SetOptStat(0) ;
-  gStyle->SetOptFit(1) ;
-
+  RooPlot* frame3 = mcstudy->plotPull(*m_ws.var("nSignal"),Bins(40),FitGauss(kTRUE)) ;
   TCanvas* c = new TCanvas("rf801_mcstudy","rf801_mcstudy",900,900) ;
-  c->Divide(3,3);
-  c->cd(1);
-  pullSigYield->Draw();
-  pullSigYield->Fit("gaus");
-  c->cd(2);
-  SigYield->Draw();
-  c->cd(3);
-  errorSigYield->Draw();
-  c->cd(4);
-  pullMisIDYield->Draw();
-  pullMisIDYield->Fit("gaus");
-  c->cd(5);
-  MisIDYield->Draw();
-  c->cd(6);
-  errorMisIDYield->Draw();
-  c->cd(7);
-  pullCombYield->Draw();
-  pullCombYield->Fit("gaus");
-  c->cd(8);
-  CombYield->Draw();
-  c->cd(9);
-  errorCombYield->Draw();
-  std::cout<<errorCombYield->Integral()<<std::endl;
-
-  c->SaveAs(targetFile);
-
-  std::cout<<"DONE"<<std::endl;
-  
-
+  frame3->GetYaxis()->SetTitleOffset(1.4) ; frame3->Draw() ;
+  c->Print("test.eps");
+ 
 }
 
 
@@ -2331,7 +2725,7 @@ void D2hhmumuFitter1D::setStyle(){
 }
 
 double D2hhmumuFitter1D::getMisIDbkgExp(TString cut, TString namePlot){
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1780., 1940.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1780., 1940.,"MeV/c^{2}");
   TString dmRange = "&&deltaM>144.5&&deltaM<146.5";
 
   TFile* file;
@@ -2360,7 +2754,7 @@ double D2hhmumuFitter1D::getMisIDbkgExp(TString cut, TString namePlot){
   RooAbsPdf* finalPDF = myModel->Model(components);
 
   RooFitResult *result;
-  result = finalPDF->fitTo(*data,Save(kTRUE),Extended(kTRUE),NumCPU(3));
+  result = finalPDF->fitTo(*data,Save(kTRUE),Extended(kTRUE),NumCPU(8));
 
   TCanvas* c1= new TCanvas("");
   c1->Divide(2);
@@ -2369,9 +2763,9 @@ double D2hhmumuFitter1D::getMisIDbkgExp(TString cut, TString namePlot){
   RooPlot* frame_m= D0_M.frame();
   frame_m->SetTitle("");
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
-  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("D2hhhhBkg")),LineColor(kRed),LineStyle(kDashed),LineWidth(2.5));
-  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(2.5));
-  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(2.5));
+  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("D2hhhhBkg")),LineColor(kRed),LineStyle(kDashed),LineWidth(3));
+  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(3));
+  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(3));
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
   frame_m->Draw();
   c1->cd(2);
@@ -2394,7 +2788,7 @@ double D2hhmumuFitter1D::getMisIDbkgExp(TString cut, TString namePlot){
 
 double D2hhmumuFitter1D::getCombBkg(TString cut,TString namePlot){
 
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1810., 1940.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1810., 1940.,"MeV/c^{2}");
   TString dmRange = "&& deltaM>144.5 && deltaM<146.5";
 
   TFile* file;
@@ -2434,7 +2828,7 @@ double D2hhmumuFitter1D::getCombBkg(TString cut,TString namePlot){
 
   double sidebands = data->sumEntries("1","R1,R2");
   RooFitResult *result;
-  result = finalPDF->fitTo(*data,Range("R1,R2"),Save(kTRUE),Extended(kTRUE),NumCPU(3));                                                                                            
+  result = finalPDF->fitTo(*data,Range("R1,R2"),Save(kTRUE),Extended(kTRUE),NumCPU(8));                                                                                            
 
   TCanvas* c1= new TCanvas("");
   c1->Divide(2);
@@ -2443,8 +2837,8 @@ double D2hhmumuFitter1D::getCombBkg(TString cut,TString namePlot){
   RooPlot* frame_m= D0_M.frame();
   frame_m->SetTitle("");
   data->plotOn(frame_m,Name("data"),CutRange("R1,R2"),MarkerSize(0.5),Binning(50));
-  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(2.5));
-  finalPDF->plotOn(frame_m,Range("lowersideband,uppersideband"),LineColor(kRed),LineWidth(2.5),Normalization(sidebands,RooAbsReal::NumEvent));                                  
+  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(3));
+  finalPDF->plotOn(frame_m,Range("lowersideband,uppersideband"),LineColor(kRed),LineWidth(3),Normalization(sidebands,RooAbsReal::NumEvent));                                  
   data->plotOn(frame_m,Name("data"),CutRange("R1,R2"),MarkerSize(0.5),Binning(50));
   frame_m->Draw();
   c1->Draw();
@@ -2543,7 +2937,7 @@ double D2hhmumuFitter1D::getCombBkgFromDeltaM(TString cut,TString namePlot){
 
   //double sidebands = data->sumEntries("1","R1,R2");
   RooFitResult *result;
-  result = finalPDF->fitTo(*data,Range("R1"),Save(kTRUE),Extended(kTRUE),NumCPU(3));                                                                                            
+  result = finalPDF->fitTo(*data,Range("R1"),Save(kTRUE),Extended(kTRUE),NumCPU(8));                                                                                            
 
   TCanvas* c1= new TCanvas("");
   c1->Divide(2);
@@ -2552,8 +2946,8 @@ double D2hhmumuFitter1D::getCombBkgFromDeltaM(TString cut,TString namePlot){
   RooPlot* frame_m= deltaM.frame();
   frame_m->SetTitle("");
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
-  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(2.5));
-  finalPDF->plotOn(frame_m,Range("R1"),LineColor(kRed),LineWidth(2.5));//,Normalization(sidebands,RooAbsReal::NumEvent));                                  
+  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(3));
+  finalPDF->plotOn(frame_m,Range("R1"),LineColor(kRed),LineWidth(3));//,Normalization(sidebands,RooAbsReal::NumEvent));                                  
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
   frame_m->Draw();
   c1->Draw();
@@ -2706,7 +3100,7 @@ void D2hhmumuFitter1D::fit_PIDinverted_Data(bool fixShape,TString namePlot){
   std::string components="D2hhhhBkg CombinatoricBkg";
   RooAbsPdf* finalPDF = myModel->Model(components);
   RooFitResult *result;
-  result = finalPDF->fitTo(*data,Save(kTRUE),Extended(kTRUE),NumCPU(3));
+  result = finalPDF->fitTo(*data,Save(kTRUE),Extended(kTRUE),NumCPU(8));
 
   cout << "result is --------------- "<<endl;
   result->Print();
@@ -2720,9 +3114,9 @@ void D2hhmumuFitter1D::fit_PIDinverted_Data(bool fixShape,TString namePlot){
   RooPlot* frame_m= D0_M.frame();
   frame_m->SetTitle("");
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
-  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("D2hhhhBkg")),LineColor(kRed),LineStyle(kDashed),LineWidth(2.5));
-  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(2.5));
-  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(2.5));
+  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("D2hhhhBkg")),LineColor(kRed),LineStyle(kDashed),LineWidth(3));
+  myModel->GetWorkspace().pdf("D2hhmumuModel")->plotOn(frame_m,Components(*myModel->GetWorkspace().pdf("CombinatoricBkg")),LineColor(kBlue),LineStyle(kDashed),LineWidth(3));
+  finalPDF->plotOn(frame_m,LineColor(kBlack),LineWidth(3));
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
   frame_m->Draw();
 
@@ -2876,17 +3270,19 @@ void D2hhmumuFitter1D::addNormalizationSWeights(TString dataCut, TString misIDCu
   
   bool binned = true;
 
-  //this->fit_normalization_MC(dataCut,true,"");
+  this->fit_normalization_MC(dataCut,true,"");
   this->fit_Kpipipi_misID(misIDCut,true,""); //q2 range norm channel 
   
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(K #pi #mu #mu)", 1800., 1950.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(K #pi #mu #mu)", 1810., 1940.,"MeV/c^{2}");
   //TString dmRange = "&&deltaM>144.5&&deltaM<146.5&&Dst_DTF_D0_M>1800&&Dst_DTF_D0_M<1950&&D_DiMuon_Mass>675&&D_DiMuon_Mass<875";
-  TString dmRange = "&&deltaM>144.5&&deltaM<146.5&&Dst_DTF_D0_M>1800&&Dst_DTF_D0_M<1950";
+  TString dmRange = "&&deltaM>144.5&&deltaM<146.5&&Dst_DTF_D0_M>1810&&Dst_DTF_D0_M<1940";
   
   TFile* file;
-                                                                                                                                                                                    
+  
+                                                                                                                                                       
   file= new TFile(fIn,"OPEN");
   TTree* tree = (TTree*) file->Get("BDT_Tree");
+  
   tree->SetBranchStatus("*",1);
   tree->SetBranchStatus("Dst_DTF_D0_M",1);
   tree->SetBranchStatus("deltaM",1);
@@ -2902,14 +3298,21 @@ void D2hhmumuFitter1D::addNormalizationSWeights(TString dataCut, TString misIDCu
   RooDataSet* data = new RooDataSet("data", "data", cutTree, RooArgSet(D0_M));
   RooDataSet* data_small = (RooDataSet*) data->reduce(SelectVars(RooArgSet(D0_M)));
   RooDataHist* data_binned = data_small->binnedClone();
+  
+  ResolutionScale.setRange(0.9,1.2);
+  globalShift.setRange(0.9,1.2);
 
-  RooJohnsonSU Signal("Signal", "Signal D^{0} JSU", D0_M,D0_M_xi_norm,D0_M_lambda_norm,D0_M_gamma_norm,D0_M_delta_norm);
+  RooFormulaVar mean("mean","@0*@1",RooArgList(D0_M_xi_norm,globalShift));
+  RooFormulaVar width("width","@0*@1",RooArgList(D0_M_lambda_norm,ResolutionScale));
+
+  RooJohnsonSU Signal("Signal", "Signal D^{0} JSU", D0_M,mean,width,D0_M_gamma_norm,D0_M_delta_norm);
   
   RooJohnsonSU D2hhhhBkg("D2hhhhBkg", "D^{0} misidentified D2hhhhh", D0_M,D0_M_xi_bkg_norm,D0_M_lambda_bkg_norm,D0_M_gamma_bkg_norm,D0_M_delta_bkg_norm);
-  RooChebychev CombinatoricBkg("CombinatoricBkg", "Combinatoric Background (M)", D0_M, RooArgList(D0_M_chebyA,D0_M_chebyB));
+  RooExponential CombinatoricExpoBkg("CombinatoricExpoBkg","CombinatoricExpoBkg",D0_M,D0_M_ExpoLambda);
+
 
   RooRealVar f_bkg("f_{bkg}", "background fraction", 0.11, 0., 1.);
-  RooAddPdf bkg("bkg", "bkg", RooArgList(D2hhhhBkg,CombinatoricBkg), RooArgList(f_bkg));
+  RooAddPdf bkg("bkg", "bkg", RooArgList(D2hhhhBkg,CombinatoricExpoBkg), RooArgList(f_bkg));
 
   RooRealVar n_sig("n_sig", "n_sig", data->numEntries()/2., 0., data->numEntries());
   RooRealVar n_bkg("n_bkg", "n_bkg", data->numEntries()/2. , 0., data->numEntries());
@@ -2918,7 +3321,7 @@ void D2hhmumuFitter1D::addNormalizationSWeights(TString dataCut, TString misIDCu
 
   RooFitResult *result;
   if(binned) result = pdf->fitTo(*data_binned,Save(kTRUE),Extended());
-  else result = pdf->fitTo(*data,Save(kTRUE),Extended(),NumCPU(3));
+  else result = pdf->fitTo(*data,Save(kTRUE),Extended(),NumCPU(8));
   cout << "result is --------------- "<<endl;
   result->Print();
 
@@ -2927,9 +3330,9 @@ void D2hhmumuFitter1D::addNormalizationSWeights(TString dataCut, TString misIDCu
   frame_m->SetTitle("");
 
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
-  pdf->plotOn(frame_m,Name("pdf"),LineColor(kBlack),LineWidth(2.5));
-  pdf->plotOn(frame_m,Components(Signal),LineColor(kBlue),LineStyle(kDashed),LineWidth(2.5));
-  pdf->plotOn(frame_m,Components(bkg),LineColor(kRed),LineStyle(kDashed),LineWidth(2.5));
+  pdf->plotOn(frame_m,Name("pdf"),LineColor(kBlack),LineWidth(3));
+  pdf->plotOn(frame_m,Components(Signal),LineColor(kBlue),LineStyle(kDashed),LineWidth(3));
+  pdf->plotOn(frame_m,Components(bkg),LineColor(kRed),LineStyle(kDashed),LineWidth(3));
   //pdf->paramOn(frame_m,Layout(0.6));
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
   frame_m->Draw();
@@ -2997,7 +3400,7 @@ void D2hhmumuFitter1D::addNormalizationSWeightsHadronicChannel(TString dataCut,T
   
   bool binned = false;
 
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h^{(')} #mu #mu)", 1820., 1930.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h^{(')} #mu #mu)", 1820., 1930.,"MeV/c^{2}");
 
   TString dmRange = dataCut+"&&Dst_DTF_D0_M>1820.&&Dst_DTF_D0_M<1930.&&deltaM>144.5&&deltaM<146.5";
 
@@ -3035,7 +3438,7 @@ void D2hhmumuFitter1D::addNormalizationSWeightsHadronicChannel(TString dataCut,T
 
   RooFitResult *result;
   if(binned) result = pdf->fitTo(*data_binned,Save(kTRUE),Extended());
-  else result = pdf->fitTo(*data,Save(kTRUE),Extended(),NumCPU(3));
+  else result = pdf->fitTo(*data,Save(kTRUE),Extended(),NumCPU(8));
   cout << "result is --------------- "<<endl;
   result->Print();
 
@@ -3044,9 +3447,9 @@ void D2hhmumuFitter1D::addNormalizationSWeightsHadronicChannel(TString dataCut,T
   frame_m->SetTitle("");
 
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
-  pdf->plotOn(frame_m,Name("pdf"),LineColor(kBlack),LineWidth(2.5));
-  pdf->plotOn(frame_m,Components(Signal),LineColor(kBlue),LineStyle(kDashed),LineWidth(2.5));
-  pdf->plotOn(frame_m,Components(CombinatoricBkg),LineColor(kRed),LineStyle(kDashed),LineWidth(2.5));
+  pdf->plotOn(frame_m,Name("pdf"),LineColor(kBlack),LineWidth(3));
+  pdf->plotOn(frame_m,Components(Signal),LineColor(kBlue),LineStyle(kDashed),LineWidth(3));
+  pdf->plotOn(frame_m,Components(CombinatoricBkg),LineColor(kRed),LineStyle(kDashed),LineWidth(3));
   //pdf->paramOn(frame_m,Layout(0.6));
   data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
   frame_m->Draw();
@@ -3108,6 +3511,167 @@ void D2hhmumuFitter1D::addNormalizationSWeightsHadronicChannel(TString dataCut,T
 }
 
 
+void D2hhmumuFitter1D::addSignalSWeights(TString kind, TString cut,TString q2Range,TString namePlot,TString xLabel,TString legend, bool bkgShapeFromInvertedBDTCut, TString fOut){
+
+  dcastyle();
+  
+  RooRealVar D0_M("Dst_DTF_D0_M",xLabel, 1810., 1940.,"MeV/c^{2}");
+  TString dmRange = "&&deltaM>144.5&&deltaM<146.5&&Dst_DTF_D0_M>1810&&Dst_DTF_D0_M<1940";
+  //TString dmRange = "&&deltaM>150.";      
+  double bkgExponent;
+
+  if(bkgShapeFromInvertedBDTCut){
+    if(kind=="D2KKmumu") bkgExponent = fit_invertedBDT_data("mu0_ProbNNmu>.5&&mu1_ProbNNmu>.5&&BDT<.4",q2Range,namePlot.Remove(namePlot.Sizeof()-5)+"_invertedBDTCut.eps","","");
+    if(kind=="D2pipimumu") bkgExponent = fit_invertedBDT_data("mu0_ProbNNmu>.5&&mu1_ProbNNmu>.5&&BDT<.4",q2Range,namePlot.Remove(namePlot.Sizeof()-5)+"_invertedBDTCut.eps","","");
+    namePlot+=".eps";
+  }
+  else bkgExponent=0;
+
+
+  D0_M_ExpoLambda.setVal(bkgExponent);
+  D0_M_ExpoLambda.setConstant();
+
+  //get data to fit                                                                                                                                                                  
+  TFile* file;
+  file= new TFile(pathToSignalData,"OPEN");
+  TTree* tree = (TTree*) file->Get("BDT_Tree");
+  tree->SetBranchStatus("*",0);
+  tree->SetBranchStatus("Dst_DTF_D0_M",1);
+  tree->SetBranchStatus("deltaM",1);
+  tree->SetBranchStatus("BDT",1);
+  tree->SetBranchStatus("mu0_ProbNNmu",1);
+  tree->SetBranchStatus("mu1_ProbNNmu",1);
+  tree->SetBranchStatus("D_DiMuon_Mass",1);
+  tree->SetBranchStatus("nTracks",1);
+  tree->SetBranchStatus("mu0_MuonNShared",1);
+  tree->SetBranchStatus("mu1_MuonNShared",1);
+  tree->SetBranchStatus("h0_PIDK",1);
+  tree->SetBranchStatus("h1_PIDK",1);
+  tree->SetBranchStatus("mHH",1);
+  tree->SetBranchStatus("D_L0HadronDecision_TOS",1);
+
+  tree->SetBranchStatus("mu0_ProbNNghost",1);
+  tree->SetBranchStatus("mu1_ProbNNghost",1);
+  tree->SetBranchStatus("h0_ProbNNghost",1);
+  tree->SetBranchStatus("h1_ProbNNghost",1);
+  tree->SetBranchStatus("h0_ProbNNk",1);
+  tree->SetBranchStatus("h1_ProbNNpi",1);
+  tree->SetBranchStatus("h0_ProbNNpi",1);
+
+  tree->SetBranchStatus("Slowpi_ProbNNghost",1);
+
+  tree->SetBranchStatus("D_L0Global_TIS",1);
+  tree->SetBranchStatus("mu0_L0MuonDecision_TOS",1);
+  tree->SetBranchStatus("mu1_L0MuonDecision_TOS",1);
+
+  tree->SetBranchStatus("D_L0DiMuonDecision_TIS",1);
+  tree->SetBranchStatus("D_L0Global_TIS",1);
+  tree->SetBranchStatus("D_L0HadronDecision_TIS",1);
+  tree->SetBranchStatus("D_L0MuonDecision_TIS",1);
+  tree->SetBranchStatus("D_L0ElectronDecision_TIS",1);
+  tree->SetBranchStatus("D_L0PhotonDecision_TIS",1);
+
+  tree->SetBranchStatus("mu0_Hlt1TrackMuonDecision_TOS",1);
+  tree->SetBranchStatus("mu1_Hlt1TrackMuonDecision_TOS",1);
+  tree->SetBranchStatus("D_Hlt1TrackAllL0Decision_TOS",1);
+
+  tree->SetBranchStatus("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",1);
+  
+  //apply cuts if needed                                                                                                                                                             
+  TTree* cutTree = tree->CopyTree(cut+dmRange+"&&"+q2Range);
+  RooDataSet* data = new RooDataSet("data", "data", cutTree, RooArgSet(D0_M));
+
+  //do the fit                                                                                                                                                                      
+  ///create Model with desired components                                                                                                                                                                                                                                           
+  //set the yields and add the to ws                                                                                                                                                
+
+  RooRealVar n_sig("n_sig", "n_sig", data->numEntries()/2., 0., data->numEntries());
+  RooRealVar n_bkg("n_bkg", "n_bkg", data->numEntries()/2. , 0., data->numEntries());
+
+  RooJohnsonSU Signal("Signal", "Signal D^{0} JSU", D0_M,D0_M_xi,D0_M_lambda,D0_M_gamma,D0_M_delta);
+  RooJohnsonSU D2hhhhBkg("D2hhhhBkg", "D^{0} misidentified D2hhhhh", D0_M,D0_M_xi_bkg,D0_M_lambda_bkg,D0_M_gamma_bkg,D0_M_delta_bkg);
+  RooExponential CombinatoricExpoBkg("CombinatoricExpoBkg","CombinatoricExpoBkg",D0_M,D0_M_ExpoLambda);
+
+  RooRealVar f_bkg("f_{bkg}", "background fraction", 0.11, 0., 1.);
+  RooAddPdf bkg("bkg", "bkg", RooArgList(D2hhhhBkg,CombinatoricExpoBkg), RooArgList(f_bkg));
+
+  RooAbsPdf* finalPDF=new RooAddPdf("pdf", "pdf", RooArgList(Signal,bkg), RooArgList(n_sig,n_bkg));
+
+ 
+  RooFitResult *result;
+  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(8),Minos(kTRUE));
+  cout << "result is --------------- "<<endl;
+  result->Print();
+
+  TFile* output = new TFile(fOut,"RECREATE");
+ 
+  TCanvas* c1= new TCanvas("");
+  RooPlot* frame_m= D0_M.frame();
+  frame_m->SetTitle("");
+
+  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
+  finalPDF->plotOn(frame_m,Name("pdf"),LineColor(kBlack),LineWidth(3));
+  finalPDF->plotOn(frame_m,Components(Signal),LineColor(kBlue),LineStyle(kDashed),LineWidth(3));
+  finalPDF->plotOn(frame_m,Components(bkg),LineColor(kRed),LineStyle(kDashed),LineWidth(3));
+  //pdf->paramOn(frame_m,Layout(0.6));
+  data->plotOn(frame_m,Name("data"),MarkerSize(0.5),Binning(50));
+  frame_m->Draw();
+  c1->Print("drawingMacros/sWeights_signal.eps");
+
+  //nSignal.setConstant();
+  //nCombinatoricBkg.setConstant();
+  //nD2hhhhBkg.setConstant();
+  f_bkg.setConstant();
+  //nBkg.setConstant();
+
+  RooStats::SPlot* sData = new RooStats::SPlot("sData","An SPlot",*data,finalPDF,RooArgList(n_sig,n_bkg));
+  gStyle->SetOptStat(0);
+
+  ///Plot the sWeight distributions as a function of mass                                                                                                                           
+  // TCanvas* SwDs = new TCanvas("Bd sWeight","Bd sWeight distribution");
+  //TH2 * SwDsHist = (TH2*)data->createHistogram("Dst_DTF_D0_M,n_sig_sw");
+  //SwDsHist->GetYaxis()->SetTitle("Signal sWeights");
+  //SwDsHist->SetTitle("");
+  //SwDs->Write();                                                                                                                                                                  
+  //SwDsHist->Draw();
+  //SwDs->Print("test2.eps");
+
+  ///Create output file                                                                                                                                                             
+  
+  TH1* histo = new TH1D("sWeights","sWeights",100,-1,2);
+  cutTree->SetBranchStatus("*",1);
+
+  TTree* new_tree = cutTree->CopyTree("");
+  double w, Dst_DTF_D0_M;
+  TBranch* Bra_sw = new_tree->Branch("n_sig_sw",&w);
+  cutTree->SetBranchAddress("Dst_DTF_D0_M",&Dst_DTF_D0_M);
+
+  ///loop over events                                                                                                                                                               
+  int numEvents = cutTree->GetEntries();
+  std::cout<<"calculating sWeights for "<<numEvents <<"entries."<<std::endl;
+
+  int counter = 0;
+
+  for(int i=0; i< numEvents; i++){
+    if (0ul == (i % 10000ul)) cout << "Read event " << i << "/" << numEvents << endl;
+    cutTree->GetEntry(i);
+    //if(Dst_DTF_D0_M<1780 || Dst_DTF_D0_M>1950) continue;
+    w=sData->GetSWeight(i,"n_sig_sw");
+    histo->Fill(w);
+    Bra_sw->Fill();
+    //    std::cout<<i<<std::endl;
+  }
+
+  std::cout<<"calculates sWeights"<<std::endl;
+  histo->Write();
+  new_tree->Write();
+  output->Close();
+
+
+}
+
+
+
 void D2hhmumuFitter1D::defineBinning(){
 
   RooRealVar x("x","x",0,50) ;
@@ -3126,12 +3690,12 @@ void D2hhmumuFitter1D::defineBinning(){
 }
 
 
-std::pair<double,double>  D2hhmumuFitter1D::getBkgFromBlindedFit(TString cut="",TString q2Range="", TString namePlot=""){
+std::pair<double,double >  D2hhmumuFitter1D::getBkgFromBlindedFit(TString cut="",TString q2Range="", TString namePlot=""){
 
 
 
   //observables                                                                                                                                                                               
-  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1810., 1940.,"MeV");
+  RooRealVar D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1810., 1940.,"MeV/c^{2}");
   TString dmRange = "&& deltaM>144.5 && deltaM<146.5";
 
   //get data to fit                                                                                                                                                                          
@@ -3164,6 +3728,10 @@ std::pair<double,double>  D2hhmumuFitter1D::getBkgFromBlindedFit(TString cut="",
   m_ws.SetName("m_ws");
   m_ws.import(*data);
 
+  ResolutionScale.setConstant();
+  globalShift.setConstant();
+
+
   RooRealVar nSignal("nSignal","number of signal events",50,0,2000);
   RooRealVar nCombinatoricBkg("nCombinatoricBkg","number of combinatorial bkg events",10,0,3000);
   RooRealVar nD2hhhhBkg("nD2hhhhBkg","number of misidentified D2hhhh background",5,0,2000);
@@ -3181,10 +3749,16 @@ std::pair<double,double>  D2hhmumuFitter1D::getBkgFromBlindedFit(TString cut="",
   m_ws.import(*finalPDF);
 
   RooFitResult *result;
-  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(3));                                                                                                                      
-  m_ws.import(*result);
+  result = finalPDF->fitTo(*data,Save(kTRUE),NumCPU(8));                                                                                                                      
   cout << "result is --------------- "<<endl;
   result->Print();
+
+  //std::cout<<"corr " <<result->correlation("nD2hhhhBkg","nCombinatoricBkg")<<"  "<<result->covQual()<<std::endl; 
+  //const TMatrixDSym& cov = result->covarianceMatrix() ;
+  //cout << "covariance matrix" << endl ;
+  //cov.Print() ;
+
+  m_ws.import(*result);
 
   D0_M.setRange("signal",1820,1910);
   RooArgSet variables(D0_M);
@@ -3213,7 +3787,7 @@ std::pair<double,double>  D2hhmumuFitter1D::getBkgFromBlindedFit(TString cut="",
   TBox * blindingbox = new TBox();
   blindingbox->SetFillColor(0);
   data->plotOn(frame_m,Name("data"),CutRange("lowersideband,uppersideband"),MarkerSize(0.5),Binning(50));
-  finalPDF->plotOn(frame_m,Range("lowersideband,uppersideband"),LineColor(kRed),LineWidth(2.5),Normalization(sidebands,RooAbsReal::NumEvent));
+  finalPDF->plotOn(frame_m,Range("lowersideband,uppersideband"),LineColor(kRed),LineWidth(3),Normalization(sidebands,RooAbsReal::NumEvent));
   frame_m->Draw();
   blindingbox->DrawBox(1830.,0.0,1900.,frame_m->GetMaximum()*0.97);
 
@@ -3225,10 +3799,20 @@ std::pair<double,double>  D2hhmumuFitter1D::getBkgFromBlindedFit(TString cut="",
 
   double nhhhhBkg=m_ws.var("nD2hhhhBkg")->getValV()*fr_sig2->getVal();
   double nCombBkg=m_ws.var("nCombinatoricBkg")->getValV()*fr_sig->getVal();
+  double delta_nhhhhBkg = m_ws.var("nD2hhhhBkg")->getError()*fr_sig2->getVal();
+  double delta_nCombBkg= m_ws.var("nCombinatoricBkg")->getError()*fr_sig->getVal();
+
+  double nBkg = nhhhhBkg+nCombBkg;
+  double corr = result->correlation("nD2hhhhBkg","nCombinatoricBkg");
+  double dNBkg = TMath::Sqrt(delta_nhhhhBkg*delta_nhhhhBkg + delta_nCombBkg*delta_nCombBkg + 2*corr*delta_nhhhhBkg*delta_nhhhhBkg);
+
+  std::cout<<"dBkg "<<dNBkg<<std::endl;
+  std::cout<<"simpl dBkg "<<TMath::Sqrt(delta_nhhhhBkg*delta_nhhhhBkg + delta_nCombBkg*delta_nCombBkg)<<std::endl;
 
   c1->Draw();
-  c1->Print(namePlot+".eps");                                                                                                                                        
-  // c1->Print("test.eps");
+  c1->Print(namePlot+".eps");                                                                   
+
+  // c1->Print("test.eps")
 
   delete tree;
   delete cutTree;
@@ -3238,6 +3822,7 @@ std::pair<double,double>  D2hhmumuFitter1D::getBkgFromBlindedFit(TString cut="",
   delete file;
 
 
-  return std::make_pair(nhhhhBkg,nCombBkg);
+  //return std::make_pair( std::make_pair(nhhhhBkg,delta_nhhhhBkg),std::make_pair( nCombBkg,delta_nCombBkg) );
+  return std::make_pair(nBkg,dNBkg);
 
 }

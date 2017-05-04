@@ -29,6 +29,7 @@ void createMCTuplesForEffStudies();//created a tuples for each q2 bin and channe
 void createMCTuplesForEffStudiesNoTruthmatching(); //also no q2 splitting is done
 void createDataTuplesForEffStudies();
 void copyMCTuplesWithCut(TString fileIn,TString target, TString nameTree,TString cut) ;
+
 //the following one is applied to the flagged MC sample, needed to get the reco and stripping efficiency
 void createTuplesForRecoEfficiency();
 
@@ -64,6 +65,9 @@ void plotPIDCalibMuonSampleAndSignalMC();
 void checkMuonPIDFactorization();
 void evaluatePIDEfficiencySystematicUncertainty();
 
+void calibratePIDEfficiencyWithDsPhiPi();
+void evaluateDsPhiPiMuonEfficiencyForLowPtBins(TString polarity);
+
 //hadron PID
 void evaluatePIDCalibHadronEfficiency(TString polarity,TString binningScheme);
 void plotPIDCalibKaonSampleAndSignalMC();
@@ -82,31 +86,44 @@ void addDiMuonMassBranch(TChain *chain, TString fOut, bool isReco);
 void drawRecoAndStrippingEfficiency(int cat);
 void drawRecoAndStrippingEfficiencyWithFit(bool useFit,TString additionalCut);
 void drawRecoAndStrippingEfficiencyWithFit_alternativeFitModel(bool useFit,TString additionalCut); //take alternative fit model for systemtic studies
+void drawRecoAndStrippingEfficiencyWithFit_PhaseSpaceModel(bool useFit=true,TString additionalCut="",TString componentMuon="",TString componentHadron="");
 void compareDifferentRecoAndStrippingEfficiencies();
-
 //multiple candidates
 void writeMultipleCanidatesToFile(bool withGhosts);
 void chose_multiple_events(const char *input,TString channel,bool withGhosts);
 void addMultipleCandidateBranch(TChain *chain, TString fOut,const char *f_chosenCand);
 void createTuplesWithSelectedMultipleCand();
 void writeAllTrueCanidatesToFile();
+//in data
+void writeMultipleDataCanidatesToFile();
+void chose_multiple_Data_events(const char *input,TString channel);
+void createDataTuplesWithSelectedMultipleCand();
+void addMultipleCandidateBranchData();
+
+//investige multiple candidates
+void writeFullKinematicMultipleDataCanidatesToFile();
+void chose_FullKinematic_multiple_Data_events(const char *input,TString channel);
+void write_ghosts_withMultipleCand_toFile(const char  *input,TString channel);
+
 
 ///TAG and Probe method to get L0 trigger efficiecny, hadron PID and BDT cut hardcoded
 void calibrateTagAndProbeL0EfficiencyWithMC();
 void mergeDs2PhiPiTuples();
 void calibrateTagAndProbeL0EfficiencyWithDsPhiPi();
 void applyTagAndProbeL0Efficiency(bool useData); //if use data is set to false a MC closure test will be performed
-//void applyTagAndProbeL0EfficiencyToyStudy(bool useData, int nToys);
+void applyTagAndProbeL0EfficiencyToyStudy(bool useData, int nToys);
 
 //MC bases HLT level efficiency (HLT1 and 2)
 void MC_HltTrigger_efficiency(double ghostProbCut,double hadronPID,double muonPID,double BDT,bool applyPID, bool applyBDT, TString triggerLevel);
 void MC_Combined_Hlt_BDT_efficiency(double ghostProbCut,double hadronPID,double muonPID,double BDT,bool applyPID,bool withGhosts);
 
+//full effiency taken from MC to test model dependency of efficienyx
+void MC_Combined_efficiency_onlyPhaseSpaceModel(double ghostProbCut,double hadronPID,double muonPID,double BDT, bool onlyDiMuonPHSP, bool onlyDiHadronPHSP);
+void compareDifferentModelsForRecoEfficiency();
+
 void drawTotalEfficiency();
 
 //Old version where the efficienc was tried to be computed with TISTOS methon. No satisfying results
 void MC_L0Trigger_efficiency(double ghostProbCut,double hadronPID,double muonPID, double BDT, bool applyPID,bool applyTrigger, TString cut_Trigger_TIS);
-
-
 
 

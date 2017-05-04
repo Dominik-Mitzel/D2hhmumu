@@ -115,7 +115,7 @@ bool D2hhmumuReader::isHlt1Selected(){
 
 bool D2hhmumuReader::MCTruthmatched(){
 
-  if(Dst_BKGCAT > 10) return false;
+  if(!(Dst_BKGCAT<11||Dst_BKGCAT==50) ) return false;
 
   return true;
 }
@@ -432,7 +432,6 @@ void D2hhmumuReader::createMCEfficiencyStudySampleNoTruthmatching(TString name, 
      //NO TRUTH MATCHING
      //NO OTHER CUTS (NEEDED FOR EFFICIENCY STUDIES LATER)
      ///if(!MCTruthmatched()) continue;
-     //std::cout<<i<<"  "<<D_DiMuon_Mass<<"  "<<q2High<<"  "<<q2Low<<"  "<<h0_PT<<std::endl;
 
      if(D_DiMuon_Mass>q2High) continue;
      if(D_DiMuon_Mass<q2Low) continue;
@@ -540,7 +539,6 @@ void D2hhmumuReader::createSubsample(TString name, double percentage) {//specify
      
      fChain->GetEntry(i);
       //select only events that pass the trigger seelction criteria 
-     ////ALL CUTS REMOVED RIGHT NOW FOR TIS TOS STUDIES
      if(!passGhostProbCut(0.5)) continue; 
      if(!isL0Selected() || !isHlt1Selected() || !isHlt2Selected()  )continue;   
      if(mu0_MuonNShared!=0) continue;
@@ -3249,7 +3247,8 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("mu1_Hlt1SingleMuonNoIPDecision_TOS",1);
   fChain->SetBranchStatus("mu0_Hlt1SingleMuonHighPTDecision_TOS",1);
   fChain->SetBranchStatus("mu1_Hlt1SingleMuonHighPTDecision_TOS",1);
-  fChain->SetBranchStatus("h1_0_Hlt1TrackMuonDecision_TOS",1);
+  fChain->SetBranchStatus("h1_Hlt1TrackMuonDecision_TOS",1);
+  fChain->SetBranchStatus("h0_Hlt1TrackMuonDecision_TOS",1);
   fChain->SetBranchStatus("D_Hlt2CharmSemilepD02KKMuMuDecision_TOS",1);
   fChain->SetBranchStatus("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",1);
   fChain->SetBranchStatus("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",1);
@@ -3393,6 +3392,9 @@ void D2hhmumuReader::activateRelevantBranches()
   fChain->SetBranchStatus("Slowpi_TRACK_CHI2NDOF",1);
   fChain->SetBranchStatus("eventNumber",1);
   fChain->SetBranchStatus("Polarity",1);
+  fChain->SetBranchStatus("nCandidate",1);
+  fChain->SetBranchStatus("runNumber",1);
+  fChain->SetBranchStatus("totCandidates",1);
 
   Notify();
   

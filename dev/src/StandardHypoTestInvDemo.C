@@ -64,7 +64,7 @@ using namespace RooFit;
 using namespace RooStats;
 using namespace std;
 
-bool plotHypoTestResult = false;          // plot test statistic result at each point
+bool plotHypoTestResult = true;//false;          // plot test statistic result at each point
 bool writeResult = true;                 // write HypoTestInverterResult in a file
 TString resultFileName;                  // file with results (by default is built automatically using the workspace input file name)
 bool optimize = true;                    // optmize evaluation of test statistic
@@ -76,7 +76,7 @@ double nToysRatio = 2;                   // ratio Ntoys S+b/ntoysB
 double maxPOI = -1;                      // max value used of POI (in case of auto scan)
 bool useProof = false;                   // use Proof Lite when using toys (for freq or hybrid)
 int nworkers = 0;                        // number of worker for ProofLite (default use all available cores)
-bool enableDetailedOutput = false;       // enable detailed output with all fit information for each toys (output will be written in result file)
+bool enableDetailedOutput = true;//false;       // enable detailed output with all fit information for each toys (output will be written in result file)
 bool rebuild = false;                    // re-do extra toys for computing expected limits and rebuild test stat
                                          // distributions (N.B this requires much more CPU (factor is equivalent to nToyToRebuild)
 int nToyToRebuild = 100;                 // number of toys used to rebuild
@@ -84,22 +84,22 @@ int rebuildParamValues=0;                // = 0   do a profile of all the parame
                                          // = 1   use initial workspace parameters with B snapshot values
                                          // = 2   use all initial workspace parameters with B
                                          // Otherwise the rebuild will be performed using
-int initialFit = -1;                     // do a first  fit to the model (-1 : default, 0 skip fit, 1 do always fit)
+int initialFit = 1;//-1;                     // do a first  fit to the model (-1 : default, 0 skip fit, 1 do always fit)
 int randomSeed = -1;                     // random seed (if = -1: use default value, if = 0 always random )
                                          // NOTE: Proof uses automatically a random seed
 
 int nAsimovBins = 0;                     // number of bins in observables used for Asimov data sets (0 is the default and it is given by workspace, typically is 100)
 
-bool reuseAltToys = false;                // reuse same toys for alternate hypothesis (if set one gets more stable bands)
-double confidenceLevel = 0.95;            // confidence level value
+bool reuseAltToys = true;//false;                // reuse same toys for alternate hypothesis (if set one gets more stable bands)
+double confidenceLevel = 0.90;            // confidence level value
 
 
 
 std::string massValue = "";              // extra string to tag output file of result
 std::string  minimizerType = "";                  // minimizer type (default is what is in ROOT::Math::MinimizerOptions::DefaultMinimizerType()
-int   printLevel = -1;                    // print level for debugging PL test statistics and calculators
+int   printLevel =2;//-1;                    // print level for debugging PL test statistics and calculators
 
-bool useNLLOffset = false;               // use NLL offset when fitting (this increase stability of fits) 
+bool useNLLOffset = true;//false;               // use NLL offset when fitting (this increase stability of fits) 
 
 
 // internal class to run the inverter and more
@@ -456,22 +456,21 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
       std::cout << "The computed lower limit is: " << lowerLimit << " +/- " << llError << std::endl;
    std::cout << "The computed upper limit is: " << upperLimit << " +/- " << ulError << std::endl;
 
-
+   
    // compute expected limit
-   std::cout << "Expected upper limits, using the B (alternate) model : " << std::endl;
+   std::cout << "Expected upper limits, using the B (alternate) model : " << std::endl; 
    std::cout << " expected limit (median) " << r->GetExpectedUpperLimit(0) << std::endl;
    std::cout << " expected limit (-1 sig) " << r->GetExpectedUpperLimit(-1) << std::endl;
    std::cout << " expected limit (+1 sig) " << r->GetExpectedUpperLimit(1) << std::endl;
    std::cout << " expected limit (-2 sig) " << r->GetExpectedUpperLimit(-2) << std::endl;
    std::cout << " expected limit (+2 sig) " << r->GetExpectedUpperLimit(2) << std::endl;
-
+   
 
    // detailed output
    if (mEnableDetOutput) {
       mWriteResult=true;
       Info("StandardHypoTestInvDemo","detailed output will be written in output result file");
    }
-
 
    // write result in a file
    if (r != NULL && mWriteResult) {
@@ -502,8 +501,28 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
          if (fileULDist) ulDist= fileULDist->Get("RULDist");
       }
 
+      cout<<"mResultFileName "<<mResultFileName<<endl;
+      //remove the .root extension from fileName
+      TString target = mResultFileName.Remove(mResultFileName.Sizeof()-6);
+      cout<<target<<endl;
+    
+      
+      std::ofstream myFile;
+      myFile.open("../limits/tests/LogFiles/"+target+TString::Format("_CL_%.2f",confidenceLevel)+".txt");
+      //myFile.open("test.txt");
+      myFile <<"Expected upper limits, using the B (alternate) model : "<<std::endl;
+      myFile << " expected limit (median) " << r->GetExpectedUpperLimit(0) << std::endl;
+      myFile << " expected limit (-1 sig) " << r->GetExpectedUpperLimit(-1) << std::endl;
+      myFile << " expected limit (+1 sig) " << r->GetExpectedUpperLimit(1) << std::endl;
+      myFile << " expected limit (-2 sig) " << r->GetExpectedUpperLimit(-2) << std::endl;
+      myFile << " expected limit (+2 sig) " << r->GetExpectedUpperLimit(2) << std::endl;
+   
+      myFile.close();
+
+      mResultFileName+=".root";
+
       //set to HD PATH 
-      TFile * fileOut = new TFile("/work/mitzel/D2hhmumu/dev/D2pipimumu/img/limits/"+mResultFileName,"RECREATE");
+      TFile * fileOut = new TFile("/work/mitzel/D2hhmumu/dev/limits/tests/"+mResultFileName,"RECREATE");
       r->Write();
       if (ulDist) ulDist->Write();
       Info("StandardHypoTestInvDemo","HypoTestInverterResult has been written in the file %s",mResultFileName.Data());
@@ -515,6 +534,7 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
    // plot the result ( p values vs scan points)
    std::string typeName = "";
    if (calculatorType == 0 )
+      mPlotHypoTestResult = true;
       typeName = "Frequentist";
    if (calculatorType == 1 )
       typeName = "Hybrid";
@@ -532,19 +552,19 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
    TCanvas * c1 = new TCanvas(c1Name);
    c1->SetLogy(false);
 
+   
    plot->Draw("EXP");
+   
    //plot->Draw("CLb 2CL");  // plot all and Clb
-   // if (useCLs)
-   //    plot->Draw("CLb 2CL");  // plot all and Clb
-   // else
-   //    plot->Draw("");  // plot all and Clb
+   //if (useCLs)
+      //   plot->Draw("CLb 2CL");  // plot all and Clb
+    //else
+      //    plot->Draw("");  // plot all and Clb
    //c1->Print("plot_"+mResultFileName+".eps");
 
-   //remove the .root extension from fileName
-   TString target = mResultFileName.Remove(mResultFileName.Sizeof()-6);
    
-   c1->SaveAs("/work/mitzel/D2hhmumu/dev/D2pipimumu/img/limits/plot_"+target+".C");
-   c1->Print("/work/mitzel/D2hhmumu/dev/D2pipimumu/img/limits/plot_"+target+".eps"); 
+   c1->SaveAs("/work/mitzel/D2hhmumu/dev/limits/tests/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+".C");
+   c1->Print("/work/mitzel/D2hhmumu/dev/limits/tests/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+".eps"); 
 
    TCanvas * c2 = new TCanvas("c2","c2");
    c2->SetRightMargin(0.15);
@@ -564,11 +584,12 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
    double max = gr->GetXaxis()->GetXmax();
    //TLine *line = new TLine(, 0.1, r->GetExpectedUpperLimit(0), 0.1);
    TLine *line = new TLine(min, 0.05 , max, 0.05);
-   line->SetLineColor(kRed);
+   line->SetLineColor(kBlack);
    line->SetLineWidth(2);
    line->Draw("SAME");
 
-   c2->Print("/work/mitzel/D2hhmumu/dev/D2pipimumu/img/limits/plot_"+target+"_2.pdf");
+   c2->Print("/work/mitzel/D2hhmumu/dev/limits/tests/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+"_redColors.pdf");
+   c2->Print("/work/mitzel/D2hhmumu/dev/limits/tests/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+"_redColors.C");
 
 
 
@@ -590,7 +611,7 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
          pl->Draw();
       }
    }
-
+   c2->Print("controlplots.eps");
 
 }
 

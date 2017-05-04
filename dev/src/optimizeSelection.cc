@@ -706,9 +706,9 @@ void D2KpipipiRandomizedData(){
     Tree_D2Kpipipi->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/2012Data/newD2hhhhPIDLine/magDw/2012Data_D2hhhh_%i.root",i));
   }
 
-
+  //ADDED TRIGGER INFOS HERE 27.4.17
   D2KpipipiReader* Kpipipi_Reader = new D2KpipipiReader(Tree_D2Kpipipi);
-  Kpipipi_Reader->createRandomizedSubsample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_PreselectedRandomizedSubsample.root");
+  Kpipipi_Reader->createRandomizedSubsample("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_PreselectedRandomizedSubsample_withTrigger.root");
 }
 
 
@@ -2115,19 +2115,36 @@ void Draw_MC_TriggerEfficiencies( TString variable, int nBins, int xLow, int xHi
 void newCutOptimization(TString kind, TString polarity="", TString q2Range="") {
 
   
-  TFile *fout = new TFile("/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/newJan17/"+kind+"_PID_BDT_cut_scan_1D_"+q2Range+polarity+".root","recreate");
-  TString path="/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/newJan17/";
+  TFile *fout = new TFile("/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/newFeb17/"+kind+"_PID_BDT_cut_scan_1D_"+q2Range+polarity+".root","recreate");
+  TString path="/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/newFeb17/";
 
+  /*
   TH2* h2_misIDBkg = new TH2D("h2_misIDBkg","h2_misIDBkg",15,-0.5,1,10,0,1);
   TH2* h2_misIDBkg_alt = new TH2D("h2_misIDBkg_alt","h2_misIDBkg_alt",15,-0.5,1,10,0,1);
   TH2* h2_combBkg = new TH2D("h2_combBkg","h2_combBkg",15,-0.5,1,10,0,1);
   TH2* h2_sigEff = new TH2D("h2_sigEff","h2_sigEff",15,-0.5,1,10,0,1);
   TH2* h2_relEff = new TH2D("h2_releff","h2_relEff",15,-0.5,1,10,0,1);
   TH2* h2= new TH2D("h2_cutEfficiency","h2_cutEfficiency",15,-0.5,1.0,10,0,1);
+  */
 
 
-  double PIDcuts[10]={0,0.1,0.2,0.3,0.4,0.5,0.60,0.7,0.8,0.9};
-  double BDTcuts[15]={-0.5,-0.4,-0.3,-0.2,-0.1,0.,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9};
+  double PIDcuts[11]={0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.};
+  //double BDTcuts[15]={-0.5,-0.4,-0.3,-0.2,-0.1,0.,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9};
+  //double BDTcuts[21]={-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0.,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1};
+  double BDTcuts[11]={-1,-0.8,-0.6,-0.4,-0.2,0.,0.2,0.4,0.6,0.8,1};
+
+  int nBinsX=10;
+  int nBinsY=10;
+
+  //int nBinsX = sizeof(BDTcuts)/sizeof(BDTcuts[0]);
+  //int nBinsY = sizeof(PIDcuts)/sizeof(PIDcuts[0]); 
+ 
+  TH2* h2_misIDBkg = new TH2D("h2_misIDBkg","h2_misIDBkg",nBinsX,BDTcuts[0],BDTcuts[nBinsX],nBinsY,PIDcuts[0],PIDcuts[nBinsY]);
+  TH2* h2_misIDBkg_alt = new TH2D("h2_misIDBkg_alt","h2_misIDBkg_alt",nBinsX,BDTcuts[nBinsX],BDTcuts[nBinsX-1],nBinsY,PIDcuts[0],PIDcuts[nBinsY]);
+  TH2* h2_combBkg = new TH2D("h2_combBkg","h2_combBkg",nBinsX,BDTcuts[0],BDTcuts[nBinsX],nBinsY,PIDcuts[0],PIDcuts[nBinsY]);
+  TH2* h2_sigEff = new TH2D("h2_sigEff","h2_sigEff",nBinsX,BDTcuts[0],BDTcuts[nBinsX],nBinsY,PIDcuts[0],PIDcuts[nBinsY]);
+  TH2* h2_relEff = new TH2D("h2_releff","h2_relEff",nBinsX,BDTcuts[0],BDTcuts[nBinsX],nBinsY,PIDcuts[0],PIDcuts[nBinsY]);
+  TH2* h2= new TH2D("h2_cutEfficiency","h2_cutEfficiency",nBinsX,BDTcuts[0],BDTcuts[nBinsX],nBinsY,PIDcuts[0],PIDcuts[nBinsY]);
 
   double misIDBkg,misIDBKG_scaled;
   D2hhmumuFitter1D myFitter;
@@ -2137,41 +2154,85 @@ void newCutOptimization(TString kind, TString polarity="", TString q2Range="") {
   myFitter.fit_MC("deltaM>144.5&&deltaM<146.5&&"+polarity+"&&"+q2Range,true,"");
   if(kind=="D2KKmumu") myFitter.setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKpipi_"+kind+"BDT.root");
   else myFitter.setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_"+kind+"BDT.root");
+  
 
   TString cut_singleID;
   TString cut_doubleID;
+
+  //take a single shappe for the misID
+  cut_singleID="BDT>.4&&mu1_ProbNNmu>.3";
+  myFitter.fit_HHpipi_misID(cut_singleID+"&&"+q2Range,true,"test.eps");
+
   //MC file to get efficiency
   TString fIn1="/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_"+kind+"_BDT.root";
+
   //  TString fIn2=;
 
-   for(int i=0;i<15;++i){
-    for(int j=0;j<9;++j){
+    for(int i=0;i<nBinsX;++i){ //BDT
+      for(int j=0;j<nBinsY;++j){ //was 9 before //PID
+
+      //for(int i=7;i<8;++i){ //BDT                                                                                                                         
+      //for(int j=4;j<7;++j){ //was 9 before //PID  
 
       cut_doubleID = TString::Format("BDT>%f&&mu0_ProbNNmu>%f&&mu1_ProbNNmu>%f",BDTcuts[i],PIDcuts[j],PIDcuts[j]);
       cut_singleID = TString::Format("BDT>%f&&mu1_ProbNNmu>%f",BDTcuts[i],PIDcuts[j]);
       //cut_singleID = TString::Format("BDT>%f",BDTcuts[i]);
 
       cout<<i<<"  "<<j<<" "<<cut_doubleID<<"  "<<cut_singleID<<endl;
+      
+      std::pair<double,double> eff = getMCEfficiency(fIn1,"BDT_Tree",cut_doubleID,polarity+"&&"+q2Range);
+      double signalEff = eff.first;
+      double dSignalEff = eff.second;
+      
+      //std::pair<std::pair<double,double>,std::pair<double,double> >bkg = myFitter.getBkgFromBlindedFit(cut_doubleID+"&&"+polarity,q2Range,path+"Fits/"+kind+"/"+cut_doubleID+"_"+q2Range+"_"+polarity);
 
-      myFitter.fit_HHpipi_misID(cut_singleID+"&&"+polarity,true,"");
-      
-      double signalEff = getMCEfficiency(fIn1,"BDT_Tree",cut_doubleID,polarity+"&&"+q2Range).first;
-      
       std::pair<double,double> bkg = myFitter.getBkgFromBlindedFit(cut_doubleID+"&&"+polarity,q2Range,path+"Fits/"+kind+"/"+cut_doubleID+"_"+q2Range+"_"+polarity);
 
-      double combBkg=bkg.second;
-      double misIDBkg=bkg.first;
+      //int roundedCombBkg = (int)bkg.second;
+      //int roundedMisID = (int)bkg.first;
       
-      h2_misIDBkg->SetBinContent(i+1,j+1,bkg.first);
-      h2_combBkg->SetBinContent(i+1,j+1,bkg.second);
+      //double combBkg = (double)roundedCombBkg;
+      //double misIDBkg = (double)roundedMisID;
+      
+      /*
+      double combBkg=bkg.second.first;
+      double misIDBkg=bkg.first.first;
+      
+      double dcombBkg=bkg.second.second;
+      double dmisIDBkg=bkg.first.second;
+      
+      double nBkg = combBkg+ misIDBkg;
+      double dNBkg = TMath::Sqrt(dcombBkg*dcombBkg + dmisIDBkg*dmisIDBkg);
+      */
+      
+      double nBkg= bkg.first;
+      double dNBkg= bkg.second;
+
+      //h2_misIDBkg->SetBinContent(i+1,j+1,misIDBkg); 
+      //h2_combBkg->SetBinContent(i+1,j+1,combBkg);
+
       h2_sigEff->SetBinContent(i+1,j+1,signalEff);     
 
-      double FOM=signalEff/( 5/2 + TMath::Sqrt( (misIDBkg + combBkg) ) );
- 
-      h2->SetBinContent(i+1,j+1,FOM);
-      cout<<"combBkg "<<combBkg<<" "<<misIDBkg<<" "<<FOM<<"  "<<signalEff<<endl;
+      double FOM=signalEff/( 2.5 + TMath::Sqrt( nBkg ) );
+      double dFOM = TMath::Sqrt( TMath::Power(dSignalEff/( 2.5 + TMath::Sqrt( nBkg )),2) +  TMath::Power(signalEff*dNBkg/( (2.5 + TMath::Sqrt(nBkg))*(2.5 + TMath::Sqrt(nBkg))*2*TMath::Sqrt(nBkg)),2) ); 
+      double dFOM2 = getDFOMwithToys(signalEff,dSignalEff,nBkg,dNBkg);
+      
+      double FOM2 = signalEff/( 2.5 + TMath::Sqrt( nBkg+dNBkg ) );
+      double dFOM3 = TMath::Sqrt( TMath::Power(dSignalEff/( 2.5 + TMath::Sqrt( nBkg )),2) +  TMath::Power(FOM2-FOM,2) ); 
+      
+      std::cout<<"analytical solution "<<dFOM<<endl;
+      std::cout<<"toy solution "<<dFOM2<<endl;
+      std::cout<<"alternative solution "<<dFOM3<<endl;
 
-    }
+      h2->SetBinContent(i+1,j+1,FOM);
+      if(nBkg<1) 
+	h2->SetBinError(i+1,j+1,dFOM3);
+      else h2->SetBinError(i+1,j+1,dFOM);
+
+      //cout<<"combBkg "<<combBkg<<" "<<misIDBkg<<" "<<FOM<<"  "<<signalEff<<endl;
+      //cout<<"nBkg "<<nBkg<<"  "<<"dNBkg  "<<dNBkg<<"  "<<"dFOM  "<<dFOM<<std::endl;  
+      
+      }
 
    }
 
@@ -2214,6 +2275,54 @@ void newCutOptimization(TString kind, TString polarity="", TString q2Range="") {
   c->Write();
   c->Print(path+kind+"_"+q2Range+"_"+polarity+".eps");
   
+  h2_misIDBkg->Write();
+  h2_misIDBkg_alt->Write();
+  h2_combBkg->Write();
+  h2_sigEff->Write();
+  h2_relEff->Write();
+  h2->Write();
+  
   fout->Write();
 
 }
+
+double getDFOMwithToys(double signalEff, double dSignalEff, double nBkg,double dNBkg) {
+
+  double FOM0= signalEff/( 2.5 + TMath::Sqrt( nBkg ) );
+
+  double xlow = FOM0-FOM0;
+  double xhigh = FOM0+FOM0;
+
+  TH1* h1= new TH1D("temp","temp",100,xlow,xhigh);
+  TRandom3 *generator = new TRandom3(0);
+  double FOM, BkgVar, EffVar;
+    
+  int tries = 0;
+
+  while(tries<4000) {
+    
+
+    EffVar=generator->Gaus(signalEff, dSignalEff);
+    //BkgVar=TMath::Abs(generator->Gaus(nBkg,dNBkg));
+    BkgVar=generator->Gaus(nBkg,dNBkg);
+    //BkgVar=generator->PoissonD(dNBkg+0.51);
+
+    FOM = EffVar/( 2.5 + TMath::Sqrt( BkgVar ) );
+    //cout<<BkgVar<<"  "<<EffVar<<"  "<<TMath::Sqrt( BkgVar )<<"  "<< 2.5 <<"  "<<FOM<<endl;
+    h1->Fill(FOM);
+    
+    tries++;
+  }
+  
+  double FOM2 = EffVar/( 2.5 + TMath::Sqrt( nBkg+dNBkg ) );
+  cout<<FOM0<<endl;
+  cout<<FOM2<<endl;
+  cout<<FOM0-FOM2<<endl;
+
+
+
+  h1->Draw();
+  return h1->GetRMS();
+
+}
+ 

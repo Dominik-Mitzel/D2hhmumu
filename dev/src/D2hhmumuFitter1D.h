@@ -53,11 +53,15 @@
 #include "RooThreshold.h"
 #include "D2hhmumuModel1D.h"
 #include "RooWorkspace.h"
+#include <fstream>
+
 
 class D2hhmumuFitter1D {
 
  public:
-  D2hhmumuFitter1D() ;
+  //D2hhmumuFitter1D() ;
+  D2hhmumuFitter1D(TString results="") ;
+
   ~D2hhmumuFitter1D();
 
   TRandom3* generator;
@@ -143,6 +147,7 @@ class D2hhmumuFitter1D {
   //                                                                                                                                                                            
   //************************                                                                                                                                        
             
+  std::ofstream myFile;
   
 
   RooWorkspace  initializeModel(D2hhmumuModel1D* myModel, RooRealVar D0_M);
@@ -184,12 +189,14 @@ class D2hhmumuFitter1D {
   void fit_normalization_MC(TString cut, bool fixShape, TString namePlot);
   void fit_PIDinverted_Data(bool fixShape,TString namePlot);
   void fit_Data(TString kind="D2KKmumu", TString cut="", TString q2Range="",TString namePlot="",TString xLabel="m(hh#mu#mu)",TString legend="",bool bkgShapeFromInvertedBDTCut=false);
+  void fit_unblinded_Data(TString kind="D2KKmumu", TString cut="", TString q2Range="",TString namePlot="",TString xLabel="m(hh#mu#mu)",TString legend="",bool bkgShapeFromInvertedBDTCut=false);
   double fit_resonant_Data(TString kind="D2KKmumu", TString cut="",TString q2Range="",TString namePlot="",TString xLabel="m(hh#mu#mu)",TString legend="",bool fixBkgShape=false);
-  void fit_Kpipipi_misID(TString cut,bool fixShape,TString namePlot);
-  void fit_HHpipi_misID(TString cut="",bool fixShape = true,TString namePlot="",TString xLabel="m_{hhhh}(hh#mu#mu)",TString legend="");
+  void fit_Kpipipi_misID(TString cut="",bool fixShape=false,TString namePlot="", bool fixCombBkgShape=true);
+  void fit_HHpipi_misID(TString cut="",bool fixShape = true,TString namePlot="",TString xLabel="m_{hhhh}(hh#mu#mu)",TString legend="",bool fixCombBkgShape=true);
   double fit_HHpipi(TString cut,TString namePlot);
   void fit_Kpipipi_misID_fromHistogramm(TString cut,bool fixShape,TString namePlot);
   double fit_normalization_Data(TString cut,TString namePlot);  
+  //std::pair<std::pair<double,double>,std::pair<double,double>>getBkgFromBlindedFit(TString cut,TString q2Range, TString namePlot);
   std::pair<double,double> getBkgFromBlindedFit(TString cut,TString q2Range, TString namePlot);
   //void fillWorkspace(RooWorkspace &ws,RooRealVar D0_M,RooRealVar deltaM);
   double fit_invertedBDT_data(TString cut,TString q2Range,TString namePlot,TString xLabel,TString legend);
@@ -200,6 +207,7 @@ class D2hhmumuFitter1D {
   void makeSimpleToyStudy(TString kind, TString dataCut,TString q2Range, TString misIDCut,TString targetFile,double nSig_exp, double nCombBkg_exp, double nMisID_exp);
   void addNormalizationSWeights(TString dataCut, TString misIDCut,TString fIn,TString fOut);
   void addNormalizationSWeightsHadronicChannel(TString dataCut,TString fIn, TString fOut, TString plot);
+  void addSignalSWeights(TString kind, TString cut,TString q2Range,TString namePlot,TString xLabel,TString legend, bool bkgShapeFromInvertedBDTCut, TString fOut);
   void defineBinning();  
 };
  

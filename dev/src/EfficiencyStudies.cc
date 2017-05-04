@@ -16,7 +16,7 @@
 #include "D2hhmumuFitter1D.h"
 #include "RooGenericPdf.h"
 #include "EfficiencyStudies.h"
-#include <utility> 
+#include <utility>
 #include <fstream>
 #include "TList.h"
 #include "TMVA_applications.h"
@@ -25,57 +25,55 @@
 using namespace std;
 using namespace RooFit ;
 
-//set the binning scheme global
 
 
-  std::vector<double> rangesKpi_low = {675};
-  std::vector<double> rangesKpi_high = {875};
-  std::vector<double> rangespipi_low = {200,525,565,950,1100};
-  std::vector<double> rangespipi_high = {525,565,950,1100,1600};
-  std::vector<double> rangesKK_low = {200,525,565};
-  std::vector<double> rangesKK_high = {525,565,900};//!!//THIS IS THE NEW BINNING
+//set the binning scheme global                                                                                                                                                               
 
-
-
-  double binsKpi[2]={675,875};
-  double binsKK[4]={200,525,565,900};
-  double binspipi[6]={200,525,565,950,1100,1600};
-
-/*
 
 std::vector<double> rangesKpi_low = {675};
 std::vector<double> rangesKpi_high = {875};
-std::vector<double> rangespipi_low = {0,525,565,950,1100};
-std::vector<double> rangespipi_high = {525,565,950,1100,1500};
-recoandstd::vector<double> rangesKK_low = {0,525,565};
-std::vector<double> rangesKK_high = {525,565,950};
- 
+std::vector<double> rangespipi_low = {200,525,565,950,1100};
+std::vector<double> rangespipi_high = {525,565,950,1100,1600};
+std::vector<double> rangesKK_low = {200,525,565};
+std::vector<double> rangesKK_high = {525,565,900};//!!//THIS IS THE NEW BINNING                                                                                                             
+
 
 
 double binsKpi[2]={675,875};
-double binsKK[4]={0,525,565,950};
-double binspipi[6]={0,525,565,950,1100,1500};
+double binsKK[4]={200,525,565,900};
+double binspipi[6]={200,525,565,950,1100,1600};
 
+/*                                                                                                                                                                                            
+                                                                                                                                                                                              
+std::vector<double> rangesKpi_low = {675};                                                                                                                                           
+std::vector<double> rangesKpi_high = {875};                                                                                                                                         
+std::vector<double> rangespipi_low = {0,525,565,950,1100};                                                                                                                          
+std::vector<double> rangespipi_high = {525,565,950,1100,1500};                                                                                                                  
+recoandstd::vector<double> rangesKK_low = {0,525,565};                                                                                                                                 
+std::vector<double> rangesKK_high = {525,565,950};   
+double binsKpi[2]={675,875};                                                                                                                                                       
+double binsKK[4]={0,525,565,950};                                                                                                                                                   
+double binspipi[6]={0,525,565,950,1100,1500};                                                                                                                                                                                                                                                                                                                                     
 */
 
-/*
-  std::vector<double> rangesKpi_low = {675};
-  std::vector<double> rangesKpi_high = {875};
-  std::vector<double> rangespipi_low = {0};
-  std::vector<double> rangespipi_high = {1500};
-//std::vector<double> rangesKK_low = {0,525};
-// std::vector<double> rangesKK_high = {525,565};//!!//950!!
-  std::vector<double> rangesKK_low = {0};
-  std::vector<double> rangesKK_high = {950};//!!//950!!
-
-  double binsKpi[2]={675,875};
-  double binsKK[2]={0,950};
-  double binspipi[2]={0,1500};
+/*                                                                                                                                                                                            
+  std::vector<double> rangesKpi_low = {675};                                                                                                                                                  
+  std::vector<double> rangesKpi_high = {875};                                                                                                                                       
+  std::vector<double> rangespipi_low = {0};                                                                                                                        
+  std::vector<double> rangespipi_high = {1500};                                                                                                                                
+//std::vector<double> rangesKK_low = {0,525};                                                                                                                                     
+// std::vector<double> rangesKK_high = {525,565};//!!//950!!                                                                                                                  
+  std::vector<double> rangesKK_low = {0};                                                                                                                                  
+  std::vector<double> rangesKK_high = {950};//!!//950!!                                                                                                                    
+                                                                                                                                                                          
+  double binsKpi[2]={675,875};                                                                                                                                               
+  double binsKK[2]={0,950};                                                                                                                                                     
+  double binspipi[2]={0,1500};                                                                                                                                                    
 */
 
-///std::vector<double> rangesPt_low = {800,1200,1600,2000,4000};
-///std::vector<double> rangesPt_high = {1200,1600,2000,4000,8000};
-///double binsPt[6]={800,1200,1600,2000,4000,8000};
+///std::vector<double> rangesPt_low = {800,1200,1600,2000,4000};                                                                                                   
+///std::vector<double> rangesPt_high = {1200,1600,2000,4000,8000};                                                                                                        
+///double binsPt[6]={800,1200,1600,2000,4000,8000};                                                                                                                                           
 /*///!!!fineBinning!!///*/std::vector<double> rangesPt_low = {0,800,1100,1400,1700,2200,3000};
 /*///!!!fineBinning!!///*/std::vector<double> rangesPt_high = {800,1100,1400,1700,2200,3000,8000};
 /*///!!!fineBinning!!///*/double binsPt[]={0,800,1100,1400,1700,2200,3000,8000};
@@ -85,151 +83,162 @@ double binspipi[6]={0,525,565,950,1100,1500};
 /*///!!!fineBinning!!///*/  std::vector<double> rangesPt_high_fine = {200,400,600,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3500,4000,5000,8000};
 /*///!!!fineBinning!!///*/double binsPt_fine[]={0,200,400,600,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3500,4000,5000,8000};
 
-
-//std::vector<double> rangesPt_low = {0,800,1400,2200,3000};
-//std::vector<double> rangesPt_high = {800,1400,2200,3000,8000};
-//double binsPt[]={0,800,1400,2200,3000,8000};
+//std::vector<double> rangesPt_low = {0,800,1400,2200,3000};                                                                                           
+//std::vector<double> rangesPt_high = {800,1400,2200,3000,8000};                                                                                                          
+//double binsPt[]={0,800,1400,2200,3000,8000};                                                                                                                                           
 
 std::vector<double> rangesPtBothMuons_low = {0,800};
 std::vector<double> rangesPtBothMuons_high = {800,8000};
 double binsPtBothMuons[]={0,800,8000};
 
-//full range including the 0 
-//std::vector<double> full_rangesPt_low = {0,800,1100,1400,1700,2200,3000};
-//std::vector<double> full_rangesPt_high = {800,1100,1400,1700,2200,3000,8000};
-//double full_binsPt[]={0,800,1100,1400,1700,2200,3000,8000};
+
+//vector<double> rangesP_low = {3000,4000,6000,7000,10000,30000};
+//vector<double> rangesP_high = {4000,6000,7000,10000,30000,50000};
+//double binsP[]={3000,4000,6000,7000,10000,30000,50000};
+
+vector<double> rangesP_low = {3000};
+vector<double> rangesP_high = {60000};
+double binsP[]={3000,60000};
+
+
+//full range including the 0                                                                                                                                              
+//std::vector<double> full_rangesPt_low = {0,800,1100,1400,1700,2200,3000};                                                                                                       
+//std::vector<double> full_rangesPt_high = {800,1100,1400,1700,2200,3000,8000};                                                                                                
+//double full_binsPt[]={0,800,1100,1400,1700,2200,3000,8000};  
 
 void performFullPIDEfficiencyStudy(){
 
-/////////////////////////////////
-/*
-  Here, the PID efficiency is determined using data driven methods.
-  The PID calib muon reference sample does not cover the phase space
-  of the low pt momentum of signal and reference decay (pt cut >800MeV)
+  /////////////////////////////////                                                                                                                                        
+  /*                                                                                                                                                                       
+  Here, the PID efficiency is determined using data driven methods.                                                                                                      
+  The PID calib muon reference sample does not cover the phase space                                                                                                     
+  of the low pt momentum of signal and reference decay (pt cut >800MeV)                                                                                                  
+                                                                                                                                                                         
+  PREPARATIONS                                                                                                                                                           
+                                                                                                                                                                         
+  check if the kinmetics of the PID calib reference sample and the signal samples match                                                                                  
+  */
+  //  plotPIDCalibMuonSampleAndSignalMC();                                                                                                                                 
+  //  plotPIDCalibKaonSampleAndSignalMC();                                                                                                                                 
+  //  plotPIDCalibPionSampleAndSignalMC();                          
 
-  PREPARATIONS
-  
-  check if the kinmetics of the PID calib reference sample and the signal samples match
-*/
-//  plotPIDCalibMuonSampleAndSignalMC();
-//  plotPIDCalibKaonSampleAndSignalMC();
-//  plotPIDCalibPionSampleAndSignalMC();
- /*
-  split the MC tuples in the dimuon mass bins with:
-*/
-  //createMCTuplesForEffStudies(); 
-  //CrossapplicationForEfficiencyStudies(); //apply BDT to the splitted tuples 
-/*
-  then, split the tuples (already BDT variable added to them) by the pt of the muon:
-*/
-  //splitMCtuplesInPt(true); //bins in pt ot mu0,argument refers to cut un muonNshared
-  //here, the dataset is split accoring to rangesPTBothMuons, which is basically just cutting the low pt regime
-  //splitMCtuplesPtCutOnSingleMuon(true,0);
-  //splitMCtuplesPtCutOnSingleMuon(true,1);
-  //splitMCtuplesInPtOfBothMuons(true); //switched of now, has to be done once
+  /*                                                                                                                                                                      
+  split the MC tuples in the dimuon mass bins with:                                                                                                                      
+  */
+  //createMCTuplesForEffStudies();                                                                                                                                       
+  //CrossapplicationForEfficiencyStudies(); //apply BDT to the splitted tuples                                                                                           
+  /*                                                                                                                                                                       
+  then, split the tuples (already BDT variable added to them) by the pt of the muon:                                                                                     
+  */
+  //splitMCtuplesInPt(true); //bins in pt ot mu0,argument refers to cut un muonNshared                                                                                   
+  //here, the dataset is split accoring to rangesPTBothMuons, which is basically just cutting the low pt regime                                                          
+  //splitMCtuplesPtCutOnSingleMuon(true,0);                                                                                                                              
+  //splitMCtuplesPtCutOnSingleMuon(true,1);                                                                                                                              
+  //splitMCtuplesInPtOfBothMuons(true); //switched of now, has to be done once        
 
-/*
-  evaluate the muon PID eff in bins of muon pt for each polarity. Beforehand, the PID calibs scripts located in ~/cmtuser/../PIDCALIB/../D2hhmumu/ have to be executed.
-  ///////////////////////////////////////////////////////
-  HOWTO EXECUTE THE PIDCALIB SCRIPTS
-  
-  Setup environment: LbLogin -c x86_64-slc6-gcc48-opt
-                     SetupUrania v5r0
-		    
-  needed scripts: in /home/he/mitzel/cmtuser/Urania_v5r0/PIDCalib/PIDPerfScripts/scripts/D2hhmumu
-                  create the tables for muon and hadron PID cut:
-		  
-		  make the tables for a certain PID cut:
+  /*                                                                                                                                                                       
+  evaluate the muon PID eff in bins of muon pt for each polarity. Beforehand, the PID calibs scripts located in ~/cmtuser/../PIDCALIB/../D2hhmumu/ have to be executed.  
+  ///////////////////////////////////////////////////////                                                                                                                
+  HOWTO EXECUTE THE PIDCALIB SCRIPTS                                                                                                                                     
+                                                                                                                                                                         
+  Setup environment: LbLogin -c x86_64-slc6-gcc48-opt                                                                                                                    
+                     SetupUrania v5r0                                                                                                                                    
+                                                                                                                                                                         
+  needed scripts: in /home/he/mitzel/cmtuser/Urania_v5r0/PIDCalib/PIDPerfScripts/scripts/D2hhmumu                                                                        
+                  create the tables for muon and hadron PID cut:                                                                                                         
+                                                                                                                                                                         
+                  make the tables for a certain PID cut:                                                                                                                 
+                                                                                                                                                                         
+                  ./createTablesMuonPID.sh                                                                                                                               
+                  ./createTablesHadronPID.sh                                                                                                                             
+                                                                                                                                                                         
+                  perform the scripts using the tables and signal MC                                                                                                     
+                  ./performDoubeMuonPID.py  ( for the momentum range 800-8000MeV )                                                                                       
+                  ./performMuonSingePID.py  ( for the momentum range 800-8000MeV )                                                                                       
+                  ./performMuonPIDInPTBins.py (in the defined pt bins for single muon, defined in performMuonPIDInPTBins.py. The binning                                 
+                                               scheme must match the one defined here in EfficiencyStudy.cpp)                                                            
+                                                                                                                                                                         
+                  for hadrons:                                                                                                                                           
+                  ./performHadronPID.py                                                                                                                                  
 
-		  ./createTablesMuonPID.sh
-		  ./createTablesHadronPID.sh
-	  
-		  perform the scripts using the tables and signal MC
-		  ./performDoubeMuonPID.py  ( for the momentum range 800-8000MeV )
-		  ./performMuonSingePID.py  ( for the momentum range 800-8000MeV )
-		  ./performMuonPIDInPTBins.py (in the defined pt bins for single muon, defined in performMuonPIDInPTBins.py. The binning
-		                               scheme must match the one defined here in EfficiencyStudy.cpp)
 
-		  for hadrons:
-		  ./performHadronPID.py
-		  
-		  the PID calib results are saved in folders in /home/he/mitzel/cmtuser/Urania_v5r0/PIDCalib/PIDPerfScripts/scripts/D2hhmumu and will be read out by the
-		  following programms
-
-  //////////////////////////////////////////////////
-		  
-  Note: in evaluatePIDCalibMuonEfficiencyForPTBins, also the extrapolated low pt efficiency is computed by a linear fit! It is done in bin of dimuon mass bins and only for muon index 0
-*/
+                  the PID calib results are saved in folders in /home/he/mitzel/cmtuser/Urania_v5r0/PIDCalib/PIDPerfScripts/scripts/D2hhmumu and will be read out by the
+                  following programms                                                                                                                                    
+                                                                                                                                                                         
+  //////////////////////////////////////////////////       
+                                                                                                                                                                         
+  Note: in evaluatePIDCalibMuonEfficiencyForPTBins, also the extrapolated low pt efficiency is computed by a linear fit! It is done in bin of dimuon mass bins and only \
+for muon index 0                                                                                                                                                         
+  */
 
   evaluatePIDCalibMuonEfficiencyForPTBins("magDw");
   evaluatePIDCalibMuonEfficiencyForPTBins("magUp");
- /*
-   Evaluate the single and double muon efficiencies for both polarities and muon indices in pt range > 800MeV
-   PID calib has to be performed induvidually on magUp and Dw
- */
-  
+  /*                                                                                                                                                                      
+   Evaluate the single and double muon efficiencies for both polarities and muon indices in pt range > 800MeV                                                            
+   PID calib has to be performed induvidually on magUp and Dw                                                                                                            
+  */
 
-  evaluatePIDCalibSingleMuonEfficiency("magUp",0,"default"); //default is the standard PID calib binning scheme. 
+  evaluatePIDCalibSingleMuonEfficiency("magUp",0,"default"); //default is the standard PID calib binning scheme.                                                         
   evaluatePIDCalibSingleMuonEfficiency("magDw",0,"default");
   evaluatePIDCalibSingleMuonEfficiency("magUp",1,"default");
   evaluatePIDCalibSingleMuonEfficiency("magDw",1,"default");
-  
+
   evaluatePIDCalibDoubleMuonEfficiency("magDw");
   evaluatePIDCalibDoubleMuonEfficiency("magUp");
 
- // also get the MC single and double muon PID efficiencies. No splitting by magUp an Dw done
- 
+  // also get the MC single and double muon PID efficiencies. No splitting by magUp an Dw done      
+
+
   evaluateMCSingleMuonEfficiency(0);
   evaluateMCSingleMuonEfficiency(1);
   evaluateMCDoubleMuonEfficiency();
 
- /*   
-   as PID calib has to be done separately by polarity, the average is calculated  
-  
- */
+  /*                                                                                                                                                                      
+   as PID calib has to be done separately by polarity, the average is calculated                                                                                         
+                                                                                                                                                                         
+  */
 
- //drawBothPolaritiesPIDCalibMuonEfficiencyForPTBins(); //write a NEW one that onl does the things we need right now!
+  //drawBothPolaritiesPIDCalibMuonEfficiencyForPTBins(); //write a NEW one that onl does the things we need right now!                                                    
 
- //computeGlobalLowPtEfficiency(); //compute the global low pt eff, averaged over polarity, channel, m(mumu)
+  //computeGlobalLowPtEfficiency(); //compute the global low pt eff, averaged over polarity, channel, m(mumu)                                                             
 
- //average the PID calib results over polarity
- drawBothPolaritiesPIDCalibDoubleMuonEfficiency();
+  //average the PID calib results over polarity                                                                                                                           
+  drawBothPolaritiesPIDCalibDoubleMuonEfficiency();
 
- drawBothPolaritiesPIDCalibSingleMuonEfficiency(0,"default");//again mouon index 0 and 1
- drawBothPolaritiesPIDCalibSingleMuonEfficiency(1,"default");
- 
- //takes PID calib and MC PID efficiencies and corrects the low pt regime, therfor the mu_Pt spectra are needed
- //from MC
- 
- //drawPtSpectra(0); //pt spectra for mu0 and mu1
- //drawPtSpectra(1);
- drawLowPtCorrectedEfficiency("default");
-  
- //checkMuonPIDFactorization();
-  
- /*                                                                                                                                                        
-   for Hadron efficiency, no splitting by pt is needed, otherwise similar strategy. Phase space fully coverd by PID calib reference sample
-   -evaluate PID calib efficiency for both polarities
-   -average
-   -evaluate MC eff
- */
- 
+  drawBothPolaritiesPIDCalibSingleMuonEfficiency(0,"default");//again mouon index 0 and 1                                                                                 
+  drawBothPolaritiesPIDCalibSingleMuonEfficiency(1,"default");
+
+  //takes PID calib and MC PID efficiencies and corrects the low pt regime, therfor the mu_Pt spectra are needed                                                          
+  //from MC                                                                                                                                                               
+
+  //drawPtSpectra(0); //pt spectra for mu0 and mu1                                                                                                                        
+  //drawPtSpectra(1);                                                                                                                                                     
+  drawLowPtCorrectedEfficiency("default");
+  //checkMuonPIDFactorization();                                                                                                                                          
+
+  /*                                                                                                                                                                      
+   for Hadron efficiency, no splitting by pt is needed, otherwise similar strategy. Phase space fully coverd by PID calib reference sample                               
+   -evaluate PID calib efficiency for both polarities                                                                                                                    
+   -average                                                                                                                                                              
+   -evaluate MC eff                                                                                                                                                      
+  */
+
   evaluatePIDCalibHadronEfficiency("magUp","default");
   evaluatePIDCalibHadronEfficiency("magDw","default");
   drawBothPolaritiesPIDCalibHadronEfficiency("default");
- 
- //the total PID efficiency is the product of Hadron and muon PID
- 
+
+  //the total PID efficiency is the product of Hadron and muon PID                                                                                                        
+
   drawTotalPIDEfficiency("default",0.015,0.01);
 
 }
 
 void evaluatePIDEfficiencySystematicUncertainty(){
 
-  //evaluate the uncertainty due to the binning scheme in PID calib
+  //evaluate the uncertainty due to the binning scheme in PID calib                                                                                                      
 
-  //muon PID
-  
+  //muon PID                                                                                                                                                             
+
   evaluatePIDCalibSingleMuonEfficiency("magUp",0,"alternative");
   evaluatePIDCalibSingleMuonEfficiency("magDw",0,"alternative");
   evaluatePIDCalibSingleMuonEfficiency("magUp",1,"alternative");
@@ -240,16 +249,16 @@ void evaluatePIDEfficiencySystematicUncertainty(){
   evaluatePIDCalibSingleMuonEfficiency("magUp",1,"alternative2");
   evaluatePIDCalibSingleMuonEfficiency("magDw",1,"alternative2");
 
-  drawBothPolaritiesPIDCalibSingleMuonEfficiency(0,"alternative");//again mouon index 0 and 1
+  drawBothPolaritiesPIDCalibSingleMuonEfficiency(0,"alternative");//again mouon index 0 and 1                                                                            
   drawBothPolaritiesPIDCalibSingleMuonEfficiency(1,"alternative");
 
-  drawBothPolaritiesPIDCalibSingleMuonEfficiency(0,"alternative2");//again mouon index 0 and 1
+  drawBothPolaritiesPIDCalibSingleMuonEfficiency(0,"alternative2");//again mouon index 0 and 1                                                                           
   drawBothPolaritiesPIDCalibSingleMuonEfficiency(1,"alternative2");
 
   drawLowPtCorrectedEfficiency("alternative");
   drawLowPtCorrectedEfficiency("alternative2");
-    
-  //Hadron PID
+
+  //Hadron PID                                                                                                                                                           
 
   evaluatePIDCalibHadronEfficiency("magUp","alternative");
   evaluatePIDCalibHadronEfficiency("magDw","alternative");
@@ -262,7 +271,7 @@ void evaluatePIDEfficiencySystematicUncertainty(){
 
   drawTotalPIDEfficiency("alternative",0.015,0.01);
   drawTotalPIDEfficiency("alternative2",0.015,0.01);
-  
+
   compareHadonAndMuonEfficienciesWithDifferentBinning();
 
 }
@@ -295,7 +304,6 @@ void compareHadonAndMuonEfficienciesWithDifferentBinning(){
 
   dcastyle();
 
-    
   TCanvas* a = new TCanvas("a","a");
   a->Divide(1,2);
   a->cd(1);
@@ -316,7 +324,7 @@ void compareHadonAndMuonEfficienciesWithDifferentBinning(){
   relativeMuonPID_pipi_alternative2->Draw("SAME");
   cout<<"test1"<<endl;
   a->Print("test1.eps");
-    
+
   TCanvas*  b= new TCanvas("b","b");
   b->Divide(1,2);
   b->cd(1);
@@ -327,7 +335,6 @@ void compareHadonAndMuonEfficienciesWithDifferentBinning(){
   relativeHadronPID_KK_alternative2->SetLineColor(3);
   relativeHadronPID_KK_alternative2->Draw("SAME");
   cout<<"test1"<<endl;
-
   b->cd(2);
   relativeHadronPID_pipi_default->GetYaxis()->SetRangeUser(.9,1.2);
   relativeHadronPID_pipi_default->Draw();
@@ -336,11 +343,12 @@ void compareHadonAndMuonEfficienciesWithDifferentBinning(){
   relativeHadronPID_pipi_alternative2->SetLineColor(3);
   relativeHadronPID_pipi_alternative2->Draw("SAME");
   cout<<"test1"<<endl;
-  
+
   b->Print("test.eps");
-    
+
 
 }
+
 
 
 class Cand {
@@ -365,14 +373,28 @@ public :
   Double_t  id() { return ((double) runNumber)/((double) eventNumber); }
 };
 
- 
-//multiple candidate stuff
+class FullKinematicCand {
+public :
+  ULong64_t eventNumber;
+  UInt_t    runNumber;
+  Double_t  mass;
+  UInt_t    nCandidate;
+  Double_t  D_DiMuon_Mass;
+  double mu0_PX, mu0_PY, mu0_PZ;
+  double mu1_PX, mu1_PY, mu1_PZ;
+  double h0_PX, h0_PY, h0_PZ;
+  double h1_PX, h1_PY, h1_PZ;
+  double Slowpi_P;
+  Double_t  id() { return ((double) runNumber)/((double) eventNumber); }
+};
 
- 
+
+
+
 void writeMultipleCanidatesToFile(bool withGhosts){
-  
-  //write all the multiple canidated to a file with totCandidates>1 (after dm preselction and nShared cut for muons)
-  
+
+  //write all the multiple canidated to a file with totCandidates>1 (after dm preselction and nShared cut for muons)                                                     
+
 
   TString nameKpi;
   TString nameKpi_D2KKmumuBDT;
@@ -393,34 +415,32 @@ void writeMultipleCanidatesToFile(bool withGhosts){
     namepipi="candidateLists/candidatespipi_2012_filtered_noGhosts.txt";
   }
 
-  
   std::ofstream fileKpi(nameKpi);
   std::ofstream fileKpi_D2KKmumuBDT(nameKpi_D2KKmumuBDT);
   std::ofstream fileKK(nameKK);
   std::ofstream filepipi(namepipi);
 
   double cutBDT=0.4;
-  double cutPID=0.5; 
+  double cutPID=0.5;
 
-  //TChain* Chain_KK = new TChain("DecayTree");
-  //TChain* Chain_Kpi=  new TChain("DecayTree");
-  //TChain* Chain_pipi=  new TChain("DecayTree");
+  //TChain* Chain_KK = new TChain("DecayTree");                                                                                                                          
+  //TChain* Chain_Kpi=  new TChain("DecayTree");                                                                                                                         
+  //TChain* Chain_pipi=  new TChain("DecayTree");                                                                                                                        
   TChain* Chain_KK = new TChain("BDT_Tree");
   TChain* Chain_Kpi=  new TChain("BDT_Tree");
   TChain* Chain_Kpi_D2KKmumuBDT=  new TChain("BDT_Tree");
   TChain* Chain_pipi=  new TChain("BDT_Tree");
-  
-  // TChain* Chain_pipi=  new TChain("MC12_DstD2pipiMuMu/DecayTree");
 
-  //Chain_KK->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MC12_DstD2KKmumu.root");
-  //Chain_Kpi->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/MC12_DstD2Kpimumu.root");
-  //Chain_pipi->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu.root");
-  
+  // TChain* Chain_pipi=  new TChain("MC12_DstD2pipiMuMu/DecayTree");                                                                                                    
+
+  //Chain_KK->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MC12_DstD2KKmumu.root");                                                                        
+  //Chain_Kpi->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/MC12_DstD2Kpimumu.root");                                                                     
+  //Chain_pipi->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu.root");                                                                  
+
   Chain_KK->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2KKmumu_200.0_1600.0_D2KKmumuBDT.root");
   Chain_Kpi->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2pipimumuBDT.root");
-  Chain_pipi->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2pipimumu_200.0_1600.0_D2pipimumuBDT.root"); 
+  Chain_pipi->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2pipimumu_200.0_1600.0_D2pipimumuBDT.root");
   Chain_Kpi_D2KKmumuBDT->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2KKmumuBDT.root");
-
   double m_D;
   ULong64_t eventNumber;
   UInt_t runNumber;
@@ -433,7 +453,7 @@ void writeMultipleCanidatesToFile(bool withGhosts){
   double h0_PX, h0_PY, h0_PZ;
   double h1_PX, h1_PY, h1_PZ;
   double Slowpi_PX,Slowpi_PY,Slowpi_PZ;
-  double deltaM; 
+  double deltaM;
   int mu1_MuonNShared,mu0_MuonNShared;
 
   double BDT, mu0_ProbNNmu, mu1_ProbNNmu;
@@ -451,9 +471,8 @@ void writeMultipleCanidatesToFile(bool withGhosts){
   Chain_KK->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
   Chain_KK->SetBranchAddress("h0_ProbNNk",&h0_ProbNNk);
   Chain_KK->SetBranchAddress("h1_ProbNNk",&h1_ProbNNk);
-
-  Chain_KK->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS); 
-  Chain_KK->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS); 
+  Chain_KK->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  Chain_KK->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
   Chain_KK->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
   Chain_KK->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
   Chain_KK->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
@@ -478,7 +497,6 @@ void writeMultipleCanidatesToFile(bool withGhosts){
   Chain_KK->SetBranchAddress("mu1_PX",&mu1_PX);
   Chain_KK->SetBranchAddress("mu1_PY",&mu1_PY);
   Chain_KK->SetBranchAddress("mu1_PZ",&mu1_PZ);
-
   Chain_KK->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
   Chain_KK->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
 
@@ -502,9 +520,8 @@ void writeMultipleCanidatesToFile(bool withGhosts){
   Chain_Kpi->SetBranchAddress("runNumber",&runNumber);
   Chain_Kpi->SetBranchAddress("Dst_DTF_D0_M",&m_D);
   Chain_Kpi->SetBranchAddress("Dst_BKGCAT",&Dst_BKGCAT);
-  Chain_Kpi->SetBranchAddress("totCandidates",&totCandidates); 
+  Chain_Kpi->SetBranchAddress("totCandidates",&totCandidates);
   Chain_Kpi->SetBranchAddress("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&Hlt2_TOS);
-
   Chain_Kpi->SetBranchAddress("deltaM",&deltaM);
 
   Chain_Kpi->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
@@ -547,11 +564,10 @@ void writeMultipleCanidatesToFile(bool withGhosts){
   Chain_Kpi_D2KKmumuBDT->SetBranchAddress("runNumber",&runNumber);
   Chain_Kpi_D2KKmumuBDT->SetBranchAddress("Dst_DTF_D0_M",&m_D);
   Chain_Kpi_D2KKmumuBDT->SetBranchAddress("Dst_BKGCAT",&Dst_BKGCAT);
-  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("totCandidates",&totCandidates); 
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("totCandidates",&totCandidates);
   Chain_Kpi_D2KKmumuBDT->SetBranchAddress("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&Hlt2_TOS);
 
   Chain_Kpi_D2KKmumuBDT->SetBranchAddress("deltaM",&deltaM);
-
   Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
   Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
   Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
@@ -625,12 +641,11 @@ void writeMultipleCanidatesToFile(bool withGhosts){
   Chain_pipi->SetBranchAddress("h1_PY",&h1_PY);
   Chain_pipi->SetBranchAddress("h1_PZ",&h1_PZ);
 
-  //double Dst_DTF_D0_M,Dst_DTF_Dstarplus_M;
-  //Chain_pipi->SetBranchAddress("Dst_DTF_D0_M",&Dst_DTF_D0_M);
-  //Chain_pipi->SetBranchAddress("Dst_DTF_Dstarplus_M",&Dst_DTF_Dstarplus_M);
-
-  
-  //Loop                                                                                                                                                                              
+  //double Dst_DTF_D0_M,Dst_DTF_Dstarplus_M;                                                                                                                             
+  //Chain_pipi->SetBranchAddress("Dst_DTF_D0_M",&Dst_DTF_D0_M);                                                                                                          
+  //Chain_pipi->SetBranchAddress("Dst_DTF_Dstarplus_M",&Dst_DTF_Dstarplus_M);        
+  //Loop                                                                                                                                                                \
+                                                                                                                                                                         
   Long64_t nentriesKK = Chain_KK->GetEntries();
   Long64_t nentriesKpi = Chain_Kpi->GetEntries();
   Long64_t nentriesKpi_D2KKmumuBDT = Chain_Kpi_D2KKmumuBDT->GetEntries();
@@ -641,76 +656,842 @@ void writeMultipleCanidatesToFile(bool withGhosts){
 
   for (Long64_t jentry=0; jentry<nentriesKK;jentry++) {
 
-      Chain_KK->GetEntry(jentry);
-      
-      if(deltaM>146.5 || deltaM < 144.5) continue;
-      if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
-      
-      if(withGhosts && !(Dst_BKGCAT<11||Dst_BKGCAT==60))continue;
-      //if(withGhosts && !(Dst_BKGCAT<100))continue;
-      if(!withGhosts && !(Dst_BKGCAT<11))continue;        
-  
-      if(BDT<cutBDT) continue;
-      if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
-      if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
-      if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
-      if(!Hlt2_TOS) continue;
-      if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
-      if(h0_ProbNNk<0.2 || h1_ProbNNk<0.2 ) continue;
-      
+    Chain_KK->GetEntry(jentry);
 
-      if(totCandidates==1) {counter1++; continue; }
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
 
-      counter2++;
-      
-      fileKK << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT << std::endl;
-      /*
-      fileKK << eventNumber << "\t" << runNumber << "\t" << m_D  << "\t" << nCandidate << "\t" << Dst_BKGCAT 
-	     << "\t" << mu0_PX << "\t" << mu0_PY
-	     << "\t" <<mu0_PZ<< "\t" << mu1_PX<< "\t" << mu1_PY<< "\t" << mu1_PZ
-      	     << "\t" << h0_PX << "\t" << h0_PY
-	     << "\t" << h0_PZ<< "\t" << h1_PX<< "\t" << h1_PY<< "\t" << h1_PZ<< "\t" <<  Slowpi_PX<< "\t" << Slowpi_PY<< "\t" << Slowpi_PZ<< std::endl;
-      */
-           }
-  std::cout<<"KK: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl; 
+    if(withGhosts && !(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50))continue;
+    //if(withGhosts && !(Dst_BKGCAT<100))continue;                                                                                                                     
+    if(!withGhosts && !(Dst_BKGCAT<11))continue;
+
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
+    if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
+
+    if(!Hlt2_TOS) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNNk<0.2 || h1_ProbNNk<0.2 ) continue;
+
+
+    if(totCandidates==1) {counter1++; continue; }
+
+    counter2++;
+
+    fileKK << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT << std::endl;
+  }
+  std::cout<<"KK: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
+
+  counter1=0;
+  counter2=0;
+                 
+
+  for (Long64_t jentry=0; jentry<nentriesKpi;jentry++) {
+
+    Chain_Kpi->GetEntry(jentry);
+
+
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+
+    if(withGhosts && !(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50))continue;
+    //if(withGhosts && !(Dst_BKGCAT<100))continue;                                                                                                                     
+    if(!withGhosts && !(Dst_BKGCAT<11))continue;
+
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
+    if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
+    if(!Hlt2_TOS) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNNk<0.2 || h1_ProbNNpi<0.2 ) continue;
+
+    if(totCandidates==1) {counter1++; continue; }
+
+    counter2++;
+
+    fileKpi << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT  <<std::endl;
+
+  }
+
+  std::cout<<"Kpi: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
 
   counter1=0;
   counter2=0;
 
+
+  for (Long64_t jentry=0; jentry<nentriesKpi_D2KKmumuBDT;jentry++) {
+
+    Chain_Kpi_D2KKmumuBDT->GetEntry(jentry);
+
+
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+
+    if(withGhosts && !(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50))continue;
+    //if(withGhosts && !(Dst_BKGCAT<100))continue;                                                                                                                     
+    if(!withGhosts && !(Dst_BKGCAT<11))continue;
+
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
+    if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
+    if(!Hlt2_TOS) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNNk<0.2 || h1_ProbNNpi<0.2 ) continue;
+
+    if(totCandidates==1) {counter1++; continue; }
+
+    counter2++;
+    fileKpi_D2KKmumuBDT << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT  <<std::endl;
+
+
+  }
+
+
+  std::cout<<"Kpi: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
+
+
+
+  counter1=0;
+  counter2=0;
+
+  for (Long64_t jentry=0; jentry<nentriespipi;jentry++) {
+
+    Chain_pipi->GetEntry(jentry);
+
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    //if(Dst_DTF_Dstarplus_M-Dst_DTF_D0_M < 144.5) continue;                                                                                                           
+    //if(Dst_DTF_Dstarplus_M-Dst_DTF_D0_M > 146.5) continue;                                                                                                           
+
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+
+    if(withGhosts && !(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50))continue;
+    //if(withGhosts && !(Dst_BKGCAT<100))continue;                                                                                                                     
+    if(!withGhosts && !(Dst_BKGCAT<11))continue;
+
+    if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
+    if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(!Hlt2_TOS) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNNpi<0.2 || h1_ProbNNk<0.2 ) continue;
+
+
+    if(totCandidates==1) {counter1++; continue; }
+
+    counter2++;
+
+    filepipi << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT << std::endl;
+
+  }
+  std::cout<<"pi pi: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
+
+  fileKK.close();
+  fileKpi.close();
+  filepipi.close();
+
+}
+
+
+
+
+void writeMultipleDataCanidatesToFile(){
+
+  //write all the multiple canidated to a file with totCandidates>1 (after dm preselction and nShared cut for muons)                                                     
+
+  TString nameKpi;
+  TString nameKpi_D2KKmumuBDT;
+  TString nameKK;
+  TString namepipi;
+
+  nameKpi="candidateLists/candidatesKpi_2012_Data.txt";
+  nameKpi_D2KKmumuBDT="candidateLists/candidatesKpi_2012_Data.txt";
+  nameKK="candidateLists/candidatesKK_2012_Datas.txt";
+  namepipi="candidateLists/candidatespipi_2012_Data.txt";
+
+  std::ofstream fileKpi(nameKpi);
+  std::ofstream fileKpi_D2KKmumuBDT(nameKpi_D2KKmumuBDT);
+  std::ofstream fileKK(nameKK);
+  std::ofstream filepipi(namepipi);
+
+  double cutBDT=0.4;
+  double cutPID=0.5;
+
+  TChain* Chain_KK = new TChain("BDT_Tree");
+  TChain* Chain_Kpi=  new TChain("BDT_Tree");
+  TChain* Chain_Kpi_D2KKmumuBDT=  new TChain("BDT_Tree");
+  TChain* Chain_pipi=  new TChain("BDT_Tree");
+
+  Chain_KK->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT.root");
+  Chain_Kpi->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT.root");
+  Chain_pipi->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT.root");
+  Chain_Kpi_D2KKmumuBDT->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT.root");
+
+  double m_D;
+  ULong64_t eventNumber;
+  UInt_t runNumber;
+  UInt_t nCandidate;
+  int Dst_BKGCAT;
+  ULong64_t totCandidates;
+
+  double mu0_PX, mu0_PY, mu0_PZ;
+  double mu1_PX, mu1_PY, mu1_PZ;
+  double h0_PX, h0_PY, h0_PZ;
+  double h1_PX, h1_PY, h1_PZ;
+  double Slowpi_PX,Slowpi_PY,Slowpi_PZ;
+  double deltaM;
+  int mu1_MuonNShared,mu0_MuonNShared;
+
+  double BDT, mu0_ProbNNmu, mu1_ProbNNmu;
+  bool mu1_L0MuonDecision_TOS,mu0_L0MuonDecision_TOS;
+  bool mu1_Hlt1TrackMuonDecision_TOS, mu0_Hlt1TrackMuonDecision_TOS, D_Hlt1TrackAllL0Decision_TOS;
+  bool Hlt2_TOS;
+
+  double h0_ProbNNghost, h1_ProbNNghost,mu0_ProbNNghost, mu1_ProbNNghost, Slowpi_ProbNNghost;
+  double h0_ProbNNk,h1_ProbNNk,h0_ProbNNpi,h1_ProbNNpi;
+
+  Chain_KK->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  Chain_KK->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  Chain_KK->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+  Chain_KK->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  Chain_KK->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  Chain_KK->SetBranchAddress("h0_ProbNNk",&h0_ProbNNk);
+  Chain_KK->SetBranchAddress("h1_ProbNNk",&h1_ProbNNk);
+  Chain_KK->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  Chain_KK->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  Chain_KK->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  Chain_KK->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  Chain_KK->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+
+  Chain_KK->SetBranchAddress("D_Hlt2CharmSemilepD02KKMuMuDecision_TOS",&Hlt2_TOS);
+
+  Chain_KK->SetBranchAddress("totCandidates",&totCandidates);
+  Chain_KK->SetBranchAddress("nCandidate",&nCandidate);
+  Chain_KK->SetBranchAddress("eventNumber",&eventNumber);
+  Chain_KK->SetBranchAddress("runNumber",&runNumber);
+  Chain_KK->SetBranchAddress("Dst_DTF_D0_M",&m_D);
+  Chain_KK->SetBranchAddress("Dst_BKGCAT",&Dst_BKGCAT);
+  Chain_KK->SetBranchAddress("deltaM",&deltaM);
+
+  Chain_KK->SetBranchAddress("BDT",&BDT);
+  Chain_KK->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  Chain_KK->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+
+  Chain_KK->SetBranchAddress("mu0_PX",&mu0_PX);
+  Chain_KK->SetBranchAddress("mu0_PY",&mu0_PY);
+  Chain_KK->SetBranchAddress("mu0_PZ",&mu0_PZ);
+  Chain_KK->SetBranchAddress("mu1_PX",&mu1_PX);
+  Chain_KK->SetBranchAddress("mu1_PY",&mu1_PY);
+  Chain_KK->SetBranchAddress("mu1_PZ",&mu1_PZ);
+  Chain_KK->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  Chain_KK->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+  Chain_KK->SetBranchAddress("h0_PX",&h0_PX);
+  Chain_KK->SetBranchAddress("h0_PY",&h0_PY);
+  Chain_KK->SetBranchAddress("h0_PZ",&h0_PZ);
+  Chain_KK->SetBranchAddress("h1_PX",&h1_PX);
+  Chain_KK->SetBranchAddress("h1_PY",&h1_PY);
+  Chain_KK->SetBranchAddress("h1_PZ",&h1_PZ);
+
+  Chain_Kpi->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  Chain_Kpi->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  Chain_Kpi->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+  Chain_Kpi->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  Chain_Kpi->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  Chain_Kpi->SetBranchAddress("h0_ProbNNk",&h0_ProbNNk);
+  Chain_Kpi->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNpi);
+
+  Chain_Kpi->SetBranchAddress("nCandidate",&nCandidate);
+  Chain_Kpi->SetBranchAddress("eventNumber",&eventNumber);
+  Chain_Kpi->SetBranchAddress("runNumber",&runNumber);
+  Chain_Kpi->SetBranchAddress("Dst_DTF_D0_M",&m_D);
+  Chain_Kpi->SetBranchAddress("Dst_BKGCAT",&Dst_BKGCAT);
+  Chain_Kpi->SetBranchAddress("totCandidates",&totCandidates);
+  Chain_Kpi->SetBranchAddress("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&Hlt2_TOS);
+  Chain_Kpi->SetBranchAddress("deltaM",&deltaM);
+
+  Chain_Kpi->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  Chain_Kpi->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  Chain_Kpi->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  Chain_Kpi->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  Chain_Kpi->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+
+  Chain_Kpi->SetBranchAddress("BDT",&BDT);
+  Chain_Kpi->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  Chain_Kpi->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+
+  Chain_Kpi->SetBranchAddress("mu0_PX",&mu0_PX);
+  Chain_Kpi->SetBranchAddress("mu0_PY",&mu0_PY);
+  Chain_Kpi->SetBranchAddress("mu0_PZ",&mu0_PZ);
+  Chain_Kpi->SetBranchAddress("mu1_PX",&mu1_PX);
+  Chain_Kpi->SetBranchAddress("mu1_PY",&mu1_PY);
+  Chain_Kpi->SetBranchAddress("mu1_PZ",&mu1_PZ);
+
+  Chain_Kpi->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  Chain_Kpi->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+  Chain_Kpi->SetBranchAddress("h0_PX",&h0_PX);
+  Chain_Kpi->SetBranchAddress("h0_PY",&h0_PY);
+  Chain_Kpi->SetBranchAddress("h0_PZ",&h0_PZ);
+  Chain_Kpi->SetBranchAddress("h1_PX",&h1_PX);
+  Chain_Kpi->SetBranchAddress("h1_PY",&h1_PY);
+  Chain_Kpi->SetBranchAddress("h1_PZ",&h1_PZ);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h0_ProbNNk",&h0_ProbNNk);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNpi);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("nCandidate",&nCandidate);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("eventNumber",&eventNumber);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("runNumber",&runNumber);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("Dst_DTF_D0_M",&m_D);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("Dst_BKGCAT",&Dst_BKGCAT);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("totCandidates",&totCandidates);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&Hlt2_TOS);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("deltaM",&deltaM);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("BDT",&BDT);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_PX",&mu0_PX);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_PY",&mu0_PY);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_PZ",&mu0_PZ);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_PX",&mu1_PX);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_PY",&mu1_PY);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_PZ",&mu1_PZ);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h0_PX",&h0_PX);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h0_PY",&h0_PY);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h0_PZ",&h0_PZ);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h1_PX",&h1_PX);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h1_PY",&h1_PY);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h1_PZ",&h1_PZ);
+
+
+  Chain_pipi->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  Chain_pipi->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  Chain_pipi->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+  Chain_pipi->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  Chain_pipi->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  Chain_pipi->SetBranchAddress("h0_ProbNNpi",&h0_ProbNNpi);
+  Chain_pipi->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNpi);
+
+  Chain_pipi->SetBranchAddress("nCandidate",&nCandidate);
+  Chain_pipi->SetBranchAddress("eventNumber",&eventNumber);
+  Chain_pipi->SetBranchAddress("runNumber",&runNumber);
+  Chain_pipi->SetBranchAddress("Dst_DTF_D0_M",&m_D);
+  Chain_pipi->SetBranchAddress("Dst_BKGCAT",&Dst_BKGCAT);
+  Chain_pipi->SetBranchAddress("totCandidates",&totCandidates);
+  Chain_pipi->SetBranchAddress("deltaM",&deltaM);
+
+  Chain_pipi->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  Chain_pipi->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  Chain_pipi->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  Chain_pipi->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  Chain_pipi->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+
+  Chain_pipi->SetBranchAddress("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",&Hlt2_TOS);
+
+  Chain_pipi->SetBranchAddress("BDT",&BDT);
+  Chain_pipi->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  Chain_pipi->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+
+  Chain_pipi->SetBranchAddress("mu0_PX",&mu0_PX);
+  Chain_pipi->SetBranchAddress("mu0_PY",&mu0_PY);
+  Chain_pipi->SetBranchAddress("mu0_PZ",&mu0_PZ);
+  Chain_pipi->SetBranchAddress("mu1_PX",&mu1_PX);
+  Chain_pipi->SetBranchAddress("mu1_PY",&mu1_PY);
+  Chain_pipi->SetBranchAddress("mu1_PZ",&mu1_PZ);
+
+  Chain_pipi->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  Chain_pipi->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+  Chain_pipi->SetBranchAddress("h0_PX",&h0_PX);
+  Chain_pipi->SetBranchAddress("h0_PY",&h0_PY);
+  Chain_pipi->SetBranchAddress("h0_PZ",&h0_PZ);
+  Chain_pipi->SetBranchAddress("h1_PX",&h1_PX);
+  Chain_pipi->SetBranchAddress("h1_PY",&h1_PY);
+  Chain_pipi->SetBranchAddress("h1_PZ",&h1_PZ);
+                                                                                                                                                                         
+  Long64_t nentriesKK = Chain_KK->GetEntries();
+  Long64_t nentriesKpi = Chain_Kpi->GetEntries();
+  Long64_t nentriesKpi_D2KKmumuBDT = Chain_Kpi_D2KKmumuBDT->GetEntries();
+  Long64_t nentriespipi = Chain_pipi->GetEntries();
+
+  int counter1=0;
+  int counter2=0;
+
+  for (Long64_t jentry=0; jentry<nentriesKK;jentry++) {
+
+    Chain_KK->GetEntry(jentry);
+
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+
+
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
+    if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
+
+    if(!Hlt2_TOS) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNNk<0.2 || h1_ProbNNk<0.2 ) continue;
+
+
+    if(totCandidates==1) {counter1++; continue; }
+
+    counter2++;
+
+    fileKK << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT << std::endl;
+  }
+  std::cout<<"KK: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
+
+  counter1=0;
+  counter2=0;
+                 
+
   for (Long64_t jentry=0; jentry<nentriesKpi;jentry++) {
 
-      Chain_Kpi->GetEntry(jentry);
-      
-      
-      if(deltaM>146.5 || deltaM < 144.5) continue;
-      if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
-      
-      if(withGhosts && !(Dst_BKGCAT<11||Dst_BKGCAT==60))continue;
-      //if(withGhosts && !(Dst_BKGCAT<100))continue;
-      if(!withGhosts && !(Dst_BKGCAT<11))continue;        
+    Chain_Kpi->GetEntry(jentry);
 
-      if(BDT<cutBDT) continue;
-      if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
-      if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
-      if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
-      if(!Hlt2_TOS) continue;
-      if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
-      if(h0_ProbNNk<0.2 || h1_ProbNNpi<0.2 ) continue;
-      
-      if(totCandidates==1) {counter1++; continue; }
 
-      counter2++;
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
+    if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
+    if(!Hlt2_TOS) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNNk<0.2 || h1_ProbNNpi<0.2 ) continue;
 
-      fileKpi << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT  <<std::endl;
+    if(totCandidates==1) {counter1++; continue; }
 
-      /*
-      fileKpi << eventNumber << "\t" << runNumber << "\t" << m_D  << "\t" << nCandidate << "\t" << Dst_BKGCAT
+    counter2++;
+
+    fileKpi << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT  <<std::endl;
+
+  }
+
+  std::cout<<"Kpi: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
+
+  counter1=0;
+  counter2=0;
+
+
+  for (Long64_t jentry=0; jentry<nentriesKpi_D2KKmumuBDT;jentry++) {
+
+    Chain_Kpi_D2KKmumuBDT->GetEntry(jentry);
+
+
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+
+
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
+    if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
+    if(!Hlt2_TOS) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNNk<0.2 || h1_ProbNNpi<0.2 ) continue;
+
+    if(totCandidates==1) {counter1++; continue; }
+
+    counter2++;
+    fileKpi_D2KKmumuBDT << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT  <<std::endl;
+
+
+  }
+
+
+  std::cout<<"Kpi: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
+
+
+
+  counter1=0;
+  counter2=0;
+
+  for (Long64_t jentry=0; jentry<nentriespipi;jentry++) {
+
+    Chain_pipi->GetEntry(jentry);
+
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    //if(Dst_DTF_Dstarplus_M-Dst_DTF_D0_M < 144.5) continue;                                                                                                           
+    //if(Dst_DTF_Dstarplus_M-Dst_DTF_D0_M > 146.5) continue;                                                                                                           
+
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+
+    if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
+    if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(!Hlt2_TOS) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNNpi<0.2 || h1_ProbNNk<0.2 ) continue;
+
+
+    if(totCandidates==1) {counter1++; continue; }
+
+    counter2++;
+
+    filepipi << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT << std::endl;
+
+  }
+  std::cout<<"pi pi: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
+
+  fileKK.close();
+  fileKpi.close();
+  filepipi.close();
+
+}
+
+
+
+void writeFullKinematicMultipleDataCanidatesToFile(){
+
+  //write all the multiple canidated to a file with totCandidates>1 (after dm preselction and nShared cut for muons)                                                     
+
+
+  TString nameKpi;
+  TString nameKpi_D2KKmumuBDT;
+  TString nameKK;
+  TString namepipi;
+
+  nameKpi="candidateLists/fullKinematic/candidatesKpi_2012_D2pipimumuBDT_Data.txt";
+  nameKpi_D2KKmumuBDT="candidateLists/fullKinematic/candidatesKpi_2012_D2KKmumuBDT_Data.txt";
+  nameKK="candidateLists/fullKinematic/candidatesKK_2012_Data.txt";
+  namepipi="candidateLists/fullKinematic/candidatespipi_2012_Data.txt";
+
+
+  std::ofstream fileKpi(nameKpi);
+  std::ofstream fileKpi_D2KKmumuBDT(nameKpi_D2KKmumuBDT);
+  std::ofstream fileKK(nameKK);
+  std::ofstream filepipi(namepipi);
+
+  double cutBDT=0.4;
+  double cutPID=0.5;
+
+  TChain* Chain_KK = new TChain("BDT_Tree");
+  TChain* Chain_Kpi=  new TChain("BDT_Tree");
+  TChain* Chain_Kpi_D2KKmumuBDT=  new TChain("BDT_Tree");
+  TChain* Chain_pipi=  new TChain("BDT_Tree");
+
+  Chain_KK->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT.root");
+  Chain_Kpi->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT.root");
+  Chain_pipi->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT.root");
+  Chain_Kpi_D2KKmumuBDT->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT.root");
+ 
+  double m_D;
+  ULong64_t eventNumber;
+  UInt_t runNumber;
+  UInt_t nCandidate;
+  int Dst_BKGCAT;
+  ULong64_t totCandidates;
+
+  double mu0_PX, mu0_PY, mu0_PZ;
+  double mu1_PX, mu1_PY, mu1_PZ;
+  double h0_PX, h0_PY, h0_PZ;
+  double h1_PX, h1_PY, h1_PZ;
+  double Slowpi_P,Slowpi_PT;
+  double deltaM;
+  int mu1_MuonNShared,mu0_MuonNShared;
+
+  double BDT, mu0_ProbNNmu, mu1_ProbNNmu;
+  bool mu1_L0MuonDecision_TOS,mu0_L0MuonDecision_TOS;
+  bool mu1_Hlt1TrackMuonDecision_TOS, mu0_Hlt1TrackMuonDecision_TOS, D_Hlt1TrackAllL0Decision_TOS;
+  bool Hlt2_TOS;
+
+  double h0_ProbNNghost, h1_ProbNNghost,mu0_ProbNNghost, mu1_ProbNNghost, Slowpi_ProbNNghost;
+  double h0_ProbNNk,h1_ProbNNk,h0_ProbNNpi,h1_ProbNNpi;
+
+  double D_DiMuon_Mass;
+
+  Chain_KK->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  Chain_KK->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  Chain_KK->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+  Chain_KK->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  Chain_KK->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  Chain_KK->SetBranchAddress("h0_ProbNNk",&h0_ProbNNk);
+  Chain_KK->SetBranchAddress("h1_ProbNNk",&h1_ProbNNk);
+  Chain_KK->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  Chain_KK->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  Chain_KK->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  Chain_KK->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  Chain_KK->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+  Chain_KK->SetBranchAddress("D_DiMuon_Mass",&D_DiMuon_Mass);
+
+  Chain_KK->SetBranchAddress("D_Hlt2CharmSemilepD02KKMuMuDecision_TOS",&Hlt2_TOS);
+
+  Chain_KK->SetBranchAddress("totCandidates",&totCandidates);
+  Chain_KK->SetBranchAddress("nCandidate",&nCandidate);
+  Chain_KK->SetBranchAddress("eventNumber",&eventNumber);
+  Chain_KK->SetBranchAddress("runNumber",&runNumber);
+  Chain_KK->SetBranchAddress("Dst_DTF_D0_M",&m_D);
+  Chain_KK->SetBranchAddress("deltaM",&deltaM);
+
+  Chain_KK->SetBranchAddress("BDT",&BDT);
+  Chain_KK->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  Chain_KK->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+
+  Chain_KK->SetBranchAddress("mu0_PX",&mu0_PX);
+  Chain_KK->SetBranchAddress("mu0_PY",&mu0_PY);
+  Chain_KK->SetBranchAddress("mu0_PZ",&mu0_PZ);
+
+  Chain_KK->SetBranchAddress("Slowpi_PT",&Slowpi_PT);
+  Chain_KK->SetBranchAddress("Slowpi_P",&Slowpi_P);
+
+
+  Chain_KK->SetBranchAddress("mu1_PX",&mu1_PX);
+  Chain_KK->SetBranchAddress("mu1_PY",&mu1_PY);
+  Chain_KK->SetBranchAddress("mu1_PZ",&mu1_PZ);
+  Chain_KK->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  Chain_KK->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+  Chain_KK->SetBranchAddress("h0_PX",&h0_PX);
+  Chain_KK->SetBranchAddress("h0_PY",&h0_PY);
+  Chain_KK->SetBranchAddress("h0_PZ",&h0_PZ);
+  Chain_KK->SetBranchAddress("h1_PX",&h1_PX);
+  Chain_KK->SetBranchAddress("h1_PY",&h1_PY);
+  Chain_KK->SetBranchAddress("h1_PZ",&h1_PZ);
+
+  Chain_Kpi->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  Chain_Kpi->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  Chain_Kpi->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+  Chain_Kpi->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  Chain_Kpi->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  Chain_Kpi->SetBranchAddress("h0_ProbNNk",&h0_ProbNNk);
+  Chain_Kpi->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNpi);
+  Chain_Kpi->SetBranchAddress("D_DiMuon_Mass",&D_DiMuon_Mass);
+
+  Chain_Kpi->SetBranchAddress("Slowpi_PT",&Slowpi_PT);
+  Chain_Kpi->SetBranchAddress("Slowpi_P",&Slowpi_P);
+
+
+  Chain_Kpi->SetBranchAddress("nCandidate",&nCandidate);
+  Chain_Kpi->SetBranchAddress("eventNumber",&eventNumber);
+  Chain_Kpi->SetBranchAddress("runNumber",&runNumber);
+  Chain_Kpi->SetBranchAddress("Dst_DTF_D0_M",&m_D);
+  Chain_Kpi->SetBranchAddress("totCandidates",&totCandidates);
+  Chain_Kpi->SetBranchAddress("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&Hlt2_TOS);
+  Chain_Kpi->SetBranchAddress("deltaM",&deltaM);
+
+  Chain_Kpi->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  Chain_Kpi->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  Chain_Kpi->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  Chain_Kpi->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  Chain_Kpi->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+
+  Chain_Kpi->SetBranchAddress("BDT",&BDT);
+  Chain_Kpi->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  Chain_Kpi->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+
+  Chain_Kpi->SetBranchAddress("mu0_PX",&mu0_PX);
+  Chain_Kpi->SetBranchAddress("mu0_PY",&mu0_PY);
+  Chain_Kpi->SetBranchAddress("mu0_PZ",&mu0_PZ);
+  Chain_Kpi->SetBranchAddress("mu1_PX",&mu1_PX);
+  Chain_Kpi->SetBranchAddress("mu1_PY",&mu1_PY);
+  Chain_Kpi->SetBranchAddress("mu1_PZ",&mu1_PZ);
+
+  Chain_Kpi->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  Chain_Kpi->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+  Chain_Kpi->SetBranchAddress("h0_PX",&h0_PX);
+  Chain_Kpi->SetBranchAddress("h0_PY",&h0_PY);
+  Chain_Kpi->SetBranchAddress("h0_PZ",&h0_PZ);
+  Chain_Kpi->SetBranchAddress("h1_PX",&h1_PX);
+  Chain_Kpi->SetBranchAddress("h1_PY",&h1_PY);
+  Chain_Kpi->SetBranchAddress("h1_PZ",&h1_PZ);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h0_ProbNNk",&h0_ProbNNk);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNpi);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("D_DiMuon_Mass",&D_DiMuon_Mass);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("Slowpi_PT",&Slowpi_P);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("Slowpi_P",&Slowpi_PT);
+
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("nCandidate",&nCandidate);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("eventNumber",&eventNumber);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("runNumber",&runNumber);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("Dst_DTF_D0_M",&m_D);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("totCandidates",&totCandidates);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&Hlt2_TOS);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("deltaM",&deltaM);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("BDT",&BDT);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_PX",&mu0_PX);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_PY",&mu0_PY);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_PZ",&mu0_PZ);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_PX",&mu1_PX);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_PY",&mu1_PY);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_PZ",&mu1_PZ);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h0_PX",&h0_PX);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h0_PY",&h0_PY);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h0_PZ",&h0_PZ);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h1_PX",&h1_PX);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h1_PY",&h1_PY);
+  Chain_Kpi_D2KKmumuBDT->SetBranchAddress("h1_PZ",&h1_PZ);
+
+
+  Chain_pipi->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  Chain_pipi->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  Chain_pipi->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+  Chain_pipi->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  Chain_pipi->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  Chain_pipi->SetBranchAddress("h0_ProbNNpi",&h0_ProbNNpi);
+  Chain_pipi->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNpi);
+
+  Chain_pipi->SetBranchAddress("Slowpi_P",&Slowpi_P);
+  Chain_pipi->SetBranchAddress("Slowpi_PT",&Slowpi_PT);
+
+
+  Chain_pipi->SetBranchAddress("nCandidate",&nCandidate);
+  Chain_pipi->SetBranchAddress("eventNumber",&eventNumber);
+  Chain_pipi->SetBranchAddress("runNumber",&runNumber);
+  Chain_pipi->SetBranchAddress("Dst_DTF_D0_M",&m_D);
+  Chain_pipi->SetBranchAddress("totCandidates",&totCandidates);
+  Chain_pipi->SetBranchAddress("deltaM",&deltaM);
+
+  Chain_pipi->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  Chain_pipi->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  Chain_pipi->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  Chain_pipi->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  Chain_pipi->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+  Chain_pipi->SetBranchAddress("D_DiMuon_Mass",&D_DiMuon_Mass);
+
+  Chain_pipi->SetBranchAddress("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",&Hlt2_TOS);
+
+  Chain_pipi->SetBranchAddress("BDT",&BDT);
+  Chain_pipi->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  Chain_pipi->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+
+  Chain_pipi->SetBranchAddress("mu0_PX",&mu0_PX);
+  Chain_pipi->SetBranchAddress("mu0_PY",&mu0_PY);
+  Chain_pipi->SetBranchAddress("mu0_PZ",&mu0_PZ);
+  Chain_pipi->SetBranchAddress("mu1_PX",&mu1_PX);
+  Chain_pipi->SetBranchAddress("mu1_PY",&mu1_PY);
+  Chain_pipi->SetBranchAddress("mu1_PZ",&mu1_PZ);
+
+  Chain_pipi->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  Chain_pipi->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+  Chain_pipi->SetBranchAddress("h0_PX",&h0_PX);
+  Chain_pipi->SetBranchAddress("h0_PY",&h0_PY);
+  Chain_pipi->SetBranchAddress("h0_PZ",&h0_PZ);
+  Chain_pipi->SetBranchAddress("h1_PX",&h1_PX);
+  Chain_pipi->SetBranchAddress("h1_PY",&h1_PY);
+  Chain_pipi->SetBranchAddress("h1_PZ",&h1_PZ);
+
+  //double Dst_DTF_D0_M,Dst_DTF_Dstarplus_M;                                                                                                                             
+  //Chain_pipi->SetBranchAddress("Dst_DTF_D0_M",&Dst_DTF_D0_M);                                                                                                          
+  //Chain_pipi->SetBranchAddress("Dst_DTF_Dstarplus_M",&Dst_DTF_Dstarplus_M);        
+  //Loop                                                                                                                                                                \
+                                                                                                                                                                         
+  Long64_t nentriesKK = Chain_KK->GetEntries();
+  Long64_t nentriesKpi = Chain_Kpi->GetEntries();
+  Long64_t nentriesKpi_D2KKmumuBDT = Chain_Kpi_D2KKmumuBDT->GetEntries();
+  Long64_t nentriespipi = Chain_pipi->GetEntries();
+
+  int counter1=0;
+  int counter2=0;
+
+
+ for(Long64_t jentry=0; jentry<nentriesKK;jentry++)  {
+ 
+    Chain_KK->GetEntry(jentry);
+    Dst_BKGCAT=1;
+
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+    
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+
+    if(h0_ProbNNk<0.2 || h1_ProbNNk<0.2 ) continue;
+    
+    if(totCandidates==1) {counter1++; continue; }
+
+    counter2++;
+    
+    fileKK << eventNumber << "\t" << runNumber << "\t" << m_D  << "\t" << nCandidate<< "\t" << D_DiMuon_Mass 
 	     << "\t" << mu0_PX << "\t" << mu0_PY
 	     << "\t" <<mu0_PZ<< "\t" << mu1_PX<< "\t" << mu1_PY<< "\t" << mu1_PZ
       	     << "\t" << h0_PX << "\t" << h0_PY
-           << "\t" << h0_PZ<< "\t" << h1_PX<< "\t" << h1_PY<< "\t" << h1_PZ<< "\t" <<  Slowpi_PX<< "\t" << Slowpi_PY<< "\t" << Slowpi_PZ<< std::endl;
-      */
+	     << "\t" << h0_PZ<< "\t" << h1_PX<< "\t" << h1_PY<< "\t" << h1_PZ<< "\t" <<  Slowpi_P
+	     << std::endl;
+   
+    }
 
+  std::cout<<"KK: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
+
+  counter1=0;
+  counter2=0;
+
+
+ for(Long64_t jentry=0; jentry<nentriesKpi;jentry++) {
+ 
+    Chain_Kpi->GetEntry(jentry);
+    Dst_BKGCAT=1;
+    
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+    
+    
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNNk<0.2 || h1_ProbNNpi<0.2 ) continue;
+    
+    if(totCandidates==1) {counter1++; continue; }
+
+    counter2++;
+    
+    fileKpi << eventNumber << "\t" << runNumber << "\t" << m_D  << "\t" << nCandidate << "\t" <<D_DiMuon_Mass 
+	     << "\t" << mu0_PX << "\t" << mu0_PY
+	     << "\t" <<mu0_PZ<< "\t" << mu1_PX<< "\t" << mu1_PY<< "\t" << mu1_PZ
+      	     << "\t" << h0_PX << "\t" << h0_PY
+	     << "\t" << h0_PZ<< "\t" << h1_PX<< "\t" << h1_PY<< "\t" << h1_PZ<< "\t" <<  Slowpi_P
+	    <<std::endl;
+    
     }
 
   std::cout<<"Kpi: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
@@ -721,38 +1502,29 @@ void writeMultipleCanidatesToFile(bool withGhosts){
 
   for (Long64_t jentry=0; jentry<nentriesKpi_D2KKmumuBDT;jentry++) {
 
-      Chain_Kpi_D2KKmumuBDT->GetEntry(jentry);
+    Chain_Kpi_D2KKmumuBDT->GetEntry(jentry);
+    Dst_BKGCAT=1;
       
-      
-      if(deltaM>146.5 || deltaM < 144.5) continue;
-      if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
   
-      if(withGhosts && !(Dst_BKGCAT<11||Dst_BKGCAT==60))continue;
-      //if(withGhosts && !(Dst_BKGCAT<100))continue;
-      if(!withGhosts && !(Dst_BKGCAT<11))continue;        
+    
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNNk<0.2 || h1_ProbNNpi<0.2 ) continue;
+    
+    if(totCandidates==1) {counter1++; continue; }
+    
+    counter2++;
 
-      if(BDT<cutBDT) continue;
-      if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
-      if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
-      if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
-      if(!Hlt2_TOS) continue;
-      if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
-      if(h0_ProbNNk<0.2 || h1_ProbNNpi<0.2 ) continue;
-      
-      if(totCandidates==1) {counter1++; continue; }
-
-      counter2++;
-
-      fileKpi_D2KKmumuBDT << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT  <<std::endl;
-
-      /*
-      fileKpi << eventNumber << "\t" << runNumber << "\t" << m_D  << "\t" << nCandidate << "\t" << Dst_BKGCAT
+    fileKpi_D2KKmumuBDT << eventNumber << "\t" << runNumber << "\t" << m_D  << "\t" << "\t" << nCandidate << "\t"<<D_DiMuon_Mass
 	     << "\t" << mu0_PX << "\t" << mu0_PY
 	     << "\t" <<mu0_PZ<< "\t" << mu1_PX<< "\t" << mu1_PY<< "\t" << mu1_PZ
       	     << "\t" << h0_PX << "\t" << h0_PY
-           << "\t" << h0_PZ<< "\t" << h1_PX<< "\t" << h1_PY<< "\t" << h1_PZ<< "\t" <<  Slowpi_PX<< "\t" << Slowpi_PY<< "\t" << Slowpi_PZ<< std::endl;
-      */
-
+	     << "\t" << h0_PZ<< "\t" << h1_PX<< "\t" << h1_PY<< "\t" << h1_PZ<< "\t" <<  Slowpi_P
+	      << std::endl;
+    
     }
 
   std::cout<<"Kpi: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
@@ -765,39 +1537,32 @@ void writeMultipleCanidatesToFile(bool withGhosts){
   for (Long64_t jentry=0; jentry<nentriespipi;jentry++) {
 
       Chain_pipi->GetEntry(jentry);
-  
+      Dst_BKGCAT=1;
+
       if(deltaM>146.5 || deltaM < 144.5) continue;
-      //if(Dst_DTF_Dstarplus_M-Dst_DTF_D0_M < 144.5) continue;
-      //if(Dst_DTF_Dstarplus_M-Dst_DTF_D0_M > 146.5) continue;
 
       if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
       
-      if(withGhosts && !(Dst_BKGCAT<11||Dst_BKGCAT==60))continue;
-      //if(withGhosts && !(Dst_BKGCAT<100))continue;
-      if(!withGhosts && !(Dst_BKGCAT<11))continue;        
 
-      if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
-      if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
       if(BDT<cutBDT) continue;
       if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
-      if(!Hlt2_TOS) continue;
       if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
       if(h0_ProbNNpi<0.2 || h1_ProbNNk<0.2 ) continue;
-      
+     
 
       if(totCandidates==1) {counter1++; continue; }
 
       counter2++;
 
-      filepipi << eventNumber << "\t" << runNumber << "\t" << m_D << "\t" << nCandidate << "\t" << Dst_BKGCAT << std::endl;
 
-      /*
-      filepipi << eventNumber << "\t" << runNumber << "\t" << m_D  << "\t" << nCandidate << "\t" << Dst_BKGCAT
+      filepipi << eventNumber << "\t" << runNumber << "\t" << m_D  << "\t"  << nCandidate << "\t" << D_DiMuon_Mass
 	     << "\t" << mu0_PX << "\t" << mu0_PY
 	     << "\t" <<mu0_PZ<< "\t" << mu1_PX<< "\t" << mu1_PY<< "\t" << mu1_PZ
       	     << "\t" << h0_PX << "\t" << h0_PY
-           << "\t" << h0_PZ<< "\t" << h1_PX<< "\t" << h1_PY<< "\t" << h1_PZ<< "\t" <<  Slowpi_PX<< "\t" << Slowpi_PY<< "\t" << Slowpi_PZ<< std::endl;
-      */
+	     << "\t" << h0_PZ<< "\t" << h1_PX<< "\t" << h1_PY<< "\t" << h1_PZ<< "\t" <<  Slowpi_P
+	     <<  std::endl;
+
+
   }
   std::cout<<"pi pi: single candidate events "<<counter1<<" candidates in multiple cand. "<<counter2<<" sum "<< counter1+counter2<<std::endl;
 
@@ -806,6 +1571,21 @@ void writeMultipleCanidatesToFile(bool withGhosts){
     filepipi.close();
 
   }
+
+
+
+bool MatchToMultipleFullKinematicCandidate(vector<FullKinematicCand> chosen_cand_list, ULong64_t eventNumber, UInt_t runNumber,UInt_t nCandidate){
+
+  for (vector<FullKinematicCand>::iterator it = chosen_cand_list.begin(); it < chosen_cand_list.end(); ++it) {
+    if (eventNumber != (*it).eventNumber) continue;
+    if (runNumber != (*it).runNumber) continue;
+    if (nCandidate != (*it).nCandidate) continue;
+    chosen_cand_list.erase(it);
+    return true;
+  }
+  return false;
+}
+
  
 
 
@@ -1094,6 +1874,7 @@ void chose_multiple_events(
 			   ){
   //take a MC file and identify the multiple candidates writte to candidates**_2012.txt and chose the one with lowest Dst_BKGCAT. chosen candidated are written to chosen_candidates**_2012.txt
 
+
   double cutBDT=0.4;
   double cutPID=0.5;
 
@@ -1232,7 +2013,7 @@ void chose_multiple_events(
     if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
     if(h0_ProbNN<0.2 || h1_ProbNN<0.2 ) continue;
 
-    if(withGhosts && !(Dst_BKGCAT<11||Dst_BKGCAT==60)) continue;
+    if(withGhosts && !(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50)) continue;
     //if(withGhosts && !(Dst_BKGCAT<100)) continue;
     if(!withGhosts && !(Dst_BKGCAT<11)) continue;
     
@@ -1319,9 +2100,672 @@ void chose_multiple_events(
 }
 
 
+
+void write_ghosts_withMultipleCand_toFile(
+			   const char *input="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu.root",
+			   TString channel="D2pipimumu"
+					  ){
+  //take a MC file and identify the multiple candidates writte to candidates**_2012.txt and chose the one with lowest Dst_BKGCAT. chosen candidated are written to chosen_candidates**_2012.txt
+
+
+  double cutBDT=0.4;
+  double cutPID=0.5;
+
+  vector<Cand> events;
+  vector<Cand> chosen_events;
+
+  Cand tmp;
+  TString pathToFiles="candidateLists/";
+
+  TString filename = pathToFiles;
+  
+  if(channel=="D2pipimumu") filename+="candidatespipi_2012_filtered";
+  if(channel=="D2Kpimumu_D2KKmumuBDT") filename+="candidatesKpi_2012_filtered_D2KKmumuBDT";
+  if(channel=="D2Kpimumu_D2pipimumuBDT") filename+="candidatesKpi_2012_filtered_D2pipimumuBDT";
+  if(channel=="D2KKmumu") filename+="candidatesKK_2012_filtered";
+  
+  filename+="_withGhosts.txt";
+  
+
+  TString outputfilename;
+  if(channel=="D2pipimumu")outputfilename = pathToFiles+"ghostsWithMultCand_pipi_2012_filtered";
+  if(channel=="D2Kpimumu_D2KKmumuBDT")outputfilename = pathToFiles+"ghostsWithMultCand_Kpi_2012_filtered_D2KKmumuBDT";
+  if(channel=="D2Kpimumu_D2pipimumuBDT")outputfilename = pathToFiles+"ghostsWithMultCand_Kpi_2012_filtered_D2pipimumuBDT";
+  if(channel=="D2KKmumu") outputfilename= pathToFiles+"ghostsWithMultCand_KK_2012_filtered";
+  
+  outputfilename+=".txt";
+
+  /// read files with candidates that had originally more than one candidate in the event                                                                                            
+  /// and create a vector with all the matches candidates from the file                                                                                                                                                                                                                                                                                                                                                                                     
+  cout << "Readingfile "<<filename<<" ... to " <<outputfilename<< endl;
+  ifstream rs(filename);
+  if (!rs) {
+    cout << "Unable to open " << filename << endl;
+    return;
+  }
+
+
+  while (rs >> tmp.eventNumber >> tmp.runNumber  >>  tmp.mass >> tmp.nCandidate >> tmp.Dst_BKGCAT ) {
+    events.push_back(tmp);
+  }
+  rs.close();
+  cout << "Done: " << events.size() << " events found." << endl;
+
+
+
+  ///___________________________________________________________________________________                                                                                                                                                                                                                                                                                                                                                                                                           
+  TString inputfile_data;
+  TChain* chain = new TChain("BDT_Tree");
+  //TChain* chain = new TChain("MC12_DstD2pipiMuMu/DecayTree");                                                                                                                                      
+
+  chain->AddFile(input);
+
+  //____________________________________________________________________________________                                                   
+
+  double mD;
+  ULong64_t loop_eventNumber;
+  UInt_t loop_runNumber;
+  UInt_t nCandidate;
+  int Dst_BKGCAT;
+  ULong64_t totCandidates;
+ 
+  Cand loopCand;
+  vector<Cand> chosenCandidates;
+  vector<Cand> multCandidates;
+
+  double h0_ProbNNghost, h1_ProbNNghost,mu0_ProbNNghost, mu1_ProbNNghost, Slowpi_ProbNNghost;
+  double h0_ProbNN,h1_ProbNN;
+  double BDT, mu0_ProbNNmu, mu1_ProbNNmu;
+  bool mu1_L0MuonDecision_TOS,mu0_L0MuonDecision_TOS;
+  bool mu1_Hlt1TrackMuonDecision_TOS, mu0_Hlt1TrackMuonDecision_TOS, D_Hlt1TrackAllL0Decision_TOS;
+  bool Hlt2_TOS;
+  int mu1_MuonNShared,mu0_MuonNShared;
+  double deltaM;
+
+  chain->SetBranchAddress("nCandidate",&nCandidate);
+  chain->SetBranchAddress("eventNumber",&loop_eventNumber);
+  chain->SetBranchAddress("runNumber",&loop_runNumber);
+  chain->SetBranchAddress("Dst_DTF_D0_M",&mD);
+  chain->SetBranchAddress("Dst_BKGCAT",&Dst_BKGCAT);
+
+  chain->SetBranchAddress("totCandidates",&totCandidates);
+  chain->SetBranchAddress("deltaM",&deltaM);
+  chain->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+  chain->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  chain->SetBranchAddress("BDT",&BDT);
+  chain->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  chain->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+  chain->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  chain->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  chain->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  chain->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  chain->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+  chain->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  chain->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  chain->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  chain->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  chain->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+
+  if(channel=="D2KKmumu") {
+    chain->SetBranchAddress("h0_ProbNNk",&h0_ProbNN);
+    chain->SetBranchAddress("h1_ProbNNk",&h1_ProbNN);
+    chain->SetBranchAddress("D_Hlt2CharmSemilepD02KKMuMuDecision_TOS",&Hlt2_TOS);
+  }
+
+  if(channel=="D2Kpimumu") {
+    chain->SetBranchAddress("h0_ProbNNk",&h0_ProbNN);
+    chain->SetBranchAddress("h1_ProbNNpi",&h1_ProbNN);
+    chain->SetBranchAddress("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&Hlt2_TOS);
+  }
+
+
+  if(channel=="D2pipimumu") {
+    chain->SetBranchAddress("h0_ProbNNpi",&h0_ProbNN);
+    chain->SetBranchAddress("h1_ProbNNpi",&h1_ProbNN);
+    chain->SetBranchAddress("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",&Hlt2_TOS);
+  }
+
+  //Loop                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+  Long64_t nentries = chain->GetEntries();
+  
+  int counter1=0;int counter2=0;int counter3=0;
+
+
+  for (Long64_t jentry=0; jentry<nentries;jentry++) {
+
+    chain->GetEntry(jentry);
+
+    
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(!(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)) continue;
+    if(!(mu0_Hlt1TrackMuonDecision_TOS || mu1_Hlt1TrackMuonDecision_TOS|| D_Hlt1TrackAllL0Decision_TOS))continue;
+    if(!Hlt2_TOS) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNN<0.2 || h1_ProbNN<0.2 ) continue;
+
+    //if(!(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50) )  continue;
+    //if(withGhosts && !(Dst_BKGCAT<100)) continue;
+    
+    if(Dst_BKGCAT!=60) continue;
+    counter1+=1;
+
+    if(totCandidates==1) continue;
+
+    /// create temporary candidate to campare with candidates from file                                                                                                                                                                                                                                                                                                                                  
+    loopCand.mass=mD;
+    loopCand.eventNumber=loop_eventNumber;
+    loopCand.runNumber=loop_runNumber;
+    loopCand.nCandidate=nCandidate;
+    loopCand.Dst_BKGCAT=Dst_BKGCAT;
+
+   ///every candidate is put into a vector which will be added by the candidates of the same event in the following                                                                                                                                                                                                                                                                                         
+    multCandidates.push_back(loopCand);
+
+    for (int i=1;i<events.size();++i) { ///compare to every candidate from file                                                                                                                                                                                                 
+      if(events[i].eventNumber==0) continue; ///checks if candidate has already been matched (to avoid double counting)                 
+
+      if(loop_eventNumber==events[i].eventNumber && loop_runNumber==events[i].runNumber && nCandidate!=events[i].nCandidate ) {          ///find partner, but not the cand itself! (nCand)
+      //if( (TMath::Abs((double)loop_eventNumber-(double)events[i].eventNumber)<1) && (TMath::Abs((double)loop_runNumber-(double)events[i].runNumber)<1) && (TMath::Abs((double)nCandidate-(double)events[i].nCandidate)>1) ) {  
+	//cout<<jentry<<"  "<<i<<"  "<<nCandidate<<"  "<<events[i].nCandidate <<endl;               
+	multCandidates.push_back(events[i]); /// if partner is found put into vector                                                    
+	events[i].eventNumber=0; ///candidate has already found its partners, so set event number to 0                               
+      }
+      if(loop_eventNumber==events[i].eventNumber && loop_runNumber==events[i].runNumber && nCandidate==events[i].nCandidate ) {  ///find itself and "delete" from list by setting eventnumber to 0     
+	events[i].eventNumber=0;
+      }
+
+    }
+    //cout<<"event "<<jentry<<endl;
+    int nCand=multCandidates.size();
+    //cout<<"nCand "<<nCand<<endl;
+    counter1+=nCand;
+    if(nCand>1) { ///multiple candidate found
+      counter2+=1;
+      for(int k=0;k<multCandidates.size();++k){
+	chosenCandidates.push_back(multCandidates[k]); ///chosen candidates contains the candidates to be removed from the events in the loop   
+	 }
+      }
+      //cout<<"removed "<<littleCounter<<"  "<<littleCounter+1-nCand<<endl; 
+   
+
+    multCandidates.clear(); ///clear vector for next event   
+    
+  }                                                                                                                                     
+  ///write the chosen candidates to an output file                                                                              
+
+  cout << "Writing output file..." << endl;
+  ofstream fout(outputfilename);
+  for (vector<Cand>::iterator it=chosenCandidates.begin(); it<chosenCandidates.end(); ++it) {
+    fout << (*it).eventNumber << "\t" << (*it).runNumber << "\t" << (*it).nCandidate << "\t" << (*it).mass<< "\t" << (*it).Dst_BKGCAT<< endl;
+  }
+  fout.close();
+
+  cout << "Done. Chosen candidates: " << chosenCandidates.size()<<" of "<<counter1 <<endl;
+  //cout << counter1 <<"  "<<counter2<<"  "<<counter3<< endl;
+}
+
+
+
+
+
+void chose_FullKinematic_multiple_Data_events(
+			   const char *input="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu.root",
+			   TString channel="D2pipimumu"
+			   ){
+  //take a Data file and identify the multiple candidates writte to candidates**_2012.txt 
+
+  double cutBDT=0.4;
+  double cutPID=0.5;
+
+  vector<FullKinematicCand> events;
+  vector<FullKinematicCand> chosen_events;
+
+  FullKinematicCand tmp;
+  TString pathToFiles="candidateLists/fullKinematic/";
+
+  TString filename = pathToFiles;
+  if(channel=="D2pipimumu") filename+="candidatespipi_2012_Data.txt";
+  if(channel=="D2Kpimumu_D2KKmumuBDT") filename+="candidatesKpi_2012_D2KKmumuBDT_Data.txt";
+  if(channel=="D2Kpimumu_D2pipimumuBDT") filename+="candidatesKpi_2012_D2pipimumuBDT_Data.txt";
+  if(channel=="D2KKmumu") filename+="candidatesKK_2012_Data.txt";
+
+  TString outputfilename;
+  if(channel=="D2pipimumu")outputfilename = pathToFiles+"chosen_candidatespipi_2012_Data.txt";
+  if(channel=="D2Kpimumu_D2KKmumuBDT")outputfilename = pathToFiles+"chosen_candidatesKpi_2012_D2KKmumuBDT_Data.txt";
+  if(channel=="D2Kpimumu_D2pipimumuBDT")outputfilename = pathToFiles+"chosen_candidatesKpi_2012_D2pipimumuBDT_Data.txt";
+  if(channel=="D2KKmumu") outputfilename= pathToFiles+"chosen_candidatesKK_2012_Data.txt";
+
+  /// read files with candidates that had originally more than one candidate in the event
+  /// and create a vector with all the matches candidates from the file                                                                                                                                                                                                                                                                                                                                                                                    
+  cout << "Readingfile "<<filename<<" ... to " <<outputfilename<< endl;
+  ifstream rs(filename);
+  if (!rs) {
+    cout << "Unable to open " << filename << endl;
+    return;
+  }
+
+ 
+  while (rs >> tmp.eventNumber >> tmp.runNumber  >>  tmp.mass >> tmp.nCandidate >>  tmp.D_DiMuon_Mass
+	 >>  tmp.mu0_PX  >> tmp.mu0_PY>> tmp.mu0_PZ
+	 >> tmp.mu1_PX   >> tmp.mu1_PY>> tmp.mu1_PZ
+	 >> tmp.h0_PX>> tmp.h0_PY>> tmp.h0_PZ
+	 >> tmp.h1_PX>> tmp.h1_PY>> tmp.h1_PZ
+	 >> tmp.Slowpi_P ) {
+    events.push_back(tmp);
+  }
+  rs.close();
+  cout << "Done: " << events.size() << " events found." << endl;
+
+
+
+  ///___________________________________________________________________________________                                                                                                                                                                                                                                                                                                                                                                                                           
+  TString inputfile_data;
+  TChain* chain = new TChain("BDT_Tree");
+
+  chain->AddFile(input);
+
+  //____________________________________________________________________________________                                                   
+
+  double mD;
+  ULong64_t loop_eventNumber;
+  UInt_t loop_runNumber;
+  UInt_t nCandidate;
+  int Dst_BKGCAT;
+  ULong64_t totCandidates;
+ 
+  FullKinematicCand loopCand;
+  vector<FullKinematicCand> chosenCandidates;
+  vector<FullKinematicCand> multCandidates;
+
+  double h0_ProbNNghost, h1_ProbNNghost,mu0_ProbNNghost, mu1_ProbNNghost, Slowpi_ProbNNghost;
+  double h0_ProbNN,h1_ProbNN;
+  double BDT, mu0_ProbNNmu, mu1_ProbNNmu;
+  bool mu1_L0MuonDecision_TOS,mu0_L0MuonDecision_TOS;
+  bool mu1_Hlt1TrackMuonDecision_TOS, mu0_Hlt1TrackMuonDecision_TOS, D_Hlt1TrackAllL0Decision_TOS;
+  bool Hlt2_TOS;
+  int mu1_MuonNShared,mu0_MuonNShared;
+  double deltaM;
+  double D_DiMuon_Mass;
+
+  chain->SetBranchAddress("nCandidate",&nCandidate);
+  chain->SetBranchAddress("eventNumber",&loop_eventNumber);
+  chain->SetBranchAddress("runNumber",&loop_runNumber);
+  chain->SetBranchAddress("Dst_DTF_D0_M",&mD);
+  chain->SetBranchAddress("D_DiMuon_Mass",&D_DiMuon_Mass);
+
+  chain->SetBranchAddress("totCandidates",&totCandidates);
+  chain->SetBranchAddress("deltaM",&deltaM);
+  chain->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+  chain->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  chain->SetBranchAddress("BDT",&BDT);
+  chain->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  chain->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+  chain->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  chain->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  chain->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  chain->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  chain->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+  chain->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  chain->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  chain->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  chain->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  chain->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+
+  double mu0_PX,mu0_PY,mu0_PZ,mu1_PX,mu1_PY,mu1_PZ,h0_PX,h0_PY,h0_PZ,h1_PX,h1_PY,h1_PZ,Slowpi_P;
+
+  chain->SetBranchAddress("D_DiMuon_Mass",&D_DiMuon_Mass);
+  chain->SetBranchAddress("mu0_PX",&mu0_PX);
+  chain->SetBranchAddress("mu0_PY",&mu0_PY);
+  chain->SetBranchAddress("mu0_PZ",&mu0_PZ);
+  chain->SetBranchAddress("mu1_PX",&mu1_PX);
+  chain->SetBranchAddress("mu1_PY",&mu1_PY);
+  chain->SetBranchAddress("mu1_PZ",&mu1_PZ);
+  chain->SetBranchAddress("h0_PX",&h0_PX);
+  chain->SetBranchAddress("h0_PY",&h0_PY);
+  chain->SetBranchAddress("h0_PZ",&h0_PZ);
+  chain->SetBranchAddress("h1_PX",&h1_PX);
+  chain->SetBranchAddress("h1_PY",&h1_PY);
+  chain->SetBranchAddress("h1_PZ",&h1_PZ);
+  chain->SetBranchAddress("Slowpi_P",&Slowpi_P);
+
+
+
+  
+  if(channel=="D2KKmumu") {
+    chain->SetBranchAddress("h0_ProbNNk",&h0_ProbNN);
+    chain->SetBranchAddress("h1_ProbNNk",&h1_ProbNN);
+    chain->SetBranchAddress("D_Hlt2CharmSemilepD02KKMuMuDecision_TOS",&Hlt2_TOS);
+  }
+
+  if(channel=="D2Kpimumu") {
+    chain->SetBranchAddress("h0_ProbNNk",&h0_ProbNN);
+    chain->SetBranchAddress("h1_ProbNNpi",&h1_ProbNN);
+    chain->SetBranchAddress("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&Hlt2_TOS);
+  }
+
+
+  if(channel=="D2pipimumu") {
+    chain->SetBranchAddress("h0_ProbNNpi",&h0_ProbNN);
+    chain->SetBranchAddress("h1_ProbNNpi",&h1_ProbNN);
+    chain->SetBranchAddress("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",&Hlt2_TOS);
+  }
+
+  //Loop                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+  Long64_t nentries = chain->GetEntries();
+  
+  int counter1=0;int counter2=0;int counter3=0;
+
+
+  for (Long64_t jentry=0; jentry<nentries;jentry++) {
+
+    chain->GetEntry(jentry);
+    Dst_BKGCAT=1;
+    
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNN<0.2 || h1_ProbNN<0.2 ) continue;
+    
+
+    if(totCandidates==1) continue;
+
+    /// create temporary candidate to campare with candidates from file                                                                                                                                                                                                                                                                                                       
+                         
+    loopCand.mass=mD;
+    loopCand.eventNumber=loop_eventNumber;
+    loopCand.runNumber=loop_runNumber;
+    loopCand.nCandidate=nCandidate;
+    loopCand.D_DiMuon_Mass = D_DiMuon_Mass;
+    loopCand.mu0_PX=mu0_PX;
+    loopCand.mu0_PY=mu0_PY;
+    loopCand.mu0_PZ=mu0_PZ;
+    loopCand.mu1_PX=mu1_PX;
+    loopCand.mu1_PY=mu1_PY;
+    loopCand.mu1_PZ=mu1_PZ;
+    loopCand.h0_PX=h0_PX;
+    loopCand.h0_PY=h0_PY;
+    loopCand.h0_PZ=h0_PZ;
+    loopCand.h1_PX=h1_PX;
+    loopCand.h1_PY=h1_PY;
+    loopCand.h1_PZ=h1_PZ;
+    loopCand.Slowpi_P=Slowpi_P;
+
+   ///every candidate is put into a vector which will be added by the candidates of the same event in the following                                                                                                                                                                                                                                                                                         
+    multCandidates.push_back(loopCand);
+
+    for (int i=1;i<events.size();++i) { ///compare to every candidate from file                                                                                                                                                                                                 
+      if(events[i].eventNumber==0) continue; ///checks if candidate has already been matched (to avoid double counting)                 
+
+      if(loop_eventNumber==events[i].eventNumber && loop_runNumber==events[i].runNumber && loopCand.nCandidate!=events[i].nCandidate ) {          ///find partner, but not the cand itself! (nCand)
+	multCandidates.push_back(events[i]); /// if partner is found put into vector                                                    
+	events[i].eventNumber=0; ///candidate has already found its partners, so set event number to 0                               
+      }
+      if(loop_eventNumber==events[i].eventNumber && loop_runNumber==events[i].runNumber && loopCand.nCandidate==events[i].nCandidate ) {  ///find itself and "delete" from list by setting eventnumber to 0     
+	events[i].eventNumber=0;
+      }
+
+    }
+    //cout<<"event "<<jentry<<endl;
+    int nCand=multCandidates.size();
+    //cout<<"nCand "<<nCand<<endl;
+    counter1+=nCand;
+    if(nCand>1) { ///multiple candidate found if in the vector multCand has more than one entry, chose one randomly                                                   
+      //cout<<"in Loop"<<endl;
+      counter2+=1;
+      TRandom3 generator(loop_eventNumber); ///seed is event number                                                                                             
+      double randomNr=generator.Rndm();
+      int index=int(nCand*randomNr);
+      //cout<<"chosen index "<<index<<" out of "<< nCand<<endl;                                                                                                               
+      int littleCounter=0;
+      for(int k=0;k<multCandidates.size();++k){
+	chosenCandidates.push_back(multCandidates[k]); ///WRITE ALL MULTIPLE CAND TO LIST!!!!!!!   
+	  counter3+=1;
+	  littleCounter+=1;
+      }
+    }
+
+    multCandidates.clear(); ///clear vector for next event   
+
+  }                                                                                                                                     
+  ///write the chosen candidates to an output file                                                                              
+
+  cout << "Writing output file..." << endl;
+  ofstream fout(outputfilename);
+  for (vector<FullKinematicCand>::iterator it=chosenCandidates.begin(); it<chosenCandidates.end(); ++it) {
+
+    fout << (*it).eventNumber << "\t" << (*it).runNumber << "\t" << (*it).mass  << "\t" << (*it).nCandidate<< "\t" << (*it).D_DiMuon_Mass 
+	 << "\t" << (*it).mu0_PX << "\t" << (*it).mu0_PY
+	 << "\t" <<(*it).mu0_PZ<< "\t" << (*it).mu1_PX<< "\t" << (*it).mu1_PY<< "\t" << (*it).mu1_PZ
+	 << "\t" << (*it).h0_PX << "\t" << (*it).h0_PY
+	 << "\t" << (*it).h0_PZ<< "\t" << (*it).h1_PX<< "\t" << (*it).h1_PY<< "\t" << (*it).h1_PZ<< "\t" <<  (*it).Slowpi_P
+	     << std::endl;
+  }
+  fout.close();
+
+  cout << "Done. Chosen candidates: " << chosenCandidates.size()<<endl;
+  //cout << counter1 <<"  "<<counter2<<"  "<<counter3<< endl;
+}
+
+
+
+
+
+
+void chose_multiple_Data_events(
+			   const char *input="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu.root",
+			   TString channel="D2pipimumu"
+			   ){
+  //take a Data file and identify the multiple candidates writte to candidates**_2012.txt 
+
+  double cutBDT=0.4;
+  double cutPID=0.5;
+
+  vector<Cand> events;
+  vector<Cand> chosen_events;
+
+  Cand tmp;
+  TString pathToFiles="candidateLists/";
+
+  TString filename = pathToFiles;
+  if(channel=="D2pipimumu") filename+="candidatespipi_2012_Data.txt";
+  if(channel=="D2Kpimumu_D2KKmumuBDT") filename+="candidatesKpi_2012_D2KKmumuBDT_Data.txt";
+  if(channel=="D2Kpimumu_D2pipimumuBDT") filename+="candidatesKpi_2012_D2pipimumuBDT_Data.txt";
+  if(channel=="D2KKmumu") filename+="candidatesKK_2012_Data.txt";
+
+  TString outputfilename;
+  if(channel=="D2pipimumu")outputfilename = pathToFiles+"chosen_candidatespipi_2012_Data.txt";
+  if(channel=="D2Kpimumu_D2KKmumuBDT")outputfilename = pathToFiles+"chosen_candidatesKpi_2012_D2KKmumuBDT_Data.txt";
+  if(channel=="D2Kpimumu_D2pipimumuBDT")outputfilename = pathToFiles+"chosen_candidatesKpi_2012_D2pipimumuBDT_Data.txt";
+  if(channel=="D2KKmumu") outputfilename= pathToFiles+"chosen_candidatesKK_2012_Data.txt";
+
+  /// read files with candidates that had originally more than one candidate in the event
+  /// and create a vector with all the matches candidates from the file                                                                                                                                                                                                                                                                                                                                                                                    
+  cout << "Readingfile "<<filename<<" ... to " <<outputfilename<< endl;
+  ifstream rs(filename);
+  if (!rs) {
+    cout << "Unable to open " << filename << endl;
+    return;
+  }
+
+
+  while (rs >> tmp.eventNumber >> tmp.runNumber  >>  tmp.mass >> tmp.nCandidate >> tmp.Dst_BKGCAT ) {
+    events.push_back(tmp);
+  }
+  rs.close();
+  cout << "Done: " << events.size() << " events found." << endl;
+
+
+
+  ///___________________________________________________________________________________                                                                                                                                                                                                                                                                                                                                                                                                           
+  TString inputfile_data;
+  TChain* chain = new TChain("BDT_Tree");
+
+  chain->AddFile(input);
+
+  //____________________________________________________________________________________                                                   
+
+  double mD;
+  ULong64_t loop_eventNumber;
+  UInt_t loop_runNumber;
+  UInt_t nCandidate;
+  int Dst_BKGCAT;
+  ULong64_t totCandidates;
+ 
+  Cand loopCand;
+  vector<Cand> chosenCandidates;
+  vector<Cand> multCandidates;
+
+  double h0_ProbNNghost, h1_ProbNNghost,mu0_ProbNNghost, mu1_ProbNNghost, Slowpi_ProbNNghost;
+  double h0_ProbNN,h1_ProbNN;
+  double BDT, mu0_ProbNNmu, mu1_ProbNNmu;
+  bool mu1_L0MuonDecision_TOS,mu0_L0MuonDecision_TOS;
+  bool mu1_Hlt1TrackMuonDecision_TOS, mu0_Hlt1TrackMuonDecision_TOS, D_Hlt1TrackAllL0Decision_TOS;
+  bool Hlt2_TOS;
+  int mu1_MuonNShared,mu0_MuonNShared;
+  double deltaM;
+
+  chain->SetBranchAddress("nCandidate",&nCandidate);
+  chain->SetBranchAddress("eventNumber",&loop_eventNumber);
+  chain->SetBranchAddress("runNumber",&loop_runNumber);
+  chain->SetBranchAddress("Dst_DTF_D0_M",&mD);
+  chain->SetBranchAddress("Dst_BKGCAT",&Dst_BKGCAT);
+
+  chain->SetBranchAddress("totCandidates",&totCandidates);
+  chain->SetBranchAddress("deltaM",&deltaM);
+  chain->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+  chain->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  chain->SetBranchAddress("BDT",&BDT);
+  chain->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+  chain->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+  chain->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+  chain->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+  chain->SetBranchAddress("mu0_Hlt1TrackMuonDecision_TOS",&mu0_Hlt1TrackMuonDecision_TOS);
+  chain->SetBranchAddress("mu1_Hlt1TrackMuonDecision_TOS",&mu1_Hlt1TrackMuonDecision_TOS);
+  chain->SetBranchAddress("D_Hlt1TrackAllL0Decision_TOS",&D_Hlt1TrackAllL0Decision_TOS);
+  chain->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+  chain->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+  chain->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+  chain->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+  chain->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+
+  if(channel=="D2KKmumu") {
+    chain->SetBranchAddress("h0_ProbNNk",&h0_ProbNN);
+    chain->SetBranchAddress("h1_ProbNNk",&h1_ProbNN);
+    chain->SetBranchAddress("D_Hlt2CharmSemilepD02KKMuMuDecision_TOS",&Hlt2_TOS);
+  }
+
+  if(channel=="D2Kpimumu") {
+    chain->SetBranchAddress("h0_ProbNNk",&h0_ProbNN);
+    chain->SetBranchAddress("h1_ProbNNpi",&h1_ProbNN);
+    chain->SetBranchAddress("D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS",&Hlt2_TOS);
+  }
+
+
+  if(channel=="D2pipimumu") {
+    chain->SetBranchAddress("h0_ProbNNpi",&h0_ProbNN);
+    chain->SetBranchAddress("h1_ProbNNpi",&h1_ProbNN);
+    chain->SetBranchAddress("D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS",&Hlt2_TOS);
+  }
+
+  //Loop                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+  Long64_t nentries = chain->GetEntries();
+  
+  int counter1=0;int counter2=0;int counter3=0;
+
+
+  for (Long64_t jentry=0; jentry<nentries;jentry++) {
+
+    chain->GetEntry(jentry);
+    Dst_BKGCAT=1;
+    
+    if(deltaM>146.5 || deltaM < 144.5) continue;
+    if(mu0_MuonNShared!=0 || mu1_MuonNShared!=0) continue;
+    if(BDT<cutBDT) continue;
+    if(mu0_ProbNNmu<cutPID||mu1_ProbNNmu<cutPID) continue;
+    if(mu0_ProbNNghost>0.5 || mu1_ProbNNghost>0.5 || h0_ProbNNghost>0.5 || h1_ProbNNghost>0.5 || Slowpi_ProbNNghost>0.5) continue;
+    if(h0_ProbNN<0.2 || h1_ProbNN<0.2 ) continue;
+    
+
+    if(totCandidates==1) continue;
+
+    /// create temporary candidate to campare with candidates from file                                                                                                                                                                                                                                                                                                                                
+    loopCand.mass=mD;
+    loopCand.eventNumber=loop_eventNumber;
+    loopCand.runNumber=loop_runNumber;
+    loopCand.nCandidate=nCandidate;
+    loopCand.Dst_BKGCAT=Dst_BKGCAT;
+
+   ///every candidate is put into a vector which will be added by the candidates of the same event in the following                                                                                                                                                                                                                                                                                         
+    multCandidates.push_back(loopCand);
+
+    for (int i=1;i<events.size();++i) { ///compare to every candidate from file                                                                                                                                                                                                 
+      if(events[i].eventNumber==0) continue; ///checks if candidate has already been matched (to avoid double counting)                 
+
+      if(loop_eventNumber==events[i].eventNumber && loop_runNumber==events[i].runNumber && nCandidate!=events[i].nCandidate ) {          ///find partner, but not the cand itself! (nCand)
+      //if( (TMath::Abs((double)loop_eventNumber-(double)events[i].eventNumber)<1) && (TMath::Abs((double)loop_runNumber-(double)events[i].runNumber)<1) && (TMath::Abs((double)nCandidate-(double)events[i].nCandidate)>1) ) {  
+	//cout<<jentry<<"  "<<i<<"  "<<nCandidate<<"  "<<events[i].nCandidate <<endl;               
+	multCandidates.push_back(events[i]); /// if partner is found put into vector                                                    
+	events[i].eventNumber=0; ///candidate has already found its partners, so set event number to 0                               
+      }
+      if(loop_eventNumber==events[i].eventNumber && loop_runNumber==events[i].runNumber && nCandidate==events[i].nCandidate ) {  ///find itself and "delete" from list by setting eventnumber to 0     
+	events[i].eventNumber=0;
+      }
+
+    }
+    //cout<<"event "<<jentry<<endl;
+    int nCand=multCandidates.size();
+    //cout<<"nCand "<<nCand<<endl;
+    counter1+=nCand;
+    if(nCand>1) { ///multiple candidate found if in the vector multCand has more than one entry, chose one randomly                                                   
+      //cout<<"in Loop"<<endl;
+      counter2+=1;
+      TRandom3 generator(loop_eventNumber); ///seed is event number                                                                                             
+      double randomNr=generator.Rndm();
+      int index=int(nCand*randomNr);
+      //cout<<"chosen index "<<index<<" out of "<< nCand<<endl;                                                                                                               
+      int littleCounter=0;
+      for(int k=0;k<multCandidates.size();++k){
+	if(k!=index) {chosenCandidates.push_back(multCandidates[index]); ///chosen candidates contains the candidates to be removed from the events in the loop   
+	  //std::cout<<"reject "<<k<<std::endl;
+	  counter3+=1;
+	  littleCounter+=1;}
+      }
+      //cout<<"removed "<<littleCounter<<"  "<<littleCounter+1-nCand<<endl; 
+    }
+
+    multCandidates.clear(); ///clear vector for next event   
+
+  }                                                                                                                                     
+  ///write the chosen candidates to an output file                                                                              
+
+  cout << "Writing output file..." << endl;
+  ofstream fout(outputfilename);
+  for (vector<Cand>::iterator it=chosenCandidates.begin(); it<chosenCandidates.end(); ++it) {
+    fout << (*it).eventNumber << "\t" << (*it).runNumber << "\t" << (*it).nCandidate << "\t" << (*it).mass<< "\t" << (*it).Dst_BKGCAT<< endl;
+  }
+  fout.close();
+
+  cout << "Done. Chosen candidates: " << chosenCandidates.size()<<endl;
+  //cout << counter1 <<"  "<<counter2<<"  "<<counter3<< endl;
+}
+
+
+
+
+
+
+
+
+
 void addMultipleCandidateBranch(TChain *chain, TString fOut,const char *f_chosenCand){
    
   //take the flaggeg MC tuples and add a flag for selected multiple candidates
+  // this one only sets a flag for candidates that are to be removed, while the version for data only saves the selected ones 
 
   vector<Cand> matched_list;
   Cand event;
@@ -1371,6 +2815,7 @@ void addMultipleCandidateBranch(TChain *chain, TString fOut,const char *f_chosen
     Bra->Fill();
   } 
   
+ 
   new_tree->Write();
   targetFile->Write();
   targetFile->Close();
@@ -1378,6 +2823,75 @@ void addMultipleCandidateBranch(TChain *chain, TString fOut,const char *f_chosen
   delete targetFile;
 
 }
+
+
+void addMultipleCandidateBranchData(TChain *chain, TString fOut,const char *f_chosenCand){
+   
+  //as written above, this one looks for the multiple candidates which are to be rejected and only saves the ones which are selected 
+
+
+  vector<Cand> matched_list;
+  Cand event;
+  std::ifstream file(f_chosenCand);
+
+  if ( !file ) {
+    std::cout << "Unable to open " << "matched_cands_list_2012.txt" << std::endl;
+  } else
+    std::cout << "Reading matched candidates from " << f_chosenCand  << "..." << std::endl;
+
+
+  while ( (file >> event.eventNumber >> event.runNumber >>  event.nCandidate >> event.mass >> event.Dst_BKGCAT )) {
+    matched_list.push_back(event);
+  }
+  file.close();
+  std::cout << "Done." << std::endl;
+
+  double mD;
+  ULong64_t eventNumber;
+  UInt_t runNumber;
+  UInt_t nCandidate;
+  int Dst_BKGCAT;
+  ULong64_t totCandidates;
+  
+  chain->SetBranchAddress("nCandidate",&nCandidate);
+  chain->SetBranchAddress("eventNumber",&eventNumber);
+  chain->SetBranchAddress("runNumber",&runNumber);
+  chain->SetBranchAddress("Dst_DTF_D0_M",&mD);
+  chain->SetBranchAddress("Dst_BKGCAT",&Dst_BKGCAT);
+  chain->SetBranchAddress("totCandidates",&totCandidates);
+    
+   TFile* targetFile = new TFile(fOut,"RECREATE");
+
+  TTree* new_tree = chain->CopyTree("");
+  bool isRejectedMultipleCandidate;
+  TBranch* Bra = new_tree->Branch("isRejectedMultipleCandidate",&isRejectedMultipleCandidate);
+ 
+  int numEvents = chain ->GetEntries();
+  
+  for(int i=0; i< numEvents; i++){
+    
+    chain->GetEntry(i);
+    if (0ul == (i % 10000ul)) cout << "Read event " << i << "/" << numEvents << endl;
+
+    if( MatchToMultipleCandidate(matched_list, eventNumber, runNumber, nCandidate) ) isRejectedMultipleCandidate=true;  // if is found on list, reject!
+    else isRejectedMultipleCandidate = false;
+    Bra->Fill();
+  } 
+
+  //here we only take the selected ones!!!!
+  TTree* new_tree2 = new_tree->CopyTree("!isRejectedMultipleCandidate");
+ 
+  new_tree2->Write();
+  targetFile->Write();
+  targetFile->Close();
+  //delete new_tree;
+  delete targetFile;
+
+}
+
+
+
+
 
 
 void addCustomTruthMatchingBranch(TChain *chain, TString fOut,const char *f_chosenCand){
@@ -1526,14 +3040,13 @@ void createMCTuplesForEffStudies() {
   D2KKmumuReader* KK_Reader_magDw = new D2KKmumuReader(Tree_D2KKmumu_magDw);
   D2pipimumuReader* pipi_Reader_magUp = new D2pipimumuReader(Tree_D2pipimumu_magUp);
   D2pipimumuReader* pipi_Reader_magDw = new D2pipimumuReader(Tree_D2pipimumu_magDw);
- 
+
+  //tuples without preselection cuts for all q2 bins
   
   for(int i=0; i<rangesKpi_low.size();++i){
     Kpi_Reader_magUp->createMCEfficiencyStudySample(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2Kpimumu_%.1f_%.1f_magUp.root",rangesKpi_low[i],rangesKpi_high[i]),rangesKpi_low[i],rangesKpi_high[i]);
     Kpi_Reader_magDw->createMCEfficiencyStudySample(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2Kpimumu_%.1f_%.1f_magDw.root",rangesKpi_low[i],rangesKpi_high[i]),rangesKpi_low[i],rangesKpi_high[i]);
   }
-
-  
   
   for(int i=0; i<rangesKK_low.size();++i){
     KK_Reader_magUp->createMCEfficiencyStudySample(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2KKmumu_%.1f_%.1f_magUp.root",rangesKK_low[i],rangesKK_high[i]),rangesKK_low[i],rangesKK_high[i]);
@@ -1542,7 +3055,6 @@ void createMCTuplesForEffStudies() {
   
   for(int i=0; i<rangespipi_low.size();++i){
   
-   
   pipi_Reader_magUp->createMCEfficiencyStudySample(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2pipimumu_%.1f_%.1f_magUp.root",rangespipi_low[i],rangespipi_high[i]),rangespipi_low[i],rangespipi_high[i]);
     pipi_Reader_magDw->createMCEfficiencyStudySample(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2pipimumu_%.1f_%.1f_magDw.root",rangespipi_low[i],rangespipi_high[i]),rangespipi_low[i],rangespipi_high[i]);
   }
@@ -1580,6 +3092,8 @@ void createMCTuplesForEffStudiesNoTruthmatching() {
   D2pipimumuReader* pipi_Reader_magDw = new D2pipimumuReader(Tree_D2pipimumu_magDw);
   
   std::cout<<TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_%.1f_%.1f_magUp.root",200.,1600.)<<std::endl;
+
+  //tuples WITHOUT truthmatching and preselction. Full q2 range
 
   Kpi_Reader_magUp->createMCEfficiencyStudySampleNoTruthmatching(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_%.1f_%.1f_magUp.root",200.,1600.),200.,1600.);
     Kpi_Reader_magDw->createMCEfficiencyStudySampleNoTruthmatching(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_%.1f_%.1f_magDw.root",200.,1600.),200.,1600.);
@@ -1650,7 +3164,7 @@ void addDiMuonMassBranch(TChain *chain, TString fOut, bool isReco){
     mu1.SetXYZM(mu1_PX,mu1_PY,mu1_PZ,Mass::Mu());
     D_TRUE_DiMuon_Mass=(mu0+mu1).M();
     
-    std::cout<<D_TRUE_DiMuon_Mass<<"  "<<mu0_PX<<"  "<<mu0_PY<<"  "<<mu0_PZ<<"  "<<mu1_PX<<"  "<<mu1_PY<<"  "<<mu1_PZ<<
+    //std::cout<<D_TRUE_DiMuon_Mass<<"  "<<mu0_PX<<"  "<<mu0_PY<<"  "<<mu0_PZ<<"  "<<mu1_PX<<"  "<<mu1_PY<<"  "<<mu1_PZ<<
     
     Bra->Fill();
     if(isReco) {deltaM = Dst_DTF_Dstarplus_M-Dst_DTF_D0_M;Bra_dm->Fill();}
@@ -1680,6 +3194,7 @@ void createTuplesForRecoEfficiency(){
   TChain *chain_KK_reco = new TChain("MC12_DstD2KKMuMu/DecayTree");
   TChain *chain_Kpi_reco = new TChain("MC12_DstD2KPiMuMu/DecayTree");
   TChain *chain_pipi_reco = new TChain("MC12_DstD2pipiMuMu/DecayTree");
+/*
 
   //chain_pipi_truth->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/magUp/MC12_DstD2pipimumu_magUp.root");
   chain_pipi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/magUp/MC12_DstD2pipimumu_magUp.root");
@@ -1689,7 +3204,6 @@ void createTuplesForRecoEfficiency(){
   //addDiMuonMassBranch(chain_pipi_truth,"/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MCTruthTuple_DstD2pipimumu.root",false);
   addDiMuonMassBranch(chain_pipi_reco,"/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu.root",true);
   
-/*
   chain_Kpi_truth->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/magUp/MC12_DstD2Kpimumu_magUp.root");
   chain_Kpi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/magUp/MC12_DstD2Kpimumu_magUp.root");
   chain_Kpi_truth->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/magDw/MC12_DstD2Kpimumu_magDw.root");
@@ -1707,6 +3221,32 @@ void createTuplesForRecoEfficiency(){
   addDiMuonMassBranch(chain_KK_reco,"/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MC12_DstD2KKmumu.root",true);
 */ 
 
+  chain_KK_truth->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/magUp/MC12_DstD2KKmumu_magUp.root");
+  chain_KK_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/magUp/MC12_DstD2KKmumu_magUp.root");
+  chain_KK_truth->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/magDw/MC12_DstD2KKmumu_magDw.root");
+  chain_KK_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/magDw/MC12_DstD2KKmumu_magDw.root");
+
+  addDiMuonMassBranch(chain_KK_truth,"/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/MCTruthTuple_DstD2KKmumu.root",false);
+  addDiMuonMassBranch(chain_KK_reco,"/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/MC12_DstD2KKmumu.root",true);
+
+  /*
+  chain_pipi_truth->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/magUp/MC12_DstD2pipimumu_magUp.root");
+  chain_pipi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/magUp/MC12_DstD2pipimumu_magUp.root");
+  chain_pipi_truth->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/magDw/MC12_DstD2pipimumu_magDw.root");
+  chain_pipi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/magDw/MC12_DstD2pipimumu_magDw.root");
+
+  addDiMuonMassBranch(chain_pipi_truth,"/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/MCTruthTuple_DstD2pipimumu.root",false);
+  addDiMuonMassBranch(chain_pipi_reco,"/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/MC12_DstD2pipimumu.root",true);
+
+  chain_Kpi_truth->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/magUp/MC12_DstD2Kpimumu_magUp.root");
+  chain_Kpi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/magUp/MC12_DstD2Kpimumu_magUp.root");
+  chain_Kpi_truth->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/magDw/MC12_DstD2Kpimumu_magDw.root");
+  chain_Kpi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/magDw/MC12_DstD2Kpimumu_magDw.root");
+
+  addDiMuonMassBranch(chain_Kpi_truth,"/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/MCTruthTuple_DstD2Kpimumu.root",false);
+  addDiMuonMassBranch(chain_Kpi_reco,"/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/MC12_DstD2Kpimumu.root",true);
+  */
+
 }
 
 void createTuplesWithSelectedMultipleCand(){
@@ -1716,21 +3256,28 @@ void createTuplesWithSelectedMultipleCand(){
   TChain *chain_Kpi_reco_D2KKmumuBDT = new TChain("BDT_Tree");
   TChain *chain_pipi_reco = new TChain("BDT_Tree");
 
-  chain_pipi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2pipimumu_200.0_1600.0_D2pipimumuBDT.root");
-  chain_KK_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2KKmumu_200.0_1600.0_D2KKmumuBDT.root");
-  chain_Kpi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2pipimumuBDT.root");
-  chain_Kpi_reco_D2KKmumuBDT->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2KKmumuBDT.root");
+  chain_pipi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2pipimumu_200.0_1600.0_D2pipimumuBDT_magDw.root");
+  chain_pipi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2pipimumu_200.0_1600.0_D2pipimumuBDT_magUp.root");
 
-  //addMultipleCandidateBranch(chain_KK_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2KKmumu_200.0_1600.0_D2KKmumuBDT_multipleCand_withGhosts.root","candidateLists/chosen_candidatesKK_2012_filtered_withGhosts.txt");
-  //addMultipleCandidateBranch(chain_pipi_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2pipimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_withGhosts.root","candidateLists/chosen_candidatespipi_2012_filtered_withGhosts.txt");
-  //addMultipleCandidateBranch(chain_Kpi_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_withGhosts.root","candidateLists/chosen_candidatesKpi_2012_filtered_D2pipimumuBDT_withGhosts.txt");
-  //addMultipleCandidateBranch(chain_Kpi_reco_D2KKmumuBDT,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2KKmumuBDT_multipleCand_withGhosts.root","candidateLists/chosen_candidatesKpi_2012_filtered_D2KKmumuBDT_withGhosts.txt");
+  chain_KK_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2KKmumu_200.0_1600.0_D2KKmumuBDT_magDw.root");
+  chain_KK_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2KKmumu_200.0_1600.0_D2KKmumuBDT_magUp.root");
+
+  chain_Kpi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2pipimumuBDT_magDw.root");
+  chain_Kpi_reco->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2pipimumuBDT_magUp.root");
+
+  chain_Kpi_reco_D2KKmumuBDT->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2KKmumuBDT_magDw.root");
+  chain_Kpi_reco_D2KKmumuBDT->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2KKmumuBDT_magUp.root");
+
+  addMultipleCandidateBranch(chain_KK_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2KKmumu_200.0_1600.0_D2KKmumuBDT_multipleCand_withGhosts.root","candidateLists/chosen_candidatesKK_2012_filtered_withGhosts.txt");
+  addMultipleCandidateBranch(chain_pipi_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2pipimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_withGhosts.root","candidateLists/chosen_candidatespipi_2012_filtered_withGhosts.txt");
+  addMultipleCandidateBranch(chain_Kpi_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_withGhosts.root","candidateLists/chosen_candidatesKpi_2012_filtered_D2pipimumuBDT_withGhosts.txt");
+  addMultipleCandidateBranch(chain_Kpi_reco_D2KKmumuBDT,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2KKmumuBDT_multipleCand_withGhosts.root","candidateLists/chosen_candidatesKpi_2012_filtered_D2KKmumuBDT_withGhosts.txt");
 
   
-  addMultipleCandidateBranch(chain_KK_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2KKmumu_200.0_1600.0_D2KKmumuBDT_multipleCand_noGhosts.root","candidateLists/chosen_candidatesKK_2012_filtered_noGhosts.txt");
-  addMultipleCandidateBranch(chain_pipi_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2pipimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_noGhosts.root","candidateLists/chosen_candidatespipi_2012_filtered_noGhosts.txt");
-  addMultipleCandidateBranch(chain_Kpi_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_noGhosts.root","candidateLists/chosen_candidatesKpi_2012_filtered_D2pipimumuBDT_noGhosts.txt");
-  addMultipleCandidateBranch(chain_Kpi_reco_D2KKmumuBDT,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2KKmumuBDT_multipleCand_noGhosts.root","candidateLists/chosen_candidatesKpi_2012_filtered_D2KKmumuBDT_noGhosts.txt");
+  //addMultipleCandidateBranch(chain_KK_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2KKmumu_200.0_1600.0_D2KKmumuBDT_multipleCand_noGhosts.root","candidateLists/chosen_candidatesKK_2012_filtered_noGhosts.txt");
+  //addMultipleCandidateBranch(chain_pipi_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2pipimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_noGhosts.root","candidateLists/chosen_candidatespipi_2012_filtered_noGhosts.txt");
+  //addMultipleCandidateBranch(chain_Kpi_reco,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_noGhosts.root","candidateLists/chosen_candidatesKpi_2012_filtered_D2pipimumuBDT_noGhosts.txt");
+  //addMultipleCandidateBranch(chain_Kpi_reco_D2KKmumuBDT,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2KKmumuBDT_multipleCand_noGhosts.root","candidateLists/chosen_candidatesKpi_2012_filtered_D2KKmumuBDT_noGhosts.txt");
  
   
   //addMultipleCandidateBranch(chain_pipi_reco,"/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu_matched_andMultCand.root","chosen_candidatespipi_2012.txt");
@@ -1741,6 +3288,28 @@ void createTuplesWithSelectedMultipleCand(){
   //addCustomTruthMatchingBranch(chain_pipi_reco,"/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu_matched.root","AllTrue_candidatespipi_2012.txt");
   
 }
+ 
+//DATA!!!
+void createDataTuplesWithSelectedMultipleCand(){
+  
+  TChain *chain_KK = new TChain("BDT_Tree");
+  TChain *chain_Kpi = new TChain("BDT_Tree");
+  TChain *chain_Kpi_D2KKmumuBDT = new TChain("BDT_Tree");
+  TChain *chain_pipi = new TChain("BDT_Tree");
+
+  chain_pipi->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT.root");
+  chain_KK->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT.root");
+  chain_Kpi->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT.root");
+  chain_Kpi_D2KKmumuBDT->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT.root");
+
+  
+  addMultipleCandidateBranchData(chain_pipi,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT_noMultCand.root","candidateLists/chosen_candidatespipi_2012_Data.txt");
+   addMultipleCandidateBranchData(chain_KK,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT_noMultCand.root","candidateLists/chosen_candidatesKK_2012_Data.txt");
+  addMultipleCandidateBranchData(chain_Kpi,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT_noMultCand.root","candidateLists/chosen_candidatesKpi_2012_D2pipimumuBDT_Data.txt");
+  addMultipleCandidateBranchData(chain_Kpi_D2KKmumuBDT,"/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT_noMultCand.root","candidateLists/chosen_candidatesKpi_2012_D2KKmumuBDT_Data.txt");
+ 
+}
+
 
 
 std::pair<double,double> getMCEfficiency(TString fIn,TString nameTree, TString cut_sel,TString cut_norm ) {
@@ -1872,10 +3441,10 @@ void computeGlobalLowPtEfficiency(){
   dAverageExtrapolEff=0;
 
   //also average magUp and Dw for Kpimumu                                                                                                                                                     
-  averageExtrapolEff+=PIDCalib_extrapolatedEff_pipimumu_up->GetBinContent(1);
-  dAverageExtrapolEff+=PIDCalib_extrapolatedEff_pipimumu_up->GetBinError(1);
-  averageExtrapolEff+=PIDCalib_extrapolatedEff_pipimumu_dw->GetBinContent(1);
-  dAverageExtrapolEff+=PIDCalib_extrapolatedEff_pipimumu_dw->GetBinError(1);
+  averageExtrapolEff+=PIDCalib_extrapolatedEff_Kpimumu_up->GetBinContent(1);
+  dAverageExtrapolEff+=PIDCalib_extrapolatedEff_Kpimumu_up->GetBinError(1);
+  averageExtrapolEff+=PIDCalib_extrapolatedEff_Kpimumu_dw->GetBinContent(1);
+  dAverageExtrapolEff+=PIDCalib_extrapolatedEff_Kpimumu_dw->GetBinError(1);
   averageExtrapolEff/=2.;
   dAverageExtrapolEff/=2.;
   PIDCalib_extrapolatedEff_average->SetBinContent(3,averageExtrapolEff);
@@ -3777,6 +5346,185 @@ ratioEffRatios=AbsMCEff_pipimumu[i]->GetBinContent(j+1)/AbsEff_pipimumu[i]->GetB
   PIDCalib_extrapolatedEff_Kpimumu->Write();
   PIDCalib_extrapolatedEff_pipimumu->Write();
 }
+
+
+std::pair<double,double> evaluateDsPhiPIDEfficiency(TString fIn){
+
+
+  TFile* calibFile = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/calibrationFileDsPhiPi.root","OPEN"); 
+  TH1D* calibrationHist = (TH1D*)calibFile->Get("AbsPIDEff");
+
+  TChain* chain;
+  chain = new TChain("BDT_Tree");
+  chain->AddFile(fIn);
+
+  double mu1_P,mu0_P,totEff;
+  double mu1_PT,mu0_PT;
+  double tempEff1, tempEff0, tempEffProduct;
+  double Eff_i,dEff_i,dTotEff;
+  double dTempEff1, dTempEff0;
+  int mu1_MuonNShared, mu0_MuonNShared;
+  int norm=0;
+  totEff=0;
+
+  chain->SetBranchAddress("mu1_P",&mu1_P);
+  chain->SetBranchAddress("mu0_P",&mu0_P);
+
+  chain->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+  chain->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+  chain->SetBranchAddress("mu1_PT",&mu1_PT);
+  chain->SetBranchAddress("mu0_PT",&mu0_PT);
+
+  for(int j=0; j<chain->GetEntries();++j){
+
+    chain->GetEntry(j);
+    if(mu1_MuonNShared>0)continue;
+    if(mu0_MuonNShared>0)continue;
+    if(mu0_PT<500)continue;
+
+    norm+=1;
+    tempEff1=calibrationHist->GetBinContent(calibrationHist->FindBin(mu0_P));
+    //cout<<j<<"  "<<tempEff1<<"  "<< mu0_P<<endl;
+    totEff+=tempEff1;
+    
+  }
+  //cout<< totEff << endl;
+  //cout<< norm <<endl;
+  totEff/=norm;
+  
+  return std::make_pair(totEff,0);
+
+}
+
+  
+
+void  evaluateDsPhiPiMuonEfficiencyForLowPtBins(TString polarity) {
+
+  dcastyle();
+  
+
+  TH1D * PIDCalib_extrapolatedEff_KKmumu = new TH1D("PIDCalib_extrapolatedEff_KKmumu","PIDCalib Eff extrapolated to low pt KKmumu",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D * PIDCalib_extrapolatedEff_pipimumu = new TH1D("PIDCalib_extrapolatedEff_pipimumu","PIDCalib Eff extrapolated to low pt pipimumu",sizeof(binspipi)/sizeof(double)-1,binspipi);
+  TH1D * PIDCalib_extrapolatedEff_Kpimumu = new TH1D("PIDCalib_extrapolatedEff_Kpimumu","PIDCalib Eff extrapolated to low pt Kpimumu",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
+ 
+  TH1D * AbsEff_Kpimumu = new TH1D("AbsEff_Kpimumu","AbsEff_Kpimumu",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
+  TH1D * AbsEff_KKmumu= new TH1D("AbsEff_KKmumu","AbsEff_KKmumu",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D * AbsEff_pipimumu= new TH1D("AbsEff_pipimumu","AbsEff_pipimumu",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+  TH1D * AbsMCEff_Kpimumu = new TH1D("AbsMCEff_Kpimumu","AbsMCEff_Kpimumu",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
+  TH1D * AbsMCEff_KKmumu= new TH1D("AbsMCEff_KKmumu","AbsMCEff_KKmumu",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D * AbsMCEff_pipimumu= new TH1D("AbsMCEff_pipimumu","AbsMCEff_pipimumu",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+  TH1D* AbsEff_pipimumu_temp;
+  TH1D* relEff_pipimumu_temp;
+ 
+  double tempEff, tempEff_norm,tempEff_err, tempEff_norm_err;
+  double tempMCEff, tempMCEff_norm,tempMCEff_norm_err,tempMCEff_err;
+  double relMCEff, relMCEff_err,relEff_err;
+  double ratioEffRatios,ratioEffRatios_err;
+
+  TString MC_file;
+  TString fIn;
+  TString pathToPIDCalibFile="/home/he/mitzel/cmtuser/Urania_v5r0/PIDCalib/PIDPerfScripts/scripts/D2hhmumu/resultsPtBins/"+polarity+"/";
+  //TString pathToPIDCalibFile="/home/he/mitzel/cmtuser/Urania_v5r0/PIDCalib/PIDPerfScripts/scripts/D2hhmumu/resultsSingleMuon/"+polarity+"/";
+
+  ////////////////////////
+  // normalization channel 
+  ////////////////////////
+  
+
+  //MC_file = TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/PTBins/MC_D2Kpimumu_%.1f_%.1f_%.1f_%.1f_D2KKmumuBDT_",rangesKpi_low[0],rangesKpi_high[0],rangesPt_low[2],rangesPt_high[2])+polarity+".root"; //take MC file of ONE pt bin
+
+  MC_file = " /auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/BinsSingleMuon/MC_D2Kpimumu_675.0_875.0_0.0_800.0_mu0_D2KKmumuBDT_magUp.root";
+
+  tempEff_norm = evaluateDsPhiPIDEfficiency(MC_file).first;
+  tempEff_norm_err = evaluateDsPhiPIDEfficiency(MC_file).second;
+ 
+  AbsEff_Kpimumu->SetBinContent(1,tempEff_norm);
+  AbsEff_Kpimumu->SetBinError(1,tempEff_norm_err);
+
+  fIn = pathToPIDCalibFile+TString::Format("D2Kpimumu_%.1f_%.1f_1100.0_1400.0.root",rangesKpi_low[0],rangesKpi_high[0]);
+  double tempEff_PIDCalib = evaluatePIDCalibEfficiency(fIn).first;
+
+
+  //MC
+  tempMCEff_norm = getMCEfficiency(MC_file,"BDT_Tree","mu0_ProbNNmu>0.5&&mu0_ProbNNghost<0.5","D_DiMuon_Mass>0").first;
+  tempMCEff_norm_err = getMCEfficiency(MC_file,"BDT_Tree","mu0_ProbNNmu>0.5&&mu0_ProbNNghost<0.5","D_DiMuon_Mass>0").second;
+  AbsMCEff_Kpimumu->SetBinContent(1,tempMCEff_norm);
+  AbsMCEff_Kpimumu->SetBinError(1,tempMCEff_norm_err);
+
+  
+  cout<<tempEff_norm<<"  "<<tempEff_norm_err<<endl;
+  cout<<"PIDCALIB "<<tempEff_PIDCalib<<"  "<<tempEff_norm_err<<endl;
+  cout<<"MC "<<tempMCEff_norm<<endl;
+  
+  ////////////////////////
+  // loop over signal channels
+  ////////////////////////
+
+  for(int i=0; i<rangesKK_low.size();++i){
+
+    // MC_file = TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/PTBins/MC_D2KKmumu_%.1f_%.1f_%.1f_%.1f_D2KKmumuBDT_",rangesKK_low[i],rangesKK_high[i],rangesPt_low[2],rangesPt_high[2])+polarity+".root";
+
+    MC_file = TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/BinsSingleMuon/MC_D2KKmumu_%.1f_%.1f_0.0_800.0_mu0_D2KKmumuBDT_",rangesKK_low[i],rangesKK_high[i])+polarity+".root"; 
+
+    tempEff = evaluateDsPhiPIDEfficiency(MC_file).first;
+    tempEff_err = evaluateDsPhiPIDEfficiency(MC_file).second;
+    
+    AbsEff_KKmumu->SetBinContent(i+1,tempEff);
+    AbsEff_KKmumu->SetBinError(i+1,tempEff_err);
+
+    tempMCEff = getMCEfficiency(MC_file,"BDT_Tree","mu0_ProbNNmu>0.5&&mu0_ProbNNghost<0.5","D_DiMuon_Mass>0&&mu0_PT>500").first;
+    tempMCEff_err = getMCEfficiency(MC_file,"BDT_Tree","mu0_ProbNNmu>0.5&&mu0_ProbNNghost<0.5","D_DiMuon_Mass>0&&mu0_PT>500").second;
+    AbsMCEff_KKmumu->SetBinContent(i+1,tempMCEff);
+    AbsMCEff_KKmumu->SetBinError(i+1,tempMCEff_err);
+
+    cout<<tempEff<<"  "<<tempEff_err<<endl;
+
+  } 
+  
+
+  for(int i=0; i<rangespipi_low.size();++i){
+
+    //MC_file = TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/PTBins/MC_D2pipimumu_%.1f_%.1f_%.1f_%.1f_D2pipimumuBDT_",rangespipi_low[i],rangespipi_high[i],rangesPt_low[2],rangesPt_high[2])+polarity+".root";
+
+    MC_file = TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/BinsSingleMuon/MC_D2pipimumu_%.1f_%.1f_0.0_800.0_mu0_D2pipimumuBDT_",rangespipi_low[i],rangespipi_high[i])+polarity+".root"; 
+    
+    tempEff = evaluateDsPhiPIDEfficiency(MC_file).first;
+    tempEff_err = evaluateDsPhiPIDEfficiency(MC_file).second;
+    
+    AbsEff_pipimumu->SetBinContent(i+1,tempEff);
+    AbsEff_pipimumu->SetBinError(i+1,tempEff_err);
+
+    tempMCEff = getMCEfficiency(MC_file,"BDT_Tree","mu0_ProbNNmu>0.5&&mu0_ProbNNghost<0.5","D_DiMuon_Mass>0&&mu0_PT>500").first;
+    tempMCEff_err = getMCEfficiency(MC_file,"BDT_Tree","mu0_ProbNNmu>0.5&&mu0_ProbNNghost<0.5","D_DiMuon_Mass>0&&mu0_PT>500").second;
+    AbsMCEff_pipimumu->SetBinContent(i+1,tempMCEff);
+    AbsMCEff_pipimumu->SetBinError(i+1,tempMCEff_err);
+
+    cout<<tempEff<<"  "<<tempEff_err<<endl;
+
+  } 
+  
+
+ 
+  TFile *fout = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/PID_MC_and_DsPhiPib_"+polarity+"_lowPtBin.root","RECREATE");
+ 
+  AbsMCEff_Kpimumu->Write();
+  AbsMCEff_KKmumu->Write();
+  AbsMCEff_pipimumu->Write();
+
+  AbsEff_Kpimumu->Write();
+  AbsEff_pipimumu->Write();
+  AbsEff_KKmumu->Write();
+    
+
+ }
+
+
+
+
+
 
 
 void  evaluatePIDCalibHadronEfficiency(TString polarity, TString binningScheme) {
@@ -6003,7 +7751,7 @@ void MC_Combined_Hlt_BDT_efficiency(double ghostProbCut,double hadronPID,double 
 
   dcastyle;
   
-  TString cutNshared="mu0_MuonNShared==0&&mu1_MuonNShared==0&&deltaM<146.6&&deltaM>144.5";
+  TString cutNshared="mu0_MuonNShared==0&&mu1_MuonNShared==0&&deltaM<146.6&&deltaM>144.5"; // also deltaM cut here included!
   TString cut_hadronPID_Kpimumu=TString::Format("h0_ProbNNghost<%.1f&&h1_ProbNNghost<%.1f&&h0_ProbNNk>%.1f&&h1_ProbNNpi>%.1f",ghostProbCut,ghostProbCut,hadronPID,hadronPID); 
   TString cut_hadronPID_pipimumu=TString::Format("h0_ProbNNghost<%.1f&&h1_ProbNNghost<%.1f&&h0_ProbNNpi>%.1f&&h1_ProbNNpi>%.1f",ghostProbCut,ghostProbCut,hadronPID,hadronPID); 
   TString cut_hadronPID_KKmumu=TString::Format("h0_ProbNNghost<%.1f&&h1_ProbNNghost<%.1f&&h0_ProbNNk>%.1f&&h1_ProbNNk>%.1f",ghostProbCut,ghostProbCut,hadronPID,hadronPID); 
@@ -6031,10 +7779,6 @@ void MC_Combined_Hlt_BDT_efficiency(double ghostProbCut,double hadronPID,double 
   TString nameTarget ;
   nameTarget="/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/";
  
-  //cut *PID* will the one be aplied to the normalization yield, cut_*mumu is the actual selection cut
-
-  //if(applyTrigger && !applyPID) cout<<"trigger but no PID cut is not implemented right now. Either PID, PID and Trigger or neither of them."<<endl;
-
   
   TChain* tempChain_Kpi_KKmumuTrained = new TChain("BDT_Tree");
   TChain* tempChain_Kpi_pipimumuTrained = new TChain("BDT_Tree");
@@ -6043,8 +7787,7 @@ void MC_Combined_Hlt_BDT_efficiency(double ghostProbCut,double hadronPID,double 
 
 
 
-
-  if(!applyPID) {
+  if(applyPID) {
     //Form the string which are the "normalisation" cut later
     cut_norm_Kpimumu = cut_hadronPID_Kpimumu + "&&" + cut_MuonPID + "&&" + cut_SlowpiPID + "&&" + cutNshared +"&&"+ cutTriggerL0 ; 
     cut_norm_pipimumu = cut_hadronPID_pipimumu + "&&" + cut_MuonPID + "&&" + cut_SlowpiPID+ "&&" + cutNshared +"&&"+ cutTriggerL0; 
@@ -6063,9 +7806,9 @@ void MC_Combined_Hlt_BDT_efficiency(double ghostProbCut,double hadronPID,double 
   }
 
   if(withGhosts) {
-    cut_norm_Kpimumu+="&&(Dst_BKGCAT<11||Dst_BKGCAT==60)"; 
-    cut_norm_pipimumu+="&&(Dst_BKGCAT<11||Dst_BKGCAT==60)";
-    cut_norm_KKmumu+="&&(Dst_BKGCAT<11||Dst_BKGCAT==60)";
+    cut_norm_Kpimumu+="&&(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50)"; 
+    cut_norm_pipimumu+="&&(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50)";
+    cut_norm_KKmumu+="&&(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50)";
   
     tempChain_Kpi_KKmumuTrained->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2KKmumuBDT_multipleCand_withGhosts.root");
     tempChain_Kpi_pipimumuTrained->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_withGhosts.root");//!!!!
@@ -6158,8 +7901,6 @@ void MC_Combined_Hlt_BDT_efficiency(double ghostProbCut,double hadronPID,double 
  
   relEffCombinedHltBDTKKmumu= new TH1D("relEffCombinedHltBDTDKKmumu","relative efficiency MC CombinedHltBDT D->KKmumu/D->Kpimumu ",sizeof(binsKK)/sizeof(double)-1,binsKK);
   relEffCombinedHltBDTpipimumu= new TH1D("relEffCombinedHltBDTDpipimumu","relative efficiency MC CombinedHltBDT D->pipimumu/D->Kpimumu",sizeof(binspipi)/sizeof(double)-1,binspipi);
-
-
 
   
   for(int i=0; i<rangesKpi_low.size();++i){
@@ -6367,7 +8108,7 @@ void MC_Combined_Hlt_BDT_efficiency(double ghostProbCut,double hadronPID,double 
 
 
   ////////////////////
-  //Draing part 
+  //Drawing part 
 
   dcastyle();
 
@@ -6440,6 +8181,201 @@ void MC_Combined_Hlt_BDT_efficiency(double ghostProbCut,double hadronPID,double 
   
 
 }
+
+
+void MC_Combined_efficiency_onlyPhaseSpaceModel(double ghostProbCut,double hadronPID,double muonPID,double BDT, bool onlyDiMuonPHSP, bool onlyDiHadronPHSP){
+
+  dcastyle;
+  
+  TString cutNshared="mu0_MuonNShared==0&&mu1_MuonNShared==0&&deltaM<146.6&&deltaM>144.5"; // also deltaM cut here included!
+
+  TString cut_hadronPID_Kpimumu=TString::Format("h0_ProbNNghost<%.1f&&h1_ProbNNghost<%.1f&&h0_ProbNNk>%.1f&&h1_ProbNNpi>%.1f",ghostProbCut,ghostProbCut,hadronPID,hadronPID); 
+  TString cut_hadronPID_pipimumu=TString::Format("h0_ProbNNghost<%.1f&&h1_ProbNNghost<%.1f&&h0_ProbNNpi>%.1f&&h1_ProbNNpi>%.1f",ghostProbCut,ghostProbCut,hadronPID,hadronPID); 
+  TString cut_hadronPID_KKmumu=TString::Format("h0_ProbNNghost<%.1f&&h1_ProbNNghost<%.1f&&h0_ProbNNk>%.1f&&h1_ProbNNk>%.1f",ghostProbCut,ghostProbCut,hadronPID,hadronPID); 
+  TString cut_SlowpiPID = TString::Format("Slowpi_ProbNNghost<%.1f",ghostProbCut); 
+  
+  TString cutTriggerL0 = "(mu0_L0MuonDecision_TOS==1 || mu1_L0MuonDecision_TOS ==1)";
+
+  TString cutTrigger_KKmumu = "(mu0_Hlt1TrackMuonDecision_TOS==1 || mu1_Hlt1TrackMuonDecision_TOS==1 || D_Hlt1TrackAllL0Decision_TOS==1)&&D_Hlt2CharmSemilepD02KKMuMuDecision_TOS==1";
+  TString cutTrigger_Kpimumu = "(mu0_Hlt1TrackMuonDecision_TOS==1 || mu1_Hlt1TrackMuonDecision_TOS==1 || D_Hlt1TrackAllL0Decision_TOS==1)&&D_Hlt2CharmSemilepD02KPiMuMuDecision_TOS==1";
+  TString cutTrigger_pipimumu = "(mu0_Hlt1TrackMuonDecision_TOS==1 || mu1_Hlt1TrackMuonDecision_TOS==1 || D_Hlt1TrackAllL0Decision_TOS==1)&&D_Hlt2CharmSemilepD02PiPiMuMuDecision_TOS==1";
+
+
+  TString cut_MuonPID=TString::Format("mu0_ProbNNghost<%.1f&&mu1_ProbNNghost<%.1f&&mu0_ProbNNmu>%.1f&&mu1_ProbNNmu>%.1f",ghostProbCut,ghostProbCut,muonPID,muonPID);  
+  TString cut_BDT=TString::Format("BDT>%.1f",BDT);
+ 
+  TString cut_norm_Kpimumu; 
+  TString cut_norm_pipimumu;
+  TString cut_norm_KKmumu ;
+ 
+  TString nameTarget ;
+  nameTarget="/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/FullMCEfficiency/";
+ 
+  nameTarget+= "FullMC_Efficiencies";//!!!!!
+  nameTarget+= "_withGhosts";  
+
+  TChain* tempChain_Kpi_KKmumuTrained = new TChain("BDT_Tree");
+  TChain* tempChain_Kpi_pipimumuTrained = new TChain("BDT_Tree");
+  TChain* tempChain_pipi_pipimumuTrained = new TChain("BDT_Tree");
+  TChain* tempChain_KK_KKmumuTrained = new TChain("BDT_Tree");
+
+
+  cut_norm_Kpimumu = cutNshared;
+  cut_norm_pipimumu = cutNshared;
+  cut_norm_KKmumu = cutNshared;
+
+  cut_norm_Kpimumu+="&&(Dst_BKGCAT<11||Dst_BKGCAT==60)";
+  cut_norm_pipimumu+="&&(Dst_BKGCAT<11||Dst_BKGCAT==60)";
+  cut_norm_KKmumu+="&&(Dst_BKGCAT<11||Dst_BKGCAT==60)";
+
+  //mu phsp only                                                                                                                                                                     
+  if(onlyDiMuonPHSP){
+    cut_norm_KKmumu +="&&(TMath::Abs(mu1_MC_MOTHER_ID)==421||TMath::Abs(mu0_MC_MOTHER_ID)==421)";
+    //cut_norm_Kpimumu +="&&TMath::Abs(mu1_MC_MOTHER_ID)==421";
+    cut_norm_pipimumu +="&&(TMath::Abs(mu1_MC_MOTHER_ID)==421||TMath::Abs(mu0_MC_MOTHER_ID)==421)";
+    nameTarget+="_onlyDiMuonPHSP";
+  }
+  
+  if(onlyDiHadronPHSP){
+    cut_norm_KKmumu+="&&(TMath::Abs(h1_MC_MOTHER_ID)==421||TMath::Abs(h0_MC_MOTHER_ID)==421)";
+    //cut_norm_Kpimumu+="&&TMath::Abs(h1_MC_MOTHER_ID)==421";
+    cut_norm_pipimumu+="&&(TMath::Abs(h1_MC_MOTHER_ID)==421||TMath::Abs(h0_MC_MOTHER_ID)==421)";
+    nameTarget+="_onlyDiHadronPHSP";
+  }
+
+  nameTarget+=".root";
+  
+  
+  tempChain_Kpi_KKmumuTrained->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2KKmumuBDT_multipleCand_withGhosts.root");
+  tempChain_Kpi_pipimumuTrained->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2Kpimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_withGhosts.root");//!!!!
+  tempChain_pipi_pipimumuTrained->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2pipimumu_200.0_1600.0_D2pipimumuBDT_multipleCand_withGhosts.root");
+  tempChain_KK_KKmumuTrained->AddFile("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudiesNoTruthmatching/MC_D2KKmumu_200.0_1600.0_D2KKmumuBDT_multipleCand_withGhosts.root");
+ 
+  TString cut_Kpimumu_BDT ;
+  TString cut_pipimumu_BDT;
+  TString cut_KKmumu_BDT ; 
+
+  //build the selection string for BDT Eff
+  cut_Kpimumu_BDT= cut_norm_Kpimumu +"&&"+ cutTriggerL0 +"&&"+ cut_hadronPID_Kpimumu + "&&" + cutTrigger_Kpimumu + "&&" + cut_MuonPID  + "&&" + cut_BDT  +"&&!isRejectedMultipleCandidate";
+  cut_KKmumu_BDT=  cut_norm_KKmumu +"&&"+ cutTriggerL0 +"&&"+ cut_hadronPID_KKmumu + "&&" + cutTrigger_KKmumu + "&&" + cut_MuonPID + "&&" + cut_BDT    +"&&!isRejectedMultipleCandidate";
+  cut_pipimumu_BDT= cut_norm_pipimumu  +"&&" + cutTriggerL0 +"&&"+ cut_hadronPID_pipimumu + "&&" + cutTrigger_pipimumu + "&&" + cut_MuonPID + "&&" + cut_BDT+"&&!isRejectedMultipleCandidate";
+
+  TFile* fOut= new TFile(nameTarget,"RECREATE"); 
+
+
+  TH1D* effCombinedHltBDTKpimumu_KKmumuTrained;
+  effCombinedHltBDTKpimumu_KKmumuTrained= new TH1D("effCombinedHltBDTKpimumu_KKmumuTrained","efficiency MC CombinedHltBDT D->Kpimumu",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
+  TH1D* effCombinedHltBDTKpimumu_pipimumuTrained; 
+  effCombinedHltBDTKpimumu_pipimumuTrained= new TH1D("effCombinedHltBDTKpimumu_pipimumuTrained","efficiency MC CombinedHltBDT D->Kpimumu",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
+  TH1D* effCombinedHltBDTKKmumu_KKmumuTrained;
+  effCombinedHltBDTKKmumu_KKmumuTrained= new TH1D("effCombinedHltBDTKKmumu_KKmumuTrained","efficiency MC CombinedHltBDT D->KKmumu",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D* effCombinedHltBDTpipimumu_pipimumuTrained;
+  effCombinedHltBDTpipimumu_pipimumuTrained= new TH1D("effCombinedHltBDTpipimumu_pipimumuTrained","efficiency MC CombinedHltBDT D->pipimumu ",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+  TH1D* relEffCombinedHltBDTKKmumu;
+  TH1D* relEffCombinedHltBDTpipimumu;
+ 
+  relEffCombinedHltBDTKKmumu= new TH1D("relEffCombinedHltBDTDKKmumu","relative efficiency MC CombinedHltBDT D->KKmumu/D->Kpimumu ",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  relEffCombinedHltBDTpipimumu= new TH1D("relEffCombinedHltBDTDpipimumu","relative efficiency MC CombinedHltBDT D->pipimumu/D->Kpimumu",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+
+  for(int i=0; i<rangesKpi_low.size();++i){
+   
+    TString DimuonMassRange=TString::Format("&&D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKpi_low[i],rangesKpi_high[i]);
+
+    TString temp_cut_Kpimumu_BDT =cut_Kpimumu_BDT+ DimuonMassRange;
+    TString temp_cut_norm_Kpimumu=cut_norm_Kpimumu+DimuonMassRange;
+
+    std::cout<<temp_cut_Kpimumu_BDT<<std::endl;
+    std::cout<<cut_norm_Kpimumu<<std::endl;
+
+    /****************************combined*************************************/
+    
+    //KKmumu trained
+    double nNorm = (double)tempChain_Kpi_KKmumuTrained->GetEntries(cut_norm_Kpimumu);
+    double nSel =(double)tempChain_Kpi_KKmumuTrained->GetEntries(cut_Kpimumu_BDT);
+    double tempEff = nSel/nNorm;
+    double dTempEff = 1/nNorm * TMath::Sqrt(nSel*(1-(nSel/nNorm) ) );
+    effCombinedHltBDTKpimumu_KKmumuTrained->SetBinContent(i+1,tempEff);
+    effCombinedHltBDTKpimumu_KKmumuTrained->SetBinError(i+1,dTempEff);
+
+    //pipimumu trained
+    nNorm = (double)tempChain_Kpi_pipimumuTrained->GetEntries(cut_norm_Kpimumu);
+    nSel = (double)tempChain_Kpi_pipimumuTrained->GetEntries(cut_Kpimumu_BDT);
+    tempEff = nSel/nNorm;
+    dTempEff = 1/nNorm * TMath::Sqrt(nSel*(1-(nSel/nNorm) ) );
+    effCombinedHltBDTKpimumu_pipimumuTrained->SetBinContent(i+1,tempEff);
+    effCombinedHltBDTKpimumu_pipimumuTrained->SetBinError(i+1,dTempEff);
+     
+  }    
+  
+  for(int i=0; i<rangesKK_low.size();++i){
+   
+    TString DimuonMassRange=TString::Format("&&D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKK_low[i],rangesKK_high[i]);
+    TString temp_cut_KKmumu_BDT =cut_KKmumu_BDT+ DimuonMassRange;
+    TString temp_cut_norm_KKmumu=cut_norm_KKmumu+DimuonMassRange;
+    
+    double nNorm = (double)tempChain_KK_KKmumuTrained->GetEntries(temp_cut_norm_KKmumu);
+    double nSel =(double)tempChain_KK_KKmumuTrained->GetEntries(temp_cut_KKmumu_BDT);
+    double tempEff = nSel/nNorm;
+    double dTempEff = 1/nNorm * TMath::Sqrt(nSel*(1-(nSel/nNorm) ) );
+    effCombinedHltBDTKKmumu_KKmumuTrained->SetBinContent(i+1,tempEff);
+    effCombinedHltBDTKKmumu_KKmumuTrained->SetBinError(i+1,dTempEff);
+   
+    double relEff=tempEff/effCombinedHltBDTKpimumu_KKmumuTrained->GetBinContent(1);
+    double dRelEff = TMath::Sqrt( TMath::Power(dTempEff/effCombinedHltBDTKpimumu_KKmumuTrained->GetBinContent(1),2) + 
+				  TMath::Power(effCombinedHltBDTKpimumu_KKmumuTrained->GetBinError(1)*tempEff/(effCombinedHltBDTKpimumu_KKmumuTrained->GetBinContent(1)*effCombinedHltBDTKpimumu_KKmumuTrained->GetBinContent(1)) ,2) );
+
+    relEffCombinedHltBDTKKmumu->SetBinContent(i+1,relEff);
+    relEffCombinedHltBDTKKmumu->SetBinError(i+1,dRelEff);
+    
+  
+  }    
+
+  for(int i=0; i<rangespipi_low.size();++i){
+
+    TString DimuonMassRange=TString::Format("&&D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangespipi_low[i],rangespipi_high[i]);
+    TString temp_cut_pipimumu_BDT =cut_pipimumu_BDT+ DimuonMassRange;
+    TString temp_cut_norm_pipimumu=cut_norm_pipimumu+DimuonMassRange;
+
+    //************************ combined ******************************************//
+
+    
+    double nNorm = (double)tempChain_pipi_pipimumuTrained->GetEntries(temp_cut_norm_pipimumu);
+    double nSel =(double)tempChain_pipi_pipimumuTrained->GetEntries(temp_cut_pipimumu_BDT);
+    double tempEff = nSel/nNorm;
+    double dTempEff = 1/nNorm * TMath::Sqrt(nSel*(1-(nSel/nNorm) ) );
+    effCombinedHltBDTpipimumu_pipimumuTrained->SetBinContent(i+1,tempEff);
+    effCombinedHltBDTpipimumu_pipimumuTrained->SetBinError(i+1,dTempEff);
+    
+    double relEff=tempEff/effCombinedHltBDTKpimumu_pipimumuTrained->GetBinContent(1);
+    double dRelEff = TMath::Sqrt( TMath::Power(dTempEff/effCombinedHltBDTKpimumu_pipimumuTrained->GetBinContent(1),2) + 
+				  TMath::Power(effCombinedHltBDTKpimumu_pipimumuTrained->GetBinError(1)*tempEff/(effCombinedHltBDTKpimumu_pipimumuTrained->GetBinContent(1)*effCombinedHltBDTKpimumu_pipimumuTrained->GetBinContent(1)) ,2) );
+
+    relEffCombinedHltBDTpipimumu->SetBinContent(i+1,relEff);
+    relEffCombinedHltBDTpipimumu->SetBinError(i+1,dRelEff);
+    
+  }    
+
+  ////////////////////
+  //Drawing part 
+
+  dcastyle();
+
+  TCanvas *a  = new TCanvas("pipimumu","Eff pipimumu");
+  a->Divide(2,1);
+  a->cd(1);
+  relEffCombinedHltBDTpipimumu->Draw();
+  a->cd(2);
+  relEffCombinedHltBDTKKmumu->Draw();
+
+  fOut->Write();
+  fOut->Close();
+  
+
+}
+
+
 			   
 void MC_L0Trigger_efficiency(double ghostProbCut,double hadronPID,double muonPID,double BDT,bool applyPID, bool applyBDT, TString cut_Trigger_TIS){
 
@@ -8082,6 +10018,10 @@ std::pair<double,double> fitMC(TString file,TString treeName, TString cut, TStri
   tree->SetBranchStatus("totCandidates",1);
   tree->SetBranchStatus("isSelectedMultipleCandidate",1);
   tree->SetBranchStatus("isMatchedCandidate",1);
+  tree->SetBranchStatus("mu1_MC_MOTHER_ID",1);
+  tree->SetBranchStatus("h1_MC_MOTHER_ID",1);
+  tree->SetBranchStatus("mu0_MC_MOTHER_ID",1);
+  tree->SetBranchStatus("h0_MC_MOTHER_ID",1);
 
 
   RooRealVar Dst_DTF_D0_M("Dst_DTF_D0_M", "m(h h #mu #mu)", 1780., 1940.,"MeV");
@@ -8265,11 +10205,11 @@ void drawRecoAndStrippingEfficiencyWithFit(bool useFit=true,TString additionalCu
 
   for(int j=0; j<rangesKpi_low.size();++j){
 
-    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/MC12_DstD2Kpimumu_matched_andMultCand.root";
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/MC12_DstD2Kpimumu.root";
     // cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]);
     cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]);
 
-    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/MCTruthTuple_DstD2Kpimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]));
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/MCTruthTuple_DstD2Kpimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]));
 
     if(useFit) nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_Kpimumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangesKpi_low[j],rangesKpi_high[j]));
     else nSel=getMCYield(data_file,"DecayTree",cutSel);
@@ -8285,11 +10225,14 @@ void drawRecoAndStrippingEfficiencyWithFit(bool useFit=true,TString additionalCu
 
   for(int j=0; j<rangesKK_low.size();++j){
 
-    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MC12_DstD2KKmumu_matched_andMultCand.root";
+    //data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MC12_DstD2KKmumu_matched_andMultCand.root";
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/MC12_DstD2KKmumu.root";
+
     //cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]);
     cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]);
 
-    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MCTruthTuple_DstD2KKmumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]));
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/MCTruthTuple_DstD2KKmumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]));
+    
     if(useFit)nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_KKmumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangesKK_low[j],rangesKK_high[j]));
     else nSel=getMCYield(data_file,"DecayTree",cutSel);
 
@@ -8310,11 +10253,11 @@ void drawRecoAndStrippingEfficiencyWithFit(bool useFit=true,TString additionalCu
 
   for(int j=0; j<rangespipi_low.size();++j){
 
-    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu_matched_andMultCand.root";
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/MC12_DstD2pipimumu.root";
     //cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]);
     cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]);
     
-    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MCTruthTuple_DstD2pipimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]));
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/MCTruthTuple_DstD2pipimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]));
     if(useFit) nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_pipimumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangespipi_low[j],rangespipi_high[j]));
     else nSel=getMCYield(data_file,"DecayTree",cutSel);
 
@@ -8372,11 +10315,11 @@ void drawRecoAndStrippingEfficiencyWithFit_alternativeFitModel(bool useFit=true,
 
   for(int j=0; j<rangesKpi_low.size();++j){
 
-    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/MC12_DstD2Kpimumu_matched_andMultCand.root";
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/MC12_DstD2Kpimumu.root";
     // cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]);
     cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]);
 
-    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2Kpimumu/MCTruthTuple_DstD2Kpimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]));
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/MCTruthTuple_DstD2Kpimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]));
 
     if(useFit) nSel=fitMC_alternativeModel(data_file,"DecayTree",cutSel,"fitMC_alternativeModel_Kpimumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangesKpi_low[j],rangesKpi_high[j]));
     else nSel=getMCYield(data_file,"DecayTree",cutSel);
@@ -8392,11 +10335,11 @@ void drawRecoAndStrippingEfficiencyWithFit_alternativeFitModel(bool useFit=true,
 
   for(int j=0; j<rangesKK_low.size();++j){
 
-    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MC12_DstD2KKmumu_matched_andMultCand.root";
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/MC12_DstD2KKmumu.root";
     //cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]);
     cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]);
 
-    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2KKmumu/MCTruthTuple_DstD2KKmumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]));
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/MCTruthTuple_DstD2KKmumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]));
     if(useFit)nSel=fitMC_alternativeModel(data_file,"DecayTree",cutSel,"fitMC_alternativeModel_KKmumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangesKK_low[j],rangesKK_high[j]));
     else nSel=getMCYield(data_file,"DecayTree",cutSel);
 
@@ -8417,11 +10360,11 @@ void drawRecoAndStrippingEfficiencyWithFit_alternativeFitModel(bool useFit=true,
 
   for(int j=0; j<rangespipi_low.size();++j){
 
-    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MC12_DstD2pipimumu_matched_andMultCand.root";
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/MC12_DstD2pipimumu.root";
     //cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]);
     cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]);
     
-    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC/D2pipimumu/MCTruthTuple_DstD2pipimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]));
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/MCTruthTuple_DstD2pipimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]));
     if(useFit) nSel=fitMC_alternativeModel(data_file,"DecayTree",cutSel,"fitMC_alternativeModel_pipimumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangespipi_low[j],rangespipi_high[j]));
     else nSel=getMCYield(data_file,"DecayTree",cutSel);
 
@@ -8450,6 +10393,718 @@ void drawRecoAndStrippingEfficiencyWithFit_alternativeFitModel(bool useFit=true,
 
 
 
+void drawRecoAndStrippingEfficiencyWithFit_PhaseSpaceModel(bool useFit,TString additionalCut,TString componentMuon,TString componentHadron) { 
+
+  //if useFit is set to 0, also efficiency with just counting is possible where a BKGCAT cut can be specified with "additionalCut"
+  dcastyle();
+
+  TString cutSel,cutNorm;
+  std::pair<double,double> nNorm;
+  std::pair<double,double> nSel;
+  double Eff,dEff;
+  TString data_file;
+  TString qualityCut = "mu0_MuonNShared==0&&mu1_MuonNShared==0&&deltaM>144.5&&deltaM<146.5";
+  if(additionalCut!="") qualityCut+="&&"+additionalCut;
+  
+  TString qualityCutNorm_KK = "";
+  TString qualityCutNorm_Kpi = "";
+  TString qualityCutNorm_pipi = "";
+
+  TString qualityCut_Kpi = qualityCut;
+
+  TString nameTarget="../img/EfficiencyStudies/strippingEfficiency/individualComponents/RecoAndStrippingEfficiency";
+  if(useFit) nameTarget+="_fitted";
+  //if(additionalCut!="") nameTarget+="_"+additionalCut;
+
+
+  if(componentMuon=="PHSP"){
+    qualityCut+="&&(TMath::Abs(mu1_MC_MOTHER_ID)==421&&TMath::Abs(mu0_MC_MOTHER_ID)==421)";
+    qualityCutNorm_KK +="&&TMath::Abs(muminus_MC_MOTHER_ID)==421";
+    qualityCutNorm_Kpi +="&&TMath::Abs(muminus_MC_MOTHER_ID)==421";                                                                                                                                              
+    qualityCutNorm_pipi +="&&TMath::Abs(muminus_MC_MOTHER_ID)==421";
+    nameTarget+="_DiMuonPHSP";
+  }
+
+  if(componentMuon=="rho"){
+    qualityCut+="&&(TMath::Abs(mu1_MC_MOTHER_ID)==200113&&TMath::Abs(mu0_MC_MOTHER_ID)==200113)";
+    qualityCutNorm_KK +="&&TMath::Abs(muminus_MC_MOTHER_ID)==200113";
+    qualityCutNorm_Kpi +="&&TMath::Abs(muminus_MC_MOTHER_ID)==200113";                                                                                                                                              
+    qualityCutNorm_pipi +="&&TMath::Abs(muminus_MC_MOTHER_ID)==200113";
+    nameTarget+="_DiMuonRho";
+  }
+
+  if(componentMuon=="omega"){
+    qualityCut+="&&(TMath::Abs(mu1_MC_MOTHER_ID)==200223&&TMath::Abs(mu0_MC_MOTHER_ID)==200223)";
+    qualityCutNorm_KK +="&&TMath::Abs(muminus_MC_MOTHER_ID)==200223";
+    qualityCutNorm_Kpi +="&&TMath::Abs(muminus_MC_MOTHER_ID)==200223";                                                                                                                                              
+    qualityCutNorm_pipi +="&&TMath::Abs(muminus_MC_MOTHER_ID)==200223";
+    nameTarget+="_DiMuonOmega";
+  }
+
+  if(componentMuon=="phi"){
+    qualityCut+="&&(TMath::Abs(mu1_MC_MOTHER_ID)==200333&&TMath::Abs(mu0_MC_MOTHER_ID)==200333)";
+    qualityCutNorm_KK +="&&TMath::Abs(muminus_MC_MOTHER_ID)==200333";
+    qualityCutNorm_Kpi +="&&TMath::Abs(muminus_MC_MOTHER_ID)==200333";                                                                                                                                              
+    qualityCutNorm_pipi +="&&TMath::Abs(muminus_MC_MOTHER_ID)==200333";
+    nameTarget+="_DiMuonPhi";
+  }
+
+  if(componentMuon=="all"){
+    qualityCut+="";
+    qualityCutNorm_KK +="";
+    qualityCutNorm_Kpi +="";                                                                                                                                              
+    qualityCutNorm_pipi +="";
+    nameTarget+="_DiMuonAll";
+  }
+
+  if(componentHadron=="PHSP"){
+    qualityCut+="&&(TMath::Abs(h1_MC_MOTHER_ID)==421&&TMath::Abs(h0_MC_MOTHER_ID)==421)";
+    qualityCutNorm_KK +="&&TMath::Abs(Kminus_MC_MOTHER_ID)==421";
+    qualityCutNorm_Kpi +="&&TMath::Abs(Kminus_MC_MOTHER_ID)==421";                                                                                                                                              
+    qualityCutNorm_pipi +="&&TMath::Abs(piminus_MC_MOTHER_ID)==421";
+    nameTarget+="_DiHadronPHSP";
+  }
+
+  if(componentHadron=="rho"){
+    qualityCut+="&&(TMath::Abs(h1_MC_MOTHER_ID)==200113&&TMath::Abs(h0_MC_MOTHER_ID)==200113)";
+    qualityCutNorm_KK +="&&TMath::Abs(Kminus_MC_MOTHER_ID)==200113";
+    qualityCutNorm_Kpi +="&&TMath::Abs(Kminus_MC_MOTHER_ID)==200113";                                                                                                                                              
+    qualityCutNorm_pipi +="&&TMath::Abs(piminus_MC_MOTHER_ID)==200113";
+    nameTarget+="_DiHadronRho";
+  }
+
+  if(componentHadron=="phi"){
+    qualityCut+="&&(TMath::Abs(h1_MC_MOTHER_ID)==200333&&TMath::Abs(h0_MC_MOTHER_ID)==200333)";
+    qualityCutNorm_KK +="&&TMath::Abs(Kminus_MC_MOTHER_ID)==200333";
+    qualityCutNorm_Kpi +="&&TMath::Abs(Kminus_MC_MOTHER_ID)==200333";                                                                                                                                              
+    qualityCutNorm_pipi +="&&TMath::Abs(piminus_MC_MOTHER_ID)==200333";
+    nameTarget+="_DiHadronPhi";
+  }
+
+  if(componentHadron=="all"){
+    qualityCut+="";
+    qualityCutNorm_KK +="";
+    qualityCutNorm_Kpi +="";                                                                                                                                              
+    qualityCutNorm_pipi +="";
+    nameTarget+="_DiHadronAll";
+  }
+
+  
+
+  TFile* fOut= new TFile(nameTarget+".root","RECREATE");
+
+  TH1D * strippingEff_KK = new TH1D("strippingEff_KK","strippingEff_KK",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D * strippingEff_pipi = new TH1D("strippingEff_pipi","strippingEff_pipi",sizeof(binspipi)/sizeof(double)-1,binspipi);
+  TH1D * strippingEff_Kpi = new TH1D("strippingEff_Kpi","strippingEff_Kpi",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
+
+  TH1D * genYield_KK = new TH1D("genYield_KK","genYield_KK",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D * genYield_pipi = new TH1D("genYield_pipi","genYield_pipi",sizeof(binspipi)/sizeof(double)-1,binspipi);
+  TH1D * genYield_Kpi = new TH1D("genYield_Kpi","genYield_Kpi",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
+
+  TH1D * strippingRelativeEff_KK = new TH1D("strippingRelativeEff_KK","strippingRelativeEff_KK",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D * strippingRelativeEff_pipi = new TH1D("strippingRelativeEff_pipi","strippingRelativeEff_pipi",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+  TH1D * strippingEff_KK_integrated = new TH1D("strippingEff_KK_integrated","strippingEff_KK_integrated",1,200,1600);
+  TH1D * strippingEff_pipi_integrated = new TH1D("strippingEff_pipi_integrated","strippingEff_pipi_integrated",1,200,600);
+  TH1D * strippingEff_Kpi_integrated = new TH1D("strippingEff_Kpi_integrated","strippingEff_Kpi_integrated",1,200,600);
+
+  cout<<"muon: "<<componentMuon<<" hadron: "<<componentHadron<<endl;
+
+  double nTot;
+  
+  for(int j=0; j<rangesKpi_low.size();++j){
+
+    
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/MC12_DstD2Kpimumu.root";
+    // cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]);
+
+    if(j==0){
+
+      cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]);
+      
+      nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/MCTruthTuple_DstD2Kpimumu.root","MCTruthTuple","D_TRUE_DiMuon_Mass>675&&D_TRUE_DiMuon_Mass<875"+qualityCutNorm_Kpi);
+      if(useFit)nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_onylPhaseSpace_Kpimumu_Integrated");
+      else nSel=getMCYield(data_file,"DecayTree",cutSel);
+
+      if(nNorm.first<1e-1) continue;
+      
+      Eff=nSel.first/nNorm.first;
+      dEff=1/nNorm.first* TMath::Sqrt(nSel.first* (1- (nSel.first/nNorm.first) ) );                                                                                                           
+      strippingEff_Kpi_integrated->SetBinContent(j+1,Eff);
+      strippingEff_Kpi_integrated->SetBinError(j+1,dEff);
+      
+      nTot=nNorm.first;
+
+      cout<<"result Kpi integrated  "<<nNorm.first<<"  "<<nSel.first<<" Eff  "<<Eff<<" +-  "<<dEff<<" f= "<<nNorm.first/nTot<<endl;
+
+    }
+
+    cutSel= qualityCut_Kpi+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j]);
+
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2Kpimumu/MCTruthTuple_DstD2Kpimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKpi_low[j],rangesKpi_high[j])+qualityCutNorm_Kpi);
+
+    if(useFit) nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_onlyPhaseSpace_Kpimumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangesKpi_low[j],rangesKpi_high[j]));
+ 
+
+    else nSel=getMCYield(data_file,"DecayTree",cutSel);
+
+    if(nNorm.first<1e-1) continue;
+
+    Eff=nSel.first/nNorm.first;
+    dEff=1/nNorm.first* TMath::Sqrt(nSel.first* (1- (nSel.first/nNorm.first) ) );                                                                                                           
+
+    //dEff= TMath::Sqrt((nSel.second/nNorm.first)*(nSel.second/nNorm.first) + (nSel.first*nNorm.second/(nNorm.first*nNorm.first))*(nSel.first*nNorm.second/(nNorm.first*nNorm.first)) );
+    strippingEff_Kpi->SetBinContent(j+1,Eff);
+    strippingEff_Kpi->SetBinError(j+1,dEff);
+    genYield_Kpi->SetBinContent(j+1,nNorm.first);
+  }
+
+
+  for(int j=0; j<rangesKK_low.size();++j){
+
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/MC12_DstD2KKmumu.root";
+    //cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]);
+
+
+    //integrated
+    if(j==0){
+
+      cutSel= qualityCut;
+      
+      nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/MCTruthTuple_DstD2KKmumu.root","MCTruthTuple","D_TRUE_DiMuon_Mass>0"+qualityCutNorm_KK);
+      if(useFit)nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_onylPhaseSpace_KKmumu_Integrated");
+      else nSel=getMCYield(data_file,"DecayTree",cutSel);
+
+      if(nNorm.first<1e-1) continue;
+      
+      Eff=nSel.first/nNorm.first;
+      dEff=1/nNorm.first* TMath::Sqrt(nSel.first* (1- (nSel.first/nNorm.first) ) );                                                                                                           
+      strippingEff_KK_integrated->SetBinContent(j+1,Eff);
+      strippingEff_KK_integrated->SetBinError(j+1,dEff);
+
+      cout<<"result KK integrated "<<"  "<<nNorm.first<<"  "<<nSel.first<<"  "<<Eff<<"  "<<dEff<<endl;
+      nTot=nNorm.first;
+
+    }
+
+    cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j]);
+
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2KKmumu/MCTruthTuple_DstD2KKmumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangesKK_low[j],rangesKK_high[j])+qualityCutNorm_KK);
+    if(useFit)nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_onylPhaseSpace_KKmumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangesKK_low[j],rangesKK_high[j]));
+    else nSel=getMCYield(data_file,"DecayTree",cutSel);
+
+    if(nNorm.first<1e-1) continue;
+
+    Eff=nSel.first/nNorm.first;
+    dEff=1/nNorm.first* TMath::Sqrt(nSel.first* (1- (nSel.first/nNorm.first) ) );                                                                                                           
+    cout<<"result KK bin "<<j<<"  "<<nNorm.first<<"  "<<nSel.first<<" Eff  "<<Eff<<" +-  "<<dEff<<" f= "<<nNorm.first/nTot<<endl;
+
+
+    //dEff= TMath::Sqrt((nSel.second/nNorm.first)*(nSel.second/nNorm.first) + (nSel.first*nNorm.second/(nNorm.first*nNorm.first))*(nSel.first*nNorm.second/(nNorm.first*nNorm.first)) );
+    strippingEff_KK->SetBinContent(j+1,Eff);
+    strippingEff_KK->SetBinError(j+1,dEff);
+
+
+    genYield_KK->SetBinContent(j+1,nNorm.first);
+
+    strippingRelativeEff_KK->SetBinContent(j+1,Eff/strippingEff_Kpi->GetBinContent(1));
+    strippingRelativeEff_KK->SetBinError(j+1,TMath::Sqrt( TMath::Power( (dEff/strippingEff_Kpi->GetBinContent(1)),2) +
+
+							    TMath::Power( (Eff*strippingEff_Kpi->GetBinError(1))/(strippingEff_Kpi->GetBinContent(1)*strippingEff_Kpi->GetBinContent(1)),2) ));  
+  
+        
+  }
+
+  //cout<<"nKK tot "<<nTot<<endl;
+
+  for(int j=0; j<rangespipi_low.size();++j){
+
+    data_file ="/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/MC12_DstD2pipimumu.root";
+    //cutSel= qualityCut+"&&"+TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]);
+
+
+    if(j==0){
+
+      cutSel= qualityCut;
+      
+      nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/MCTruthTuple_DstD2pipimumu.root","MCTruthTuple","D_TRUE_DiMuon_Mass>0"+qualityCutNorm_pipi);
+      if(useFit)nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_onylPhaseSpace_pipimumu_Integrated");
+      else nSel=getMCYield(data_file,"DecayTree",cutSel);
+
+      if(nNorm.first<1e-1) continue;
+      
+      Eff=nSel.first/nNorm.first;
+      dEff=1/nNorm.first* TMath::Sqrt(nSel.first* (1- (nSel.first/nNorm.first) ) );                                                                                                           
+      strippingEff_pipi_integrated->SetBinContent(j+1,Eff);
+      strippingEff_pipi_integrated->SetBinError(j+1,dEff);
+      
+      nTot=nNorm.first;
+
+      cout<<"result pipi integrated  "<<nNorm.first<<"  "<<nSel.first<<" Eff  "<<Eff<<" +-  "<<dEff<<" f= "<<nNorm.first/nTot<<endl;
+
+    }
+
+
+    cutSel= qualityCut+"&&"+TString::Format("D_DiMuon_Mass>%f&&D_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j]);
+    
+    nNorm=getMCYield("/auto/data/mitzel/D2hhmumu/new/flaggedMC_RerunCalo/D2pipimumu/MCTruthTuple_DstD2pipimumu.root","MCTruthTuple",TString::Format("D_TRUE_DiMuon_Mass>%f&&D_TRUE_DiMuon_Mass<%f",rangespipi_low[j],rangespipi_high[j])+qualityCutNorm_pipi);
+    if(useFit) nSel=fitMC(data_file,"DecayTree",cutSel,"fitMC_onlyPhaseSpace_pipimumu_"+TString::Format("D_DiMuon_Mass_%.0f_D_DiMuon_Mass_%.0f",rangespipi_low[j],rangespipi_high[j]));
+    else nSel=getMCYield(data_file,"DecayTree",cutSel);
+
+    if(nNorm.first<1e-1) continue;
+
+    Eff=nSel.first/nNorm.first;
+    dEff=1/nNorm.first* TMath::Sqrt(nSel.first* (1- (nSel.first/nNorm.first) ) );                                                                                                           
+    cout<<"result pipi bin "<<j<<"  "<<nNorm.first<<"  "<<nSel.first<<" Eff  "<<Eff<<" +-  "<<dEff<<" f= "<<nNorm.first/nTot<<endl;
+
+    //dEff= TMath::Sqrt((nSel.second/nNorm.first)*(nSel.second/nNorm.first) + (nSel.first*nNorm.second/(nNorm.first*nNorm.first))*(nSel.first*nNorm.second/(nNorm.first*nNorm.first)) );
+    strippingEff_pipi->SetBinContent(j+1,Eff);
+    strippingEff_pipi->SetBinError(j+1,dEff);
+  
+    genYield_pipi->SetBinContent(j+1,nNorm.first);
+
+    strippingRelativeEff_pipi->SetBinContent(j+1,Eff/strippingEff_Kpi->GetBinContent(1));
+    strippingRelativeEff_pipi->SetBinError(j+1,TMath::Sqrt( TMath::Power( (dEff/strippingEff_Kpi->GetBinContent(1)),2) +
+							    TMath::Power( (Eff*strippingEff_Kpi->GetBinError(1))/(strippingEff_Kpi->GetBinContent(1)*strippingEff_Kpi->GetBinContent(1)),2) ));          
+ 
+
+
+ }
+
+  fOut->cd();
+ 
+  strippingEff_Kpi->Write();
+  strippingEff_KK->Write();
+  strippingEff_pipi_integrated->Write();
+  strippingEff_KK_integrated->Write();
+  strippingEff_pipi->Write();
+  strippingRelativeEff_pipi->Write();
+  strippingRelativeEff_pipi->Write();
+
+  genYield_Kpi->Write();
+  genYield_KK->Write();
+  genYield_pipi->Write();
+ 
+ fOut->Write();
+
+
+  }
+
+
+
+void compareDifferentModelsForRecoEfficiency(){
+
+  TH1::SetDefaultSumw2();
+
+  TString pathToFolder="/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/strippingEfficiency/individualComponents/";
+
+  TFile* f_omega_phi = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonOmega_DiHadronPhi.root","OPEN");
+  TFile* f_phi_phi  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonPhi_DiHadronPhi.root","OPEN"); 
+  TFile* f_rho_phi  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonRho_DiHadronPhi.root","OPEN"); 
+  TFile* f_PHSP_phi  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonPHSP_DiHadronPhi.root","OPEN"); 
+
+  TFile* f_omega_rho = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonOmega_DiHadronRho.root","OPEN");
+  TFile* f_phi_rho  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonPhi_DiHadronRho.root","OPEN"); 
+  TFile* f_rho_rho  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonRho_DiHadronRho.root","OPEN"); 
+  TFile* f_PHSP_rho  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonPHSP_DiHadronRho.root","OPEN"); 
+
+  TFile* f_omega_PHSP = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonOmega_DiHadronPHSP.root","OPEN");
+  TFile* f_phi_PHSP  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonPhi_DiHadronPHSP.root","OPEN"); 
+  TFile* f_rho_PHSP  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonRho_DiHadronPHSP.root","OPEN"); 
+  TFile* f_PHSP_PHSP  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonPHSP_DiHadronPHSP.root","OPEN"); 
+
+  TFile* f_all_PHSP  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonAll_DiHadronPHSP.root","OPEN"); 
+  TFile* f_all_Phi  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonAll_DiHadronPhi.root","OPEN"); 
+  TFile* f_all_Rho  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonAll_DiHadronRho.root","OPEN"); 
+
+  TFile* f_PHSP_all  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonPHSP_DiHadronAll.root","OPEN"); 
+  TFile* f_Phi_all  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonPhi_DiHadronAll.root","OPEN"); 
+  TFile* f_all_all  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonAll_DiHadronAll.root","OPEN"); 
+  TFile* f_Rho_all  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonRho_DiHadronAll.root","OPEN"); 
+  TFile* f_Omega_all  = new TFile(pathToFolder+"RecoAndStrippingEfficiency_DiMuonOmega_DiHadronAll.root","OPEN"); 
+
+
+  TH1D* h_all_PHSP_KK =(TH1D*)f_all_PHSP->Get("strippingEff_KK");
+  TH1D* h_all_Phi_KK  =(TH1D*)f_all_Phi->Get("strippingEff_KK");
+  TH1D* h_all_Rho_KK  =(TH1D*)f_all_Rho->Get("strippingEff_KK");
+
+  TH1D* h_all_PHSP_genYield_KK =(TH1D*)f_all_PHSP->Get("genYield_KK");
+  TH1D* h_all_Phi_genYield_KK  =(TH1D*)f_all_Phi->Get("genYield_KK");
+  TH1D* h_all_Rho_genYield_KK  =(TH1D*)f_all_Rho->Get("genYield_KK");
+
+  TH1D* h_all_PHSP_pipi =(TH1D*)f_all_PHSP->Get("strippingEff_pipi");
+  TH1D* h_all_Phi_pipi  =(TH1D*)f_all_Phi->Get("strippingEff_pipi");
+  TH1D* h_all_Rho_pipi  =(TH1D*)f_all_Rho->Get("strippingEff_pipi");
+
+  TH1D* h_all_PHSP_genYield_pipi =(TH1D*)f_all_PHSP->Get("genYield_pipi");
+  TH1D* h_all_Phi_genYield_pipi  =(TH1D*)f_all_Phi->Get("genYield_pipi");
+  TH1D* h_all_all_genYield_pipi  =(TH1D*)f_all_all->Get("genYield_pipi");
+  TH1D* h_all_Rho_genYield_pipi  =(TH1D*)f_all_Rho->Get("genYield_pipi");
+
+
+  TH1D* h_PHSP_all_KK = (TH1D*)f_PHSP_all->Get("strippingEff_KK"); 
+  TH1D* h_Phi_all_KK  = (TH1D*)f_Phi_all->Get("strippingEff_KK");
+  TH1D* h_all_all_KK  = (TH1D*)f_all_all->Get("strippingEff_KK");
+  TH1D* h_Rho_all_KK  = (TH1D*)f_Rho_all->Get("strippingEff_KK");
+  TH1D* h_Omega_all_KK= (TH1D*)f_Omega_all->Get("strippingEff_KK");
+
+  TH1D* h_PHSP_all_genYield_KK = (TH1D*)f_PHSP_all->Get("genYield_KK");
+  TH1D* h_Phi_all_genYield_KK  = (TH1D*)f_Phi_all->Get("genYield_KK");
+  TH1D* h_all_all_genYield_KK  = (TH1D*)f_all_all->Get("genYield_KK");
+  TH1D* h_Rho_all_genYield_KK  = (TH1D*)f_Rho_all->Get("genYield_KK");
+  TH1D* h_Omega_all_genYield_KK= (TH1D*)f_Omega_all->Get("genYield_KK");
+
+  TH1D* h_PHSP_all_pipi = (TH1D*)f_PHSP_all->Get("strippingEff_pipi"); 
+  TH1D* h_Phi_all_pipi  = (TH1D*)f_Phi_all->Get("strippingEff_pipi");
+  TH1D* h_all_all_pipi  = (TH1D*)f_all_all->Get("strippingEff_pipi");
+  TH1D* h_Rho_all_pipi  = (TH1D*)f_Rho_all->Get("strippingEff_pipi");
+  TH1D* h_Omega_all_pipi= (TH1D*)f_Omega_all->Get("strippingEff_pipi");
+
+  TH1D* h_PHSP_all_genYield_pipi = (TH1D*)f_PHSP_all->Get("genYield_pipi");
+  TH1D* h_Phi_all_genYield_pipi  = (TH1D*)f_Phi_all->Get("genYield_pipi");
+  TH1D* h_Rho_all_genYield_pipi  = (TH1D*)f_Rho_all->Get("genYield_pipi");
+  TH1D* h_Omega_all_genYield_pipi= (TH1D*)f_Omega_all->Get("genYield_pipi");
+
+
+
+  TFile* fout = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/strippingEfficiency/individualComponents/ComparisonDifferentModels.root","RECREATE");
+  fout->cd();
+
+  std::vector<double> norm_KK;
+  std::vector<double> norm_pipi;
+  
+  std::vector<double> norm_dimuon_KK;
+  std::vector<double> norm_dimuon_pipi;
+  
+  for(int j=0; j<rangesKK_low.size();++j){
+
+    //for hadron only two compoents: phsp and phi
+    norm_KK.push_back(0);
+    norm_KK[j]+=h_all_PHSP_genYield_KK->GetBinContent(j+1);
+    norm_KK[j]+=h_all_Phi_genYield_KK->GetBinContent(j+1);
+
+    //for muons also two compoents: phsp and rho
+    norm_dimuon_KK.push_back(0);
+    norm_dimuon_KK[j]+=h_PHSP_all_genYield_KK->GetBinContent(j+1);
+    norm_dimuon_KK[j]+=h_Rho_all_genYield_KK->GetBinContent(j+1);
+
+  }
+
+
+  for(int j=0; j<rangespipi_low.size();++j){
+
+    //for hadron only two compoents: phsp and rho                                                                                                                                      
+    norm_pipi.push_back(0);
+    norm_pipi[j]+=h_all_PHSP_genYield_pipi->GetBinContent(j+1);
+    norm_pipi[j]+=h_all_Rho_genYield_pipi->GetBinContent(j+1);
+
+    //for muons 4 compoents: phsp and rho,omega and phi
+    norm_dimuon_pipi.push_back(0);
+    norm_dimuon_pipi[j]+=h_PHSP_all_genYield_pipi->GetBinContent(j+1);
+    norm_dimuon_pipi[j]+=h_Rho_all_genYield_pipi->GetBinContent(j+1);
+    norm_dimuon_pipi[j]+=h_Omega_all_genYield_pipi->GetBinContent(j+1);
+    norm_dimuon_pipi[j]+=h_Phi_all_genYield_pipi->GetBinContent(j+1);
+
+  }
+
+
+  //di hadron 
+  
+    cout<<" KK fractions hadron models.."<<endl; 
+  for(int j=0; j<rangesKK_low.size();++j){
+    cout<<"bin :"<<j<<endl; 
+    cout<<"PHSP "<<h_all_PHSP_genYield_KK->GetBinContent(j+1)/norm_KK[j]<<endl;
+    cout<<"PHI "<<h_all_Phi_genYield_KK->GetBinContent(j+1)/norm_KK[j]<<endl;
+  }
+    cout<<" KK fractions muon models.."<<endl;   
+  for(int j=0; j<rangesKK_low.size();++j){
+    cout<<"bin :"<<j<<endl; 
+    cout<<"PHSP "<<h_PHSP_all_genYield_KK->GetBinContent(j+1)/norm_dimuon_KK[j]<<endl;
+    cout<<"Rho "<<h_Rho_all_genYield_KK->GetBinContent(j+1)/norm_dimuon_KK[j]<<endl;
+    
+  } 
+
+  cout<<" pipi fractions hadron models.."<<endl; 
+  for(int j=0; j<rangespipi_low.size();++j){
+    cout<<"bin :"<<j<<endl;
+    cout<<"PHSP "<<h_all_PHSP_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]<<endl;
+    cout<<"Rho "<<h_all_Rho_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]<<endl;
+  }
+
+  cout<<" pipi fractions muon models.."<<endl; 
+  for(int j=0; j<rangespipi_low.size();++j){
+    cout<<"bin :"<<j<<endl;
+    cout<<"PHSP "<<h_PHSP_all_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]<<endl;
+    cout<<"Rho "<<h_Rho_all_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]<<endl;
+    cout<<"Omega "<<h_Omega_all_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]<<endl;
+    cout<<"Phi "<<h_Phi_all_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]<<endl;
+  }
+
+
+
+  TH1D * strippingEff_KK_baseline = new TH1D("strippingEff_KK_baseline","strippingEff_KK_baseline",sizeof(binsKK)/sizeof(double)-1,binsKK);
+
+  for(int j=0; j<rangesKK_low.size();++j){
+    
+    strippingEff_KK_baseline->AddBinContent(j+1,h_all_PHSP_KK->GetBinContent(j+1)*h_all_PHSP_genYield_KK->GetBinContent(j+1)/norm_KK[j]);
+    strippingEff_KK_baseline->AddBinContent(j+1,h_all_Phi_KK->GetBinContent(j+1)*h_all_Phi_genYield_KK->GetBinContent(j+1)/norm_KK[j]);
+
+  }
+
+  TH1D * strippingEff_KK_alternative1 = new TH1D("strippingEff_KK_alternative1","strippingEff_KK_alternative1",sizeof(binsKK)/sizeof(double)-1,binsKK);
+
+  for(int j=0; j<rangesKK_low.size();++j){
+    
+    double coeff1 = h_all_PHSP_genYield_KK->GetBinContent(j+1)/norm_KK[j] * 1.5 / (h_all_PHSP_genYield_KK->GetBinContent(j+1)/norm_KK[j]*1.5 + h_all_Phi_genYield_KK->GetBinContent(j+1)/norm_KK[j]/1.5);
+    double coeff2 = h_all_Phi_genYield_KK->GetBinContent(j+1)/norm_KK[j] / 1.5 / (h_all_PHSP_genYield_KK->GetBinContent(j+1)/norm_KK[j]*1.5 + h_all_Phi_genYield_KK->GetBinContent(j+1)/norm_KK[j]/1.5);
+
+    //double coeff1=0.4;
+    //double coeff2=0.6;
+    
+    cout<<coeff1<<"  "<<coeff2<<endl; 
+
+    strippingEff_KK_alternative1->AddBinContent(j+1,h_all_PHSP_KK->GetBinContent(j+1)*coeff1);
+    strippingEff_KK_alternative1->AddBinContent(j+1,h_all_Phi_KK->GetBinContent(j+1)*coeff2);
+
+  }
+
+
+  TH1D * strippingEff_pipi_alternative1 = new TH1D("strippingEff_pipi_alternative1","strippingEff_pipi_alternative1",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+  for(int j=0; j<rangespipi_low.size();++j){
+    
+    double coeff1 = h_all_PHSP_genYield_pipi->GetBinContent(j+1)/norm_pipi[j] * 1.5 / (h_all_PHSP_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]*1.5 + h_all_Rho_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]/1.5);
+    double coeff2 = h_all_Rho_genYield_pipi->GetBinContent(j+1)/norm_pipi[j] / 1.5 / (h_all_PHSP_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]*1.5 + h_all_Rho_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]/1.5);
+
+    //double coeff1=0.4;
+    //double coeff2=0.6;
+    
+    cout<<coeff1<<"  "<<coeff2<<endl; 
+
+    strippingEff_pipi_alternative1->AddBinContent(j+1,h_all_PHSP_pipi->GetBinContent(j+1)*coeff1);
+    strippingEff_pipi_alternative1->AddBinContent(j+1,h_all_Rho_pipi->GetBinContent(j+1)*coeff2);
+
+  }
+
+  TH1D * strippingEff_KK_alternative2 = new TH1D("strippingEff_KK_alternative2","strippingEff_KK_alternative2",sizeof(binsKK)/sizeof(double)-1,binsKK);
+
+  for(int j=0; j<rangesKK_low.size();++j){
+    
+    double coeff1 = h_all_PHSP_genYield_KK->GetBinContent(j+1)/norm_KK[j] / 1.5 / (h_all_PHSP_genYield_KK->GetBinContent(j+1)/norm_KK[j]/1.5 + h_all_Phi_genYield_KK->GetBinContent(j+1)/norm_KK[j]*1.5);
+    double coeff2 = h_all_Phi_genYield_KK->GetBinContent(j+1)/norm_KK[j] * 1.5 / (h_all_PHSP_genYield_KK->GetBinContent(j+1)/norm_KK[j]/1.5 + h_all_Phi_genYield_KK->GetBinContent(j+1)/norm_KK[j]*1.5);
+ 
+    //double coeff1=0.4;
+    //double coeff2=0.6;
+    
+    cout<<coeff1<<"  "<<coeff2<<endl; 
+
+    strippingEff_KK_alternative2->AddBinContent(j+1,h_all_PHSP_KK->GetBinContent(j+1)*coeff1);
+    strippingEff_KK_alternative2->AddBinContent(j+1,h_all_Phi_KK->GetBinContent(j+1)*coeff2);
+
+  }
+
+
+  TH1D * strippingEff_pipi_alternative2 = new TH1D("strippingEff_pipi_alternative2","strippingEff_pipi_alternative2",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+  for(int j=0; j<rangespipi_low.size();++j){
+    
+    double coeff1 = h_all_PHSP_genYield_pipi->GetBinContent(j+1)/norm_pipi[j] / 1.5 / (h_all_PHSP_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]/1.5 + h_all_Rho_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]*1.5);
+    double coeff2 = h_all_Rho_genYield_pipi->GetBinContent(j+1)/norm_pipi[j] *1.5 / (h_all_PHSP_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]/1.5 + h_all_Rho_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]*1.5);
+
+    //double coeff1=0.4;
+    //double coeff2=0.6;
+    
+    cout<<coeff1<<"  "<<coeff2<<endl; 
+
+    strippingEff_pipi_alternative2->AddBinContent(j+1,h_all_PHSP_pipi->GetBinContent(j+1)*coeff1);
+    strippingEff_pipi_alternative2->AddBinContent(j+1,h_all_Rho_pipi->GetBinContent(j+1)*coeff2);
+
+  }
+
+
+  TH1D * strippingEff_pipi_baseline = new TH1D("strippingEff_pipi_baseline","strippingEff_pipi_baseline",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+  for(int j=0; j<rangespipi_low.size();++j){
+    
+    strippingEff_pipi_baseline->AddBinContent(j+1,h_all_PHSP_pipi->GetBinContent(j+1)*h_all_PHSP_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]);
+    strippingEff_pipi_baseline->AddBinContent(j+1,h_all_Rho_pipi->GetBinContent(j+1)*h_all_Rho_genYield_pipi->GetBinContent(j+1)/norm_pipi[j]);
+
+
+  }
+
+
+  //di muon model
+
+                                                                                                                                                                     
+  TH1D * strippingEff_pipi_baseline_dimuon = new TH1D("strippingEff_pipi_baseline_dimuon","strippingEff_pipi_baseline_dimuon",sizeof(binspipi)/sizeof(double)-1,binspipi);
+  TH1D * strippingEff_pipi_alternative1_dimuon = new TH1D("strippingEff_pipi_alternative1_dimuon","strippingEff_pipi_alternative1_dimuon",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+  for(int j=0; j<rangespipi_low.size();++j){
+    
+    double f_phi;
+    double f_rho;
+    double f_phsp;
+    double f_omega;
+
+    f_phi=h_Phi_all_genYield_pipi->GetBinContent(j+1)/norm_dimuon_pipi[j];
+    f_rho=h_Rho_all_genYield_pipi->GetBinContent(j+1)/norm_dimuon_pipi[j];
+    f_omega=h_Omega_all_genYield_pipi->GetBinContent(j+1)/norm_dimuon_pipi[j];
+    f_phsp=h_PHSP_all_genYield_pipi->GetBinContent(j+1)/norm_dimuon_pipi[j];
+
+    cout<<"bin "<<j<<f_rho<<"  "<<f_phsp<<endl;
+
+
+    strippingEff_pipi_baseline_dimuon->AddBinContent(j+1,h_Phi_all_pipi->GetBinContent(j+1)*f_phi);
+    strippingEff_pipi_baseline_dimuon->AddBinContent(j+1,h_Rho_all_pipi->GetBinContent(j+1)*f_rho);
+    strippingEff_pipi_baseline_dimuon->AddBinContent(j+1,h_Omega_all_pipi->GetBinContent(j+1)*f_omega);
+    strippingEff_pipi_baseline_dimuon->AddBinContent(j+1,h_PHSP_all_pipi->GetBinContent(j+1)*f_phsp);
+    
+
+  }
+
+  for(int j=0; j<rangespipi_low.size();++j){
+    
+    double f_phi;
+    double f_rho;
+    double f_phsp;
+    double f_omega;
+    
+    if(j==0) {
+      f_phi=0;
+      f_rho=0;
+      f_phsp=1.0;
+      f_omega=0.;
+    }    
+   
+    if(j==1) {
+      f_phi=0;
+      f_rho=0;
+      f_phsp=1;
+      f_omega=0;
+    }
+
+    if(j==2) {
+      f_phi=0;
+      f_rho=.5;
+      f_phsp=0;
+      f_omega=0.5;
+    }    
+    
+    if(j==3) {
+      f_phi=1.0;
+      f_rho=0;
+      f_phsp=0;
+      f_omega=0.;
+    }    
+
+    if(j==4) {
+      f_phi=0;
+      f_rho=0;
+      f_phsp=1;
+      f_omega=0.;
+    }    
+
+    strippingEff_pipi_alternative1_dimuon->AddBinContent(j+1,h_Phi_all_pipi->GetBinContent(j+1)*f_phi);
+    strippingEff_pipi_alternative1_dimuon->AddBinContent(j+1,h_Rho_all_pipi->GetBinContent(j+1)*f_rho);
+    strippingEff_pipi_alternative1_dimuon->AddBinContent(j+1,h_Omega_all_pipi->GetBinContent(j+1)*f_omega);
+    strippingEff_pipi_alternative1_dimuon->AddBinContent(j+1,h_PHSP_all_pipi->GetBinContent(j+1)*f_phsp);    
+  }
+
+
+  TH1D * strippingEff_KK_baseline_dimuon = new TH1D("strippingEff_KK_baseline_dimuon","strippingEff_KK_baseline_dimuon",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D * strippingEff_KK_alternative1_dimuon = new TH1D("strippingEff_KK_alternative1_dimuon","strippingEff_KK_alternative1_dimuon",sizeof(binsKK)/sizeof(double)-1,binsKK);
+
+  for(int j=0; j<rangesKK_low.size();++j){
+    
+    double f_phi;
+    double f_rho;
+    double f_phsp;
+    double f_omega;
+    
+    f_phi=h_Phi_all_genYield_KK->GetBinContent(j+1)/norm_dimuon_KK[j];
+    f_rho=h_Rho_all_genYield_KK->GetBinContent(j+1)/norm_dimuon_KK[j];
+    f_omega=h_Omega_all_genYield_KK->GetBinContent(j+1)/norm_dimuon_KK[j];
+    f_phsp=h_PHSP_all_genYield_KK->GetBinContent(j+1)/norm_dimuon_KK[j];
+
+    strippingEff_KK_baseline_dimuon->AddBinContent(j+1,h_Phi_all_KK->GetBinContent(j+1)*f_phi);
+    strippingEff_KK_baseline_dimuon->AddBinContent(j+1,h_Rho_all_KK->GetBinContent(j+1)*f_rho);
+    strippingEff_KK_baseline_dimuon->AddBinContent(j+1,h_Omega_all_KK->GetBinContent(j+1)*f_omega);
+    strippingEff_KK_baseline_dimuon->AddBinContent(j+1,h_PHSP_all_KK->GetBinContent(j+1)*f_phsp);    
+
+  }
+
+  for(int j=0; j<rangesKK_low.size();++j){
+    
+    double f_rho;
+    double f_phsp;
+
+    if(j==0) {
+      f_rho=0;
+      f_phsp=1.;
+    }    
+   
+    if(j==1) {
+      f_phsp=1;
+      f_rho=0;
+    }
+
+    if(j==2) {
+      f_phsp=0.;
+      f_rho=1;
+    }    
+
+    strippingEff_KK_alternative1_dimuon->AddBinContent(j+1,h_Rho_all_KK->GetBinContent(j+1)*f_rho);
+    strippingEff_KK_alternative1_dimuon->AddBinContent(j+1,h_PHSP_all_KK->GetBinContent(j+1)*f_phsp);    
+  }
+
+  strippingEff_KK_alternative1_dimuon->Write();
+  strippingEff_pipi_alternative1_dimuon->Write();
+  strippingEff_KK_baseline_dimuon->Write();
+  strippingEff_pipi_baseline_dimuon->Write();
+
+  strippingEff_KK_alternative1->Write();
+  strippingEff_pipi_alternative1->Write();
+  strippingEff_KK_alternative2->Write();
+  strippingEff_pipi_alternative2->Write();
+  strippingEff_KK_baseline->Write();
+  strippingEff_pipi_baseline->Write();
+
+
+  TCanvas* a = new TCanvas("a","a");
+  a->Divide(2);
+  a->cd(1);
+  strippingEff_KK_alternative1_dimuon->Add(strippingEff_KK_baseline_dimuon,-1);
+  strippingEff_KK_alternative1_dimuon->Divide(strippingEff_KK_baseline_dimuon);
+  strippingEff_KK_alternative1_dimuon->Draw("e");
+  
+  a->cd(2);
+  strippingEff_pipi_alternative1_dimuon->Add(strippingEff_pipi_baseline_dimuon,-1);
+  strippingEff_pipi_alternative1_dimuon->Divide(strippingEff_pipi_baseline_dimuon);
+  strippingEff_pipi_alternative1_dimuon->Draw("e");
+
+  //  strippingEff_pipi_baseline->Draw();
+  a->Print("test.eps");
+
+  TCanvas* b = new TCanvas("b","b");
+  b->Divide(2);
+  b->cd(1);
+  strippingEff_KK_alternative1->Add(strippingEff_KK_baseline,-1);
+  strippingEff_KK_alternative1->Divide(strippingEff_KK_baseline);
+  strippingEff_KK_alternative1->Draw("e");
+  
+  b->cd(2);
+  strippingEff_pipi_alternative1->Add(strippingEff_pipi_baseline,-1);
+  strippingEff_pipi_alternative1->Divide(strippingEff_pipi_baseline);
+  strippingEff_pipi_alternative1->Draw("e");
+
+  //  strippingEff_pipi_baseline->Draw();
+  b->Print("test2.eps");
+ 
+
+
+}
+
+//compares different Reco and Stripping efficiencies (different truthmatching strategies, with and without fit)
 
 void compareDifferentRecoAndStrippingEfficiencies(){
 
@@ -9022,21 +11677,26 @@ std::pair<double,double> fitDsPhiPi(TString file,TString treeName, TString cut, 
   tree->SetBranchStatus("mu0_PT",1);
   tree->SetBranchStatus("mu1_PT",1);
 
+  tree->SetBranchStatus("mu0_P",1);
+  tree->SetBranchStatus("mu1_P",1);
+
   tree->SetBranchStatus("mu0_ProbNNghost",1);
   tree->SetBranchStatus("mu1_ProbNNghost",1);
   tree->SetBranchStatus("h0_ProbNNghost",1);
   tree->SetBranchStatus("Slowpi_ProbNNghost",1);
   tree->SetBranchStatus("h0_ProbNNk",1);
  
- 
-  RooRealVar D_M("D_M", "m(#phi #pi)", 1920., 2050.,"MeV");
+  tree->SetBranchStatus("mu0_PIDmu",1);
 
+
+  RooRealVar D_M("D_M", "m(#phi #pi)", 1920., 2050.,"MeV");
 
   TFile* fOut = new TFile("temp.root","RECREATE");
   TTree* cutTree = tree->CopyTree(cut);
   RooDataSet* data = new RooDataSet("data", "data", cutTree, RooArgSet(D_M));
   TCanvas* c1= new TCanvas("test");
   CreateSubPad(c1,0.25);
+
 
   RooWorkspace* w = new RooWorkspace(namePlot,kTRUE) ;
   w->import(D_M);
@@ -9073,14 +11733,14 @@ std::pair<double,double> fitDsPhiPi(TString file,TString treeName, TString cut, 
   fOut->Close();
   std::pair<double,double> signalYield =std::make_pair(w->var("nSig")->getVal(),w->var("nSig")->getError());
 
-  delete fOut;
+
   delete result;
   delete tree;
   delete c1;
   w->Delete();
     
   return signalYield;
-
+  
 }
 
 
@@ -9120,6 +11780,8 @@ void calibrateTagAndProbeL0EfficiencyWithDsPhiPi(){
 }
 
 
+
+
 void calibrateTagAndProbeL0EfficiencyWithMC(){
 
   TFile* fOut= new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/calibrationMCFile.root","RECREATE");
@@ -9137,6 +11799,7 @@ void calibrateTagAndProbeL0EfficiencyWithMC(){
     //MC_file2 ="/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2KKmumu_565.0_900.0_D2KKmumuBDT_magUp.root";
     //MC_file ="/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2pipimumu_950.0_1100.0_D2pipimumuBDT_magUp.root";
     //MC_file2 ="/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2pipimumu_950.0_1100.0_D2pipimumuBDT_magDw.root";
+    //added CUT on pt>500 which is in stripping
     cutNorm= TString::Format("mu0_L0MuonDecision_TOS&&mu1_PT>%f&&mu1_PT<%f",rangesPt_low[j],rangesPt_high[j]);
  
     cut = "mu1_L0MuonDecision_TOS";  
@@ -9150,6 +11813,43 @@ void calibrateTagAndProbeL0EfficiencyWithMC(){
 
 }
 
+
+
+void calibratePIDEfficiencyWithDsPhiPi(){
+
+  TFile* fOut= new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/calibrationFileDsPhiPi.root","RECREATE");
+  TH1* AbsMCEff_Kpimumu = new TH1D("AbsPIDEff","Abs mu PID Eff in bins of P",sizeof(binsP)/sizeof(double)-1,binsP);
+
+  TString cutSel,cutNorm;
+  std::pair<double,double> nNorm;
+  std::pair<double,double> nSel;
+  double Eff,dEff;
+  TString data_file;
+  //  TString qualityCut = "mu0_ProbNNmu>0.3&&mu0_L0MuonDecision_TOS&&mu0_MuonNShared==0&&mu1_MuonNShared==0&&mu1_PT>800&&mu1_PT<1100";
+  TString qualityCut = "mu0_PT>2200&&mu0_PT<3000&&D_DiMuon_Mass>1010&&D_DiMuon_Mass<1030&&mu0_MuonNShared==0&&mu1_MuonNShared==0&&mu1_ProbNNmu>0.3";
+
+  for(int j=0; j<rangesP_low.size();++j){
+
+    data_file ="/auto/data/mitzel/Ds2phipi/Ds2phipi.root";
+    cutNorm= qualityCut+"&&"+TString::Format("mu0_P>%f&&mu0_P<%f",rangesP_low[j],rangesP_high[j]);
+    cutSel = cutNorm+"&&"+"mu0_ProbNNmu>0.5&&mu0_ProbNNghost<0.5";  
+
+    nNorm=fitDsPhiPi(data_file,"DecayTree",cutNorm,"normFit_"+TString::Format("mu0_P_%.0f_mu0_P_%.0f",rangesP_low[j],rangesP_high[j]));
+    nSel=fitDsPhiPi(data_file,"DecayTree",cutSel,"selFit_"+TString::Format("mu0_P_%.0f_mu0_P_%.0f",rangesP_low[j],rangesP_high[j]));
+       
+    Eff=nSel.first/nNorm.first;
+    dEff=1/nNorm.first* TMath::Sqrt(nSel.first* (1- (nSel.first/nNorm.first) ) );
+
+    //dEff= TMath::Sqrt((nSel.second/nNorm.first)*(nSel.second/nNorm.first) + (nSel.first*nNorm.second/(nNorm.first*nNorm.first))*(nSel.first*nNorm.second/(nNorm.first*nNorm.first)) );
+
+    AbsMCEff_Kpimumu->SetBinContent(j+1,Eff);
+    AbsMCEff_Kpimumu->SetBinError(j+1,dEff);
+  }
+  fOut->cd();
+  AbsMCEff_Kpimumu->Write();
+  fOut->Write();
+
+}
 					    
 
 void mergeDs2PhiPiTuples(){
@@ -9203,7 +11903,7 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
 
   TString target;
   if(useData) target = "/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/L0TriggerEfficiencies";
-  else target = "/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/L0TriggerEfficienciesMCClosureTest2";
+  else target = "/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/L0TriggerEfficienciesMCClosureTest";
 
   dcastyle();
 
@@ -9224,7 +11924,7 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
   
 
 
-  double mu1_PT,mu0_PT,totEff;
+  double mu1_PT,mu0_PT;
   bool mu1_L0MuonDecision_TOS,mu0_L0MuonDecision_TOS;
   double BDT, mu0_ProbNNmu, mu1_ProbNNmu;
   int mu1_MuonNShared, mu0_MuonNShared;
@@ -9239,6 +11939,7 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
     chain = new TChain("BDT_Tree");
     chain->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2Kpimumu_%.1f_%.1f_D2pipimumuBDT_magUp.root",rangesKpi_low[i],rangesKpi_high[i]));
     chain->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2Kpimumu_%.1f_%.1f_D2pipimumuBDT_magDw.root",rangesKpi_low[i],rangesKpi_high[i]));
+
 
     chain->SetBranchAddress("mu1_PT",&mu1_PT);
     chain->SetBranchAddress("mu0_PT",&mu0_PT);
@@ -9259,10 +11960,15 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
     chain->SetBranchAddress("h0_ProbNNk",&h0_ProbNNX);
     chain->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNX);
 
-
-    double tempEff1, tempEff0, tempEffProduct;
-    double Eff_i,dEff_i,dTotEff;
-    double dTempEff1, dTempEff0;
+    double totEff=0;
+    double tempEff1=0;
+    double tempEff0=0;
+    double tempEffProduct=0;
+    double Eff_i=0;
+    double dEff_i=0;
+    double dTotEff=0;
+    double dTempEff1=0;
+    double dTempEff0=0;
     int norm=0;
 
     for(int j=0; j<chain->GetEntries();++j){
@@ -9271,13 +11977,15 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
       //get trigger efficiency after PID
       //ALSO ADDHDRON PID HERE 
       
+      //PUT PACK LATER
       if(mu0_ProbNNmu<0.5) continue;
       if(mu1_ProbNNmu<0.5) continue;
+
       //if(BDT<0) continue;
       if(mu1_MuonNShared>0)continue;
       if(mu0_MuonNShared>0)continue;
       
-      //hadron PID
+      //hadron PID And ghost prob
       if(mu0_ProbNNghost>0.5) continue;
       if(mu1_ProbNNghost>0.5) continue;
       if(h0_ProbNNghost>0.5) continue;
@@ -9345,9 +12053,15 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
     chain->SetBranchAddress("h0_ProbNNpi",&h0_ProbNNX);
     chain->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNX);
 
-    double tempEff1, tempEff0, tempEffProduct;
-    double Eff_i,dEff_i,dTotEff;
-    double dTempEff1, dTempEff0;
+    double totEff=0;
+    double tempEff1=0;
+    double tempEff0=0;
+    double tempEffProduct=0;
+    double Eff_i=0;
+    double dEff_i=0;
+    double  dTotEff=0;
+    double dTempEff1=0;
+    double dTempEff0=0; 
     int norm=0;
 
     for(int j=0; j<chain->GetEntries();++j){
@@ -9355,8 +12069,11 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
       chain->GetEntry(j);
       //get trigger efficiency after PID
       //ALSO ADDHDRON PID HERE
+
       if(mu0_ProbNNmu<0.5) continue;
       if(mu1_ProbNNmu<0.5) continue;
+
+
       //if(BDT<0) continue;
       if(mu1_MuonNShared>0)continue;
       if(mu0_MuonNShared>0)continue;
@@ -9372,6 +12089,7 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
       if(h1_ProbNNX<0.2) continue;
       
       norm+=1;
+
       tempEff1=AbsMCEff_Kpimumu->GetBinContent(AbsMCEff_Kpimumu->FindBin(mu1_PT));
       dTempEff1=AbsMCEff_Kpimumu->GetBinError(AbsMCEff_Kpimumu->FindBin(mu1_PT));
       tempEff0=AbsMCEff_Kpimumu->GetBinContent(AbsMCEff_Kpimumu->FindBin(mu0_PT));
@@ -9383,9 +12101,13 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
       dTotEff+=dEff_i*dEff_i;
 
     }
+    
+
+
     totEff/=(double)norm;
     dTotEff=TMath::Sqrt(dTotEff)/(double)norm;
-    std::cout<<i<<"  "<<totEff<<" +- "<<dTotEff<<std::endl;
+
+    std::cout<<i<<" pipi "<<totEff<<" +- "<<dTotEff<<"  "<< (double)norm <<"  "<<std::endl;
 
     L0Trigger_Eff_pipimumu->SetBinContent(i+1,totEff);
     L0Trigger_Eff_pipimumu->SetBinError(i+1,dTotEff);
@@ -9450,18 +12172,26 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
     chain->SetBranchAddress("h0_ProbNNk",&h0_ProbNNX);
     chain->SetBranchAddress("h1_ProbNNk",&h1_ProbNNX);
 
-    double tempEff1, tempEff0, tempEffProduct;
-    double Eff_i,dEff_i,dTotEff;
-    double dTempEff1, dTempEff0;
     int norm=0;
+    double tempEff1=0;
+    double tempEff0=0;
+    double tempEffProduct=0;
+    double Eff_i=0;
+    double dEff_i=0;
+    double  dTotEff=0;
+    double dTempEff1=0;
+    double dTempEff0=0; 
+    double totEff=0;
 
     for(int j=0; j<chain->GetEntries();++j){
 
       chain->GetEntry(j);
       //get trigger efficiency after PID
       //ALSO ADDHDRON PID HERE 
+
       if(mu0_ProbNNmu<0.5) continue;
       if(mu1_ProbNNmu<0.5) continue;
+
       //if(BDT<0) continue;
       if(mu1_MuonNShared>0)continue;
       if(mu0_MuonNShared>0)continue;
@@ -9488,7 +12218,7 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
       dTotEff+=dEff_i*dEff_i;    
 
     }
-    std::cout<<i<<"  "<<totEff<<" +- "<<dTotEff<<"  "<< norm <<std::endl;
+    //std::cout<<i<<"  "<<totEff<<" +- "<<dTotEff<<"  "<< norm <<std::endl;
 
     totEff/=(double)norm;
     dTotEff=TMath::Sqrt(dTotEff)/(double)norm;
@@ -9496,7 +12226,7 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
     L0Trigger_Eff_KKmumu->SetBinContent(i+1,totEff);
     L0Trigger_Eff_KKmumu->SetBinError(i+1,dTotEff);
 
-    std::cout<<i<<"  "<<totEff<<" +- "<<dTotEff<<"  "<< norm <<std::endl;
+    std::cout<<i<<" KK "<<totEff<<" +- "<<dTotEff<<"  "<< (double)norm <<std::endl;
 
     TString cutHadronPID = "&&mu0_ProbNNghost<0.5&&mu1_ProbNNghost<0.5&&h0_ProbNNghost<0.5&&h1_ProbNNghost<0.5&&h0_ProbNNk>0.2&&h1_ProbNNk>0.2&&Slowpi_ProbNNghost<0.5";
  
@@ -9612,10 +12342,7 @@ void applyTagAndProbeL0Efficiency(bool useData=true){
 
 }
 
-
-//finsih at some point...
-/*
-void applyTagAndProbeL0EfficiencyToyStudy(bool useData=true, int nToys=100){
+void applyTagAndProbeL0EfficiencyToyStudy(bool useData=true,int nToys=100){
   
   //the calibration file 
   TString calibrationFile;
@@ -9625,27 +12352,70 @@ void applyTagAndProbeL0EfficiencyToyStudy(bool useData=true, int nToys=100){
   TFile* fIn= new TFile(calibrationFile,"OPEN");
   TH1D* AbsMCEff_Kpimumu=(TH1D*)fIn->Get("AbsMCEff_Kpimumu");
 
+  std::vector<TH1D*> fluctuatedEff ;
+
   TString target;
-  if(useData) target = "/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/L0TriggerEfficienciesToyStudy";
-  else target = "/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/L0TriggerEfficienciesMCClosureTestToyStudy";
+  if(useData) target = "/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/L0TriggerEfficienciesWithToys";
+  else target = "/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/L0TriggerEfficienciesMCClosureTestWithToys";
 
   dcastyle();
 
   TFile* fOut = new TFile(target+".root","RECREATE");
-  TH1D * L0Trigger_Eff_KKmumu = new TH1D("L0Trigger_Eff_KKmumu","L0Trigger_Eff_KKmumu",sizeof(binsKK)/sizeof(double)-1,binsKK);
-  TH1D * L0Trigger_Eff_pipimumu = new TH1D("L0Trigger_Eff_pipimumu","L0Trigger_Eff_pipimumu",sizeof(binspipi)/sizeof(double)-1,binspipi);
-  TH1D * L0Trigger_Eff_Kpimumu = new TH1D("L0Trigger_Eff_Kpimumu","L0Trigger_Eff_Kpimumu",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
+  
+  std::vector<TH1D*> L0Trigger_Eff_KKmumu ;
+  std::vector<TH1D*> L0Trigger_Eff_pipimumu; 
+  std::vector<TH1D*> L0Trigger_Eff_Kpimumu ;
+
+  std::vector<TH1D*> L0Trigger_RelativeEff_KKmumu ;
+  std::vector<TH1D*> L0Trigger_RelativeEff_pipimumu ;
 
   
-  std::vector<std::pair<double,double>> Kpi_pt;
-  std::vector<std::pair<double,double>> pipi_pt[5];
+  std::vector<TH1D*> L0Trigger_RelEff_KKmumu_pulls;
+  std::vector<TH1D*> L0Trigger_RelEff_pipimumu_pulls;
+    
+  TH1D * L0Trigger_RelativeEff_KKmumu_tot = new TH1D("L0Trigger_RelativeEff_KKmumu","L0Trigger_RelativeEff_KKmumu",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1D * L0Trigger_RelativeEff_pipimumu_tot = new TH1D("L0Trigger_RelativeEff_pipimumu","L0Trigger_RelativeEff_pipimumu",sizeof(binspipi)/sizeof(double)-1,binspipi); 
+   
+  TH1D* temp1;
+  TH1D* temp2;
+  TH1D* temp3;
+  TH1D* temp4;
+  TH1D* temp5;
+  TH1D* temp6;
+  
 
-  std::vector<TH1*>  reso_pipi;
-  TH1D* temp;
-  for(int i=0; i<rangespipi_low.size();++i){
-    temp = new TH1D(TString::Format("reso_pipi_bin_%i",i),TString::Format("reso_pipi_bin_%i",i),100,0.7,1.4);
-    reso_pipi.push_back(temp);
+  TRandom3* generator = new TRandom3(0);
+
+  for(int i=0;i<nToys;++i) {
+    
+    temp1=new TH1D(TString::Format("L0Trigger_Eff_KKmumu_%i",i),"L0Trigger_Eff_KKmumu",sizeof(binsKK)/sizeof(double)-1,binsKK);
+    L0Trigger_Eff_KKmumu.push_back(temp1);
+    temp2=new TH1D(TString::Format("L0Trigger_Eff_pipimumu_%i",i),"L0Trigger_Eff_pipimumu",sizeof(binspipi)/sizeof(double)-1,binspipi);
+    L0Trigger_Eff_pipimumu.push_back(temp2);
+    temp3= new TH1D(TString::Format("L0Trigger_Eff_Kpimumu_%i",i),"L0Trigger_Eff_Kpimumu",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
+    L0Trigger_Eff_Kpimumu.push_back(temp3);
+    temp4=new TH1D(TString::Format("L0Trigger_RelativeEff_KKmumu_%i",i),"L0Trigger_RelativeEff_KKmumu",sizeof(binsKK)/sizeof(double)-1,binsKK);
+    L0Trigger_RelativeEff_KKmumu.push_back(temp4);
+    temp5= new TH1D(TString::Format("L0Trigger_RelativeEff_pipimumu_%i",i),"L0Trigger_RelativeEff_pipimumu",sizeof(binspipi)/sizeof(double)-1,binspipi);
+    L0Trigger_RelativeEff_pipimumu.push_back(temp5);
+    
+    temp6 =  new TH1D(TString::Format("AbsMCEff_Kpimumu_%i",i),"Abs MC Eff_Kpimumu in bins of Pt",sizeof(binsPt)/sizeof(double)-1,binsPt);
+    
+    if(i>0) {
+      for(int j=1;j<rangesPt_low.size()+1;++j) {
+	temp6->SetBinContent(j,generator->Gaus(AbsMCEff_Kpimumu->GetBinContent(j),AbsMCEff_Kpimumu->GetBinError(j))); 
+      }
+    }
+    else { // first one is default
+	for(int j=1;j<rangesPt_low.size()+1;++j) {
+	  temp6->SetBinContent(j,AbsMCEff_Kpimumu->GetBinContent(j));	  
+	}
+    }
+    
+    fluctuatedEff.push_back(temp6);
+
   }
+     
 
   double mu1_PT,mu0_PT,totEff;
   bool mu1_L0MuonDecision_TOS,mu0_L0MuonDecision_TOS;
@@ -9654,54 +12424,107 @@ void applyTagAndProbeL0EfficiencyToyStudy(bool useData=true, int nToys=100){
   double Slowpi_ProbNNghost, h0_ProbNNghost, h1_ProbNNghost, mu0_ProbNNghost, mu1_ProbNNghost;
   double h0_ProbNNX, h1_ProbNNX;
 
-  //KPimumu
-  TRandom3* generator = new TRandom3(0);
+  std::vector<TChain*> chainKpi;
+  std::vector<TChain*> chainpipi;
+  std::vector<TChain*> chainKK;
+
+  TH1D* temp7;
+  TH1D* temp8;
+
+
+  TChain* chainTemp ;
 
   for(int i=0; i<rangesKpi_low.size();++i){
+    chainTemp = new TChain("BDT_Tree");
+    chainTemp->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2Kpimumu_%.1f_%.1f_D2pipimumuBDT_magUp.root",rangesKpi_low[i],rangesKpi_high[i]));
+    chainTemp->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2Kpimumu_%.1f_%.1f_D2pipimumuBDT_magDw.root",rangesKpi_low[i],rangesKpi_high[i]));
+
+    chainKpi.push_back(chainTemp);
+
+    chainTemp->Clear();
+  }
+
+  for(int i=0; i<rangespipi_low.size();++i){
+    chainTemp = new TChain("BDT_Tree");
+    chainTemp->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2pipimumu_%.1f_%.1f_D2pipimumuBDT_magUp.root",rangespipi_low[i],rangespipi_high[i]));
+    chainTemp->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2pipimumu_%.1f_%.1f_D2pipimumuBDT_magDw.root",rangespipi_low[i],rangespipi_high[i]));
+    chainpipi.push_back(chainTemp);
+    chainTemp->Clear();
+
+    temp7 = new TH1D(TString::Format("L0Trigger_Eff_pipimumu_pulls_bin_%i",i),"pipimumu_Pulls",2000,.9,1.4);
+    L0Trigger_RelEff_pipimumu_pulls.push_back(temp7);    
+
+ }
+
+  for(int i=0; i<rangesKK_low.size();++i){
+    chainTemp = new TChain("BDT_Tree");
+    chainTemp->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2KKmumu_%.1f_%.1f_D2KKmumuBDT_magUp.root",rangesKK_low[i],rangesKK_high[i]));
+    chainTemp->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2KKmumu_%.1f_%.1f_D2KKmumuBDT_magDw.root",rangesKK_low[i],rangesKK_high[i]));
+    chainKK.push_back(chainTemp);
+    chainTemp->Clear();
+
+    temp7 = new TH1D(TString::Format("L0Trigger_Eff_KKmumu_pulls_bin_%i",i),"KKmumu_Pulls",2000,.6,1.1);
+    L0Trigger_RelEff_KKmumu_pulls.push_back(temp7);    
     
-    TChain* chain;
-    chain = new TChain("BDT_Tree");
-    chain->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2Kpimumu_%.1f_%.1f_D2pipimumuBDT_magUp.root",rangesKpi_low[i],rangesKpi_high[i]));
-    chain->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2Kpimumu_%.1f_%.1f_D2pipimumuBDT_magDw.root",rangesKpi_low[i],rangesKpi_high[i]));
-
-    chain->SetBranchAddress("mu1_PT",&mu1_PT);
-    chain->SetBranchAddress("mu0_PT",&mu0_PT);
-    chain->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
-    chain->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
-    chain->SetBranchAddress("BDT",&BDT);
-    chain->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
-    chain->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
-    chain->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
-    chain->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
-
-    chain->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
-    chain->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
-    chain->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
-    chain->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
-    chain->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
-
-    chain->SetBranchAddress("h0_ProbNNk",&h0_ProbNNX);
-    chain->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNX);
+  }
 
 
-    double tempEff1, tempEff0, tempEffProduct;
-    double Eff_i,dEff_i,dTotEff;
-    double dTempEff1, dTempEff0;
-    int norm=0;
+  //KPimumu
 
-    for(int j=0; j<chain->GetEntries();++j){
+  std::vector<double> tempEff1;
+  std::vector<double> tempEff0;
+  std::vector<double> tempEffProduct;
+  std::vector<double> Eff;
 
-      chain->GetEntry(j);
-      //get trigger efficiency after PID
-      //ALSO ADDHDRON PID HERE 
-      
+  int norm=0;
+
+  //cout<<"Toy Study "<<j<<endl;
+
+  for(int i=0; i<rangesKpi_low.size();++i){
+
+    std::vector<double> tempEff1;
+    std::vector<double> tempEff0;
+    std::vector<double> tempEffProduct;
+    std::vector<double> Eff;
+
+    for(int j=0; j<nToys; ++j) {
+      tempEff1.push_back(0.);
+      tempEff0.push_back(0.);
+      Eff.push_back(0.);
+    }
+
+    chainKpi[i]->SetBranchAddress("mu1_PT",&mu1_PT);
+    chainKpi[i]->SetBranchAddress("mu0_PT",&mu0_PT);
+    chainKpi[i]->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+    chainKpi[i]->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+    chainKpi[i]->SetBranchAddress("BDT",&BDT);
+    chainKpi[i]->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+    chainKpi[i]->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+    chainKpi[i]->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+    chainKpi[i]->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+    chainKpi[i]->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+    chainKpi[i]->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+    chainKpi[i]->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+    chainKpi[i]->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+    chainKpi[i]->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+
+    chainKpi[i]->SetBranchAddress("h0_ProbNNk",&h0_ProbNNX);
+    chainKpi[i]->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNX);
+
+
+    for(int k=0; k<chainKpi[i]->GetEntries();++k){
+ 
+      chainKpi[i]->GetEntry(k);
+      //get trigger efficiency after PID                                                                                                                                                      
+      //ALSO ADDHDRON PID HERE                                                                                                                                                                
       if(mu0_ProbNNmu<0.5) continue;
       if(mu1_ProbNNmu<0.5) continue;
-      //if(BDT<0) continue;
+      //if(BDT<0) continue;                                                                                                                                                                   
       if(mu1_MuonNShared>0)continue;
       if(mu0_MuonNShared>0)continue;
-      
-      //hadron PID
+
+      //hadron PID                                                                                                                                                                            
       if(mu0_ProbNNghost>0.5) continue;
       if(mu1_ProbNNghost>0.5) continue;
       if(h0_ProbNNghost>0.5) continue;
@@ -9710,154 +12533,74 @@ void applyTagAndProbeL0EfficiencyToyStudy(bool useData=true, int nToys=100){
 
       if(h0_ProbNNX<0.2) continue;
       if(h1_ProbNNX<0.2) continue;
-      
+
       norm+=1;
-      Kpi_pt.push_back(std::make_pair(mu0_PT,mu1_PT));
-              
-      //cout<<j<<"  "<<dTempEff0<<"  "<<dTempEff1<<"  "<<dEff_i<<"  "<< dEff_i*dEff_i<<endl;
+	  
+      for(int j=0; j<nToys; ++j) {
+	tempEff1[j]=fluctuatedEff[j]->GetBinContent(fluctuatedEff[j]->FindBin(mu1_PT)) ;
+	tempEff0[j]= fluctuatedEff[j]->GetBinContent(fluctuatedEff[j]->FindBin(mu0_PT)) ;
+	Eff[j]+=( tempEff1[j]+tempEff0[j]-tempEff1[j]*tempEff0[j]);
+      }
+
+    
     }
-    
-    chain->Clear();
+
+    for(int j=0; j<nToys; ++j) {
+
+      Eff[j]/=(double)norm;
+      //      cout<<"Kpi Eff "<<j<<"  "<<Eff[j]<<endl;
+      L0Trigger_Eff_Kpimumu[j]->SetBinContent(i+1,Eff[j]);
+    }
   }
-    
- 
+
+
+
   for(int i=0; i<rangespipi_low.size();++i){
 
-    TChain* chain;
+    norm=0;
+    std::vector<double> tempEff1;
+    std::vector<double> tempEff0;
+    std::vector<double> tempEffProduct;
+    std::vector<double> Eff;
 
-    std::vector<std::pair<double,double>> temp;
-
-    chain = new TChain("BDT_Tree");
-    chain->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2pipimumu_%.1f_%.1f_D2pipimumuBDT_magUp.root",rangespipi_low[i],rangespipi_high[i]));
-    chain->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2pipimumu_%.1f_%.1f_D2pipimumuBDT_magDw.root",rangespipi_low[i],rangespipi_high[i]));
-
-    chain->SetBranchAddress("mu1_PT",&mu1_PT);
-    chain->SetBranchAddress("mu0_PT",&mu0_PT);
-    chain->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
-    chain->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
-    chain->SetBranchAddress("BDT",&BDT);
-    chain->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
-    chain->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
-    chain->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
-    chain->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
-
-    chain->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
-    chain->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
-    chain->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
-    chain->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
-    chain->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
-
-    chain->SetBranchAddress("h0_ProbNNpi",&h0_ProbNNX);
-    chain->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNX);
-
-    double tempEff1, tempEff0, tempEffProduct;
-    double Eff_i,dEff_i,dTotEff;
-    double dTempEff1, dTempEff0;
-    int norm=0;
-
-    for(int j=0; j<chain->GetEntries();++j){
-
-      chain->GetEntry(j);
-      //get trigger efficiency after PID
-      //ALSO ADDHDRON PID HERE
-      if(mu0_ProbNNmu<0.5) continue;
-      if(mu1_ProbNNmu<0.5) continue;
-      //if(BDT<0) continue;
-      if(mu1_MuonNShared>0)continue;
-      if(mu0_MuonNShared>0)continue;
-
-      //hadron PID
-      if(mu0_ProbNNghost>0.5) continue;
-      if(mu1_ProbNNghost>0.5) continue;
-      if(h0_ProbNNghost>0.5) continue;
-      if(h1_ProbNNghost>0.5) continue;
-      if(Slowpi_ProbNNghost>0.5) continue;
-
-      if(h0_ProbNNX<0.2) continue;
-      if(h1_ProbNNX<0.2) continue;
-      
-      norm+=1;
-
-      temp.push_back(std::make_pair(mu0_PT,mu1_PT));
-		  
+    for(int j=0; j<nToys; ++j) {
+      tempEff1.push_back(0.);
+      tempEff0.push_back(0.);
+      Eff.push_back(0.);
     }
-    pipi_pt[i]=temp;
-    chain->Clear();
-  
-  } //end loop over bins
 
-  for(int k=0;k<nToys;++k){
+    chainpipi[i]->SetBranchAddress("mu1_PT",&mu1_PT);
+    chainpipi[i]->SetBranchAddress("mu0_PT",&mu0_PT);
+    chainpipi[i]->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+    chainpipi[i]->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+    chainpipi[i]->SetBranchAddress("BDT",&BDT);
+    chainpipi[i]->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+    chainpipi[i]->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+    chainpipi[i]->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+    chainpipi[i]->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
 
-    for(int l=0;l<)
-    tempEff1=generator->Gaus(AbsMCEff_Kpimumu->GetBinContent(AbsMCEff_Kpimumu->FindBin(mu1_PT)),AbsMCEff_Kpimumu->GetBinError(AbsMCEff_Kpimumu->FindBin(mu1_PT)));
-    tempEff0=generator->Gaus(AbsMCEff_Kpimumu->GetBinContent(AbsMCEff_Kpimumu->FindBin(mu0_PT)),AbsMCEff_Kpimumu->GetBinError(AbsMCEff_Kpimumu->FindBin(mu0_PT)))
+    chainpipi[i]->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+    chainpipi[i]->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+    chainpipi[i]->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+    chainpipi[i]->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+    chainpipi[i]->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+
+    chainpipi[i]->SetBranchAddress("h0_ProbNNpi",&h0_ProbNNX);
+    chainpipi[i]->SetBranchAddress("h1_ProbNNpi",&h1_ProbNNX);
+
+
+    for(int k=0; k<chainpipi[i]->GetEntries();++k){
       
-  /*
-  
-    reso_pipi[i]->Fill(totEff/L0Trigger_Eff_Kpimumu->GetBinContent(1));
-
-
-
-      tempEff1=generator->Gaus(AbsMCEff_Kpimumu->GetBinContent(AbsMCEff_Kpimumu->FindBin(mu1_PT)),AbsMCEff_Kpimumu->GetBinError(AbsMCEff_Kpimumu->FindBin(mu1_PT)));
-      tempEff0=generator->Gaus(AbsMCEff_Kpimumu->GetBinContent(AbsMCEff_Kpimumu->FindBin(mu0_PT)),AbsMCEff_Kpimumu->GetBinError(AbsMCEff_Kpimumu->FindBin(mu0_PT)));
-            
-      Eff_i=tempEff1+tempEff0-tempEff1*tempEff0;
-      totEff+=Eff_i;
-
-
-      tempEff1=generator->Gaus(AbsMCEff_Kpimumu->GetBinContent(AbsMCEff_Kpimumu->FindBin(mu1_PT)),AbsMCEff_Kpimumu->GetBinError(AbsMCEff_Kpimumu->FindBin(mu1_PT)));
-      tempEff0=generator->Gaus(AbsMCEff_Kpimumu->GetBinContent(AbsMCEff_Kpimumu->FindBin(mu0_PT)),AbsMCEff_Kpimumu->GetBinError(AbsMCEff_Kpimumu->FindBin(mu0_PT)));
-      Eff_i=tempEff1+tempEff0-tempEff1*tempEff0;
-      totEff+=Eff_i;
-	
-      totEff/=(double)norm;
-    
-  *////////
-
-  /*
-  for(int i=0; i<rangesKK_low.size();++i){
-    
-    TChain* chain;
-    chain = new TChain("BDT_Tree");
-    chain->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2KKmumu_%.1f_%.1f_D2KKmumuBDT_magUp.root",rangesKK_low[i],rangesKK_high[i]));
-    chain->AddFile(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2KKmumu_%.1f_%.1f_D2KKmumuBDT_magDw.root",rangesKK_low[i],rangesKK_high[i]));
-
-    chain->SetBranchAddress("mu1_PT",&mu1_PT);
-    chain->SetBranchAddress("mu0_PT",&mu0_PT);
-    chain->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
-    chain->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
-    chain->SetBranchAddress("BDT",&BDT);
-    chain->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
-    chain->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
-    chain->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
-    chain->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
-
-    chain->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
-    chain->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
-    chain->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
-    chain->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
-    chain->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
-
-    chain->SetBranchAddress("h0_ProbNNk",&h0_ProbNNX);
-    chain->SetBranchAddress("h1_ProbNNk",&h1_ProbNNX);
-
-    double tempEff1, tempEff0, tempEffProduct;
-    double Eff_i,dEff_i,dTotEff;
-    double dTempEff1, dTempEff0;
-    int norm=0;
-
-    for(int j=0; j<chain->GetEntries();++j){
-
-      chain->GetEntry(j);
-      //get trigger efficiency after PID
-      //ALSO ADDHDRON PID HERE 
+      chainpipi[i]->GetEntry(k);
+      //get trigger efficiency after PID                                                                                                                                                      
+      //ALSO ADDHDRON PID HERE                                                                                                                                                                
       if(mu0_ProbNNmu<0.5) continue;
       if(mu1_ProbNNmu<0.5) continue;
-      //if(BDT<0) continue;
+      //if(BDT<0) continue;                                                                                                                                                                   
       if(mu1_MuonNShared>0)continue;
       if(mu0_MuonNShared>0)continue;
 
-      //hadron PID
+      //hadron PID                                                                                                                                                                            
       if(mu0_ProbNNghost>0.5) continue;
       if(mu1_ProbNNghost>0.5) continue;
       if(h0_ProbNNghost>0.5) continue;
@@ -9868,70 +12611,211 @@ void applyTagAndProbeL0EfficiencyToyStudy(bool useData=true, int nToys=100){
       if(h1_ProbNNX<0.2) continue;
 
       norm+=1;
-      tempEff1=AbsMCEff_Kpimumu->GetBinContent(AbsMCEff_Kpimumu->FindBin(mu1_PT));
-      dTempEff1=AbsMCEff_Kpimumu->GetBinError(AbsMCEff_Kpimumu->FindBin(mu1_PT));
-      tempEff0=AbsMCEff_Kpimumu->GetBinContent(AbsMCEff_Kpimumu->FindBin(mu0_PT));
-      dTempEff0=AbsMCEff_Kpimumu->GetBinError(AbsMCEff_Kpimumu->FindBin(mu0_PT));
-      
-      Eff_i=tempEff1+tempEff0-tempEff1*tempEff0;
-      dEff_i = TMath::Sqrt( (1-tempEff1)*dTempEff0*(1-tempEff1)*dTempEff0 + (1-tempEff0)*dTempEff1*(1-tempEff0)*dTempEff1 );
-      totEff+=Eff_i;
-      dTotEff+=dEff_i*dEff_i;    
+
+      for(int j=0; j<nToys; ++j) {
+	tempEff1[j]= ( fluctuatedEff[j]->GetBinContent(fluctuatedEff[j]->FindBin(mu1_PT)) );
+	tempEff0[j]=( fluctuatedEff[j]->GetBinContent(fluctuatedEff[j]->FindBin(mu0_PT)) );
+	Eff[j]+=( tempEff1[j]+tempEff0[j]-tempEff1[j]*tempEff0[j]);
+      }
+
 
     }
-    std::cout<<i<<"  "<<totEff<<" +- "<<dTotEff<<"  "<< norm <<std::endl;
 
-    totEff/=(double)norm;
-    dTotEff=TMath::Sqrt(dTotEff)/(double)norm;
+    for(int j=0; j<nToys; ++j) {
 
-    L0Trigger_Eff_KKmumu->SetBinContent(i+1,totEff);
-    L0Trigger_Eff_KKmumu->SetBinError(i+1,dTotEff);
+      Eff[j]/=(double)norm;
+      L0Trigger_Eff_pipimumu[j]->SetBinContent(i+1,Eff[j]);
 
-    std::cout<<i<<"  "<<totEff<<" +- "<<dTotEff<<"  "<< norm <<std::endl;
-
-    TString cutHadronPID = "&&mu0_ProbNNghost<0.5&&mu1_ProbNNghost<0.5&&h0_ProbNNghost<0.5&&h1_ProbNNghost<0.5&&h0_ProbNNk>0.2&&h1_ProbNNk>0.2&&Slowpi_ProbNNghost<0.5";
- 
-    std::pair<double,double> trueEff = getMCEfficiencyFrom2Files(TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2KKmumu_%.1f_%.1f_D2KKmumuBDT_magUp.root",rangesKK_low[i],rangesKK_high[i]),TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2KKmumu_%.1f_%.1f_D2KKmumuBDT_magDw.root",rangesKK_low[i],rangesKK_high[i]),"BDT_Tree","(mu0_L0MuonDecision_TOS||mu1_L0MuonDecision_TOS)","mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5&&mu1_MuonNShared==0&&mu0_MuonNShared==0"+cutHadronPID);
-
-    MC_L0Trigger_Eff_KKmumu->SetBinContent(i+1,trueEff.first);
-    MC_L0Trigger_Eff_KKmumu->SetBinError(i+1,trueEff.second);
- 
-    //ratio
-    MC_L0Trigger_RelativeEff_KKmumu->SetBinContent(i+1,trueEff.first/MC_L0Trigger_Eff_Kpimumu->GetBinContent(1));
-    L0Trigger_RelativeEff_KKmumu->SetBinContent(i+1,totEff/L0Trigger_Eff_Kpimumu->GetBinContent(1));
-
-    //error on ratio, assume uncorrelated numerator and denominator
-    double Esig = totEff;
-    double Enorm = L0Trigger_Eff_Kpimumu->GetBinContent(1);
-    double dEsig= dTotEff;
-    double dEnorm= L0Trigger_Eff_Kpimumu->GetBinError(1);
-    
-    double dR = TMath::Sqrt(TMath::Power( (dEsig/Enorm),2) + TMath::Power( (dEnorm*Esig/(Enorm*Enorm) ) ,2));
-    cout<<"KK "<<i<<" "<<Esig<<"  "<<Enorm<<"  "<<Esig/Enorm<<"  "<< dR<<endl;
-    L0Trigger_RelativeEff_KKmumu->SetBinError(i+1,dR);
-
-    double MCEsig = trueEff.first;
-    double MCEnorm = MC_L0Trigger_Eff_Kpimumu->GetBinContent(1);
-    double MCdEsig= trueEff.second;
-    double MCdEnorm= MC_L0Trigger_Eff_Kpimumu->GetBinError(1);
-
-    double MCdR = TMath::Sqrt(TMath::Power( (MCdEsig/MCEnorm),2) + TMath::Power( (MCdEnorm*MCEsig/(MCEnorm*MCEnorm) ) ,2));
-    MC_L0Trigger_RelativeEff_KKmumu->SetBinError(i+1,MCdR);
-    //cout<<"MC "<<i<<" "<<MCEsig<<"  "<<MCEnorm<<"  "<<MCEsig/MCEnorm<<" "<<MCdR<<endl;
-    
-
-    chain->Clear();
+      //ratio 
+      L0Trigger_RelativeEff_pipimumu[j]->SetBinContent(i+1,Eff[j]/L0Trigger_Eff_Kpimumu[j]->GetBinContent(1));
+      L0Trigger_RelEff_pipimumu_pulls[i]->Fill(Eff[j]/L0Trigger_Eff_Kpimumu[j]->GetBinContent(1));
+      //cout<<"pipi "<<j<<"  "<< Eff[j] <<"   "<< L0Trigger_Eff_Kpimumu[j]->GetBinContent(1)<<"   "<< Eff[j]/L0Trigger_Eff_Kpimumu[j]->GetBinContent(1)<<"  "<< (double)norm<<endl;
     }
-
-      for(int i=0; i<rangespipi_low.size();++i){
-    reso_pipi[i]->Write();
+  
   }
+
+
+  for(int i=0; i<rangesKK_low.size();++i){
+  
+    norm=0;
+    std::vector<double> tempEff1;
+    std::vector<double> tempEff0;
+    std::vector<double> tempEffProduct;
+    std::vector<double> Eff;
+
+    for(int j=0; j<nToys; ++j) {
+      tempEff1.push_back(0.);
+      tempEff0.push_back(0.);
+      Eff.push_back(0.);
+    }
+
+    chainKK[i]->SetBranchAddress("mu1_PT",&mu1_PT);
+    chainKK[i]->SetBranchAddress("mu0_PT",&mu0_PT);
+    chainKK[i]->SetBranchAddress("mu1_L0MuonDecision_TOS",&mu1_L0MuonDecision_TOS);
+    chainKK[i]->SetBranchAddress("mu0_L0MuonDecision_TOS",&mu0_L0MuonDecision_TOS);
+    chainKK[i]->SetBranchAddress("BDT",&BDT);
+    chainKK[i]->SetBranchAddress("mu0_ProbNNmu",&mu0_ProbNNmu);
+    chainKK[i]->SetBranchAddress("mu1_ProbNNmu",&mu1_ProbNNmu);
+    chainKK[i]->SetBranchAddress("mu1_MuonNShared",&mu1_MuonNShared);
+    chainKK[i]->SetBranchAddress("mu0_MuonNShared",&mu0_MuonNShared);
+
+    chainKK[i]->SetBranchAddress("Slowpi_ProbNNghost",&Slowpi_ProbNNghost);
+    chainKK[i]->SetBranchAddress("mu0_ProbNNghost",&mu0_ProbNNghost);
+    chainKK[i]->SetBranchAddress("h1_ProbNNghost",&h1_ProbNNghost);
+    chainKK[i]->SetBranchAddress("mu1_ProbNNghost",&mu1_ProbNNghost);
+    chainKK[i]->SetBranchAddress("h0_ProbNNghost",&h0_ProbNNghost);
+
+    chainKK[i]->SetBranchAddress("h0_ProbNNk",&h0_ProbNNX);
+    chainKK[i]->SetBranchAddress("h1_ProbNNk",&h1_ProbNNX);
+
+
+    for(int k=0; k<chainKK[i]->GetEntries();++k){
+      
+      chainKK[i]->GetEntry(k);
+      //get trigger efficiency after PID                                                                                                                                                      
+      //ALSO ADDHDRON PID HERE                                                                                                                                                                
+      if(mu0_ProbNNmu<0.5) continue;
+      if(mu1_ProbNNmu<0.5) continue;
+      //if(BDT<0) continue;                                                                                                                                                                   
+      if(mu1_MuonNShared>0)continue;
+      if(mu0_MuonNShared>0)continue;
+
+      //hadron PID                                                                                                                                                                            
+      if(mu0_ProbNNghost>0.5) continue;
+      if(mu1_ProbNNghost>0.5) continue;
+      if(h0_ProbNNghost>0.5) continue;
+      if(h1_ProbNNghost>0.5) continue;
+      if(Slowpi_ProbNNghost>0.5) continue;
+
+      if(h0_ProbNNX<0.2) continue;
+      if(h1_ProbNNX<0.2) continue;
+
+      norm+=1;
+	  
+      for(int j=0; j<nToys; ++j) {
+	tempEff1[j]=( fluctuatedEff[j]->GetBinContent(fluctuatedEff[j]->FindBin(mu1_PT)) );
+	tempEff0[j]=( fluctuatedEff[j]->GetBinContent(fluctuatedEff[j]->FindBin(mu0_PT)) );
+	Eff[j]+=( tempEff1[j]+tempEff0[j]-tempEff1[j]*tempEff0[j]);
+      }
+      
+      
+    }
+
+    for(int j=0; j<nToys; ++j) {
+
+      Eff[j]/=(double)norm;
+      L0Trigger_Eff_KKmumu[j]->SetBinContent(i+1,Eff[j]);
+
+      //ratio 
+      L0Trigger_RelativeEff_KKmumu[j]->SetBinContent(i+1,Eff[j]/L0Trigger_Eff_Kpimumu[j]->GetBinContent(1));
+      L0Trigger_RelEff_KKmumu_pulls[i]->Fill(Eff[j]/L0Trigger_Eff_Kpimumu[j]->GetBinContent(1));
+      //cout<<"KK "<<j<<"  "<< Eff[j] <<"   "<< L0Trigger_Eff_Kpimumu[j]->GetBinContent(1)<<"   "<< Eff[j]/L0Trigger_Eff_Kpimumu[j]->GetBinContent(1)<<endl;
+
+    }
+    
+  }
+  
+
+    //fluctuatedEff[0]->Write();
+    //L0Trigger_Eff_KKmumu[0]->Write();
+    //L0Trigger_Eff_pipimumu[0]->Write();
+    //L0Trigger_Eff_Kpimumu[0]->Write();
+    //L0Trigger_RelativeEff_KKmumu[0]->Write();
+    //L0Trigger_RelativeEff_pipimumu[0]->Write();
+
+  
+  for(int i=0; i<rangesKK_low.size();++i){
+    //L0Trigger_RelEff_KKmumu_pulls[i]->Write();
+    //Histo index 0 used the default (non fluctuated) calibration histo
+    L0Trigger_RelativeEff_KKmumu_tot->SetBinContent(i+1,L0Trigger_RelativeEff_KKmumu[0]->GetBinContent(i+1));
+    L0Trigger_RelativeEff_KKmumu_tot->SetBinError(i+1,L0Trigger_RelEff_KKmumu_pulls[i]->GetRMS());
+    L0Trigger_RelativeEff_KKmumu_tot->Write();
+  }
+
+
+  for(int i=0; i<rangespipi_low.size();++i){
+    //L0Trigger_RelEff_pipimumu_pulls[i]->Write();
+    //Histo index 0 used the default (non fluctuated) calibration histo
+    L0Trigger_RelativeEff_pipimumu_tot->SetBinContent(i+1,L0Trigger_RelativeEff_pipimumu[0]->GetBinContent(i+1));
+    L0Trigger_RelativeEff_pipimumu_tot->SetBinError(i+1,L0Trigger_RelEff_pipimumu_pulls[i]->GetRMS());
+    L0Trigger_RelativeEff_pipimumu_tot->Write();
+  }
+
+  
+
+  /*
+  TCanvas* a = new TCanvas("a","a");
+  a->Divide(4,3);
+  a->cd(1);
+  MC_L0Trigger_Eff_KKmumu->SetLineColor(kCyan);
+  MC_L0Trigger_Eff_KKmumu->GetYaxis()->SetRangeUser(0,1);
+  MC_L0Trigger_Eff_KKmumu->GetYaxis()->SetTitle("#epsilon_{L0}(D->KK#mu#mu)");
+  MC_L0Trigger_Eff_KKmumu->GetXaxis()->SetTitle("m(#mu#mu)[MeV]");
+  MC_L0Trigger_Eff_KKmumu->Draw();
+  L0Trigger_Eff_KKmumu->Draw("SAME");
+  a->cd(2);
+  TH1* ratio1 = (TH1D*)MC_L0Trigger_Eff_KKmumu->Clone("DiffAbsEffKK");
+  ratio1->Add(L0Trigger_Eff_KKmumu,-1); 
+  ratio1->Draw();
+  a->cd(3);
+  MC_L0Trigger_RelativeEff_KKmumu->SetLineColor(kCyan);
+  MC_L0Trigger_RelativeEff_KKmumu->GetYaxis()->SetTitle("#epsilon_{L0}(D->KK#mu#mu)/#epsilon_{L0}(D->KK#mu#mu)");
+  MC_L0Trigger_RelativeEff_KKmumu->GetXaxis()->SetTitle("m(#mu#mu)[MeV]");
+  MC_L0Trigger_RelativeEff_KKmumu->GetYaxis()->SetRangeUser(0.7,.9);
+  MC_L0Trigger_RelativeEff_KKmumu->Draw();
+  L0Trigger_RelativeEff_KKmumu->Draw("SAME");
+ 
+  a->cd(4);
+  TH1* clone1 = (TH1D*)L0Trigger_RelativeEff_KKmumu->Clone("DiffRelativeEffKK");
+  clone1->Add(MC_L0Trigger_RelativeEff_KKmumu,-1);
+  clone1->Draw();
+ 
+  a->cd(5);
+  MC_L0Trigger_Eff_pipimumu->SetLineColor(kCyan);
+  MC_L0Trigger_Eff_pipimumu->GetYaxis()->SetRangeUser(0,1);
+  MC_L0Trigger_Eff_pipimumu->GetXaxis()->SetTitle("m(#mu#mu)[MeV]");
+  MC_L0Trigger_Eff_pipimumu->GetYaxis()->SetTitle("#epsilon_{L0}(D->#pi#pi#mu#mu)");
+  MC_L0Trigger_Eff_pipimumu->Draw();
+  L0Trigger_Eff_pipimumu->Draw("SAME");
+  a->cd(6);
+  TH1* ratio2 = (TH1D*)MC_L0Trigger_Eff_pipimumu->Clone("DiffAbsEffpipi");
+  ratio2->Add(L0Trigger_Eff_pipimumu,-1); 
+  ratio2->Draw();
+
+  a->cd(7);
+  MC_L0Trigger_RelativeEff_pipimumu->SetLineColor(kCyan);
+  MC_L0Trigger_RelativeEff_pipimumu->GetYaxis()->SetTitle("#epsilon_{L0}(D->#pi#pi#mu#mu)/#epsilon_{L0}(D->KK#mu#mu)");
+  MC_L0Trigger_RelativeEff_pipimumu->GetXaxis()->SetTitle("m(#mu#mu)[MeV]");
+  MC_L0Trigger_RelativeEff_pipimumu->GetYaxis()->SetRangeUser(0.8,1.4);
+  MC_L0Trigger_RelativeEff_pipimumu->Draw();
+  L0Trigger_RelativeEff_pipimumu->Draw("SAME");
+
+  a->cd(8);
+  TH1* clone2 = (TH1D*)L0Trigger_RelativeEff_pipimumu->Clone("DiffRelativeEffpipi");
+  clone2->Add(MC_L0Trigger_RelativeEff_pipimumu,-1);
+  clone2->Draw();
+
+  a->cd(9);
+  MC_L0Trigger_Eff_Kpimumu->SetLineColor(kCyan);
+  MC_L0Trigger_Eff_Kpimumu->GetYaxis()->SetTitle("#epsilon_{L0}(D->K#pi#mu#mu)");
+  MC_L0Trigger_Eff_Kpimumu->GetXaxis()->SetTitle("m(#mu#mu)[MeV]");
+  MC_L0Trigger_Eff_Kpimumu->GetYaxis()->SetRangeUser(0.,1.);
+  MC_L0Trigger_Eff_Kpimumu->Draw();
+  L0Trigger_Eff_Kpimumu->Draw("SAME");
+  a->cd(10);
+  TH1* ratio3 = (TH1D*)MC_L0Trigger_Eff_Kpimumu->Clone("DiffAbsEffKpi");
+  ratio3->Add(L0Trigger_Eff_Kpimumu,-1); 
+  ratio3->Draw();
+
+  //a->Print(TString::Format("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/.eps",cat));
+  a->Print(target+".eps");
+  */
 
   fOut->Write();
 
 }
 
-*/
+
 
 void createDataTuplesForEffStudies(){
   
@@ -10072,7 +12956,7 @@ void MC_HltTrigger_efficiency(double ghostProbCut,double hadronPID,double muonPI
   cout<<"CUTS pipi: "<<selectionCut_Trigger_pipi<<"  "<<normalizationCut_pipi<<endl;
 
   for(int i=0; i<rangesKpi_low.size();++i){
-    
+
     //mag up KKmumu trained
     TString f1=TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2Kpimumu_%.1f_%.1f_D2KKmumuBDT_magUp.root",rangesKpi_low[i],rangesKpi_high[i]);
     TString f2=TString::Format("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MCEfficiencyStudies/MC_D2Kpimumu_%.1f_%.1f_D2KKmumuBDT_magUp.root",rangesKpi_low[i],rangesKpi_high[i]);
@@ -10312,22 +13196,23 @@ void MC_HltTrigger_efficiency(double ghostProbCut,double hadronPID,double muonPI
 void drawTotalEfficiency(){
 
   TFile* fGenLevel = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/GenLevelCutEfficiency/generatorLevelCutEfficiency.root","OPEN");
-  TFile* fStripping= new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/strippingEfficiency/RecoAndStrippingEfficiency_fitted_(Dst_BKGCAT<11||Dst_BKGCAT==60).root","OPEN");
+  TFile* fStripping= new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/strippingEfficiency/RecoAndStrippingEfficiency_fitted_(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50).root","OPEN");
   //TFile* fPID = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/totalPIDEfficiency_default.root","OPEN");
   TFile *fMuonPID = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/finalMuonPIDEfficiency_default.root","READ");
   TFile *fHadronPID = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/finalHadronPIDEfficiency_default.root","READ");
-  TFile* fTrigger = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/L0TriggerEfficiencies.root","OPEN");
+  TFile* fTrigger = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/L0TriggerEfficienciesWithToys.root","OPEN");
   //TFile* fHLT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/HltMCEfficiencies/MCHltTrigger_Efficiencies_Hlt1_and_Hlt2.root","OPEN");
   //TFile* fBDT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MCBDTEfficiencies_afterPID_andTrigger.root","OPEN");
-  TFile* fHLT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MCBDT_and_Hlt_EfficienciesnoGhosts.root","OPEN");
-  TFile* fBDT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MCBDT_and_Hlt_EfficienciesnoGhosts.root","OPEN");
+  TFile* fHLT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MCBDT_And_Hlt_Efficiencies_afterPIDwithGhosts.root","OPEN");
+  TFile* fBDT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MCBDT_And_Hlt_Efficiencies_afterPIDwithGhosts.root","OPEN");
 
 
   double sysL0 = 0.013;
-  double sysBDT = 0.014;
+  double sysBDT = 0.013;
   double sysMonPID=0.006 ;
   double sysHadPID =0.005 ;
-  double sysReco = 0.009;
+  double sysReco = 0.01;
+  double sysRecoModel = 0.034;
     
   TString bins[5]={"<525","525-565","565-950","950-1100",">1100"};
   
@@ -10468,13 +13353,15 @@ void drawTotalEfficiency(){
     dTotalEff += TMath::Power(sysHadPID/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(sysBDT/relEffBDTKKmumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(sysReco/strippingRelativeEff_KK->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysRecoModel,2);
 
     dTotalEff_sys += TMath::Power(sysL0/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1),2);
     dTotalEff_sys += TMath::Power(sysMonPID/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
     dTotalEff_sys += TMath::Power(sysHadPID/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
     dTotalEff_sys += TMath::Power(sysBDT/relEffBDTKKmumu->GetBinContent(i+1),2);
     dTotalEff_sys += TMath::Power(sysReco/strippingRelativeEff_KK->GetBinContent(i+1),2);
-    
+    dTotalEff_sys += TMath::Power(sysRecoModel,2);
+
     myfile<<" & "<<TMath::Sqrt(dTotalEff_sys)*100;
     myfile<<" & "<<TMath::Sqrt(dTotalEff)*100<<endl;
   
@@ -10549,12 +13436,16 @@ void drawTotalEfficiency(){
     dTotalEff += TMath::Power(sysHadPID/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(sysBDT/relEffBDTpipimumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(sysReco/strippingRelativeEff_pipi->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysRecoModel,2);
 
     dTotalEff_sys += TMath::Power(sysL0/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1),2);
     dTotalEff_sys += TMath::Power(sysMonPID/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
     dTotalEff_sys += TMath::Power(sysHadPID/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
     dTotalEff_sys += TMath::Power(sysBDT/relEffBDTpipimumu->GetBinContent(i+1),2);
     dTotalEff_sys += TMath::Power(sysReco/strippingRelativeEff_pipi->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysRecoModel,2);
+    
+    //cout<<"FFFUUUUUUCKKK "<<sysRecoModel<<"       "<<dTotalEff_sys<<"           "<< TMath::Sqrt(dTotalEff_sys)*100<<endl;
 
     myfile<<" & "<<TMath::Sqrt(dTotalEff_sys)*100;
     myfile<<" & "<<TMath::Sqrt(dTotalEff)*100<<endl;

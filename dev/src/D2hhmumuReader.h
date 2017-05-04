@@ -24,9 +24,13 @@ public :
    virtual void     activateRelevantBranches();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+   //create data supsample splitted by event number
    virtual void     createSubsample(TString name, double percentage); 
+   //create MC subsample after preselection for BDT training
    virtual void     createMCtrainingSample(TString name);
+   //relax cuts for efficiency studies
    virtual void     createMCEfficiencyStudySample(TString name, double q2Low, double q2High);
+   //no truthmatching cuts
    virtual void     createMCEfficiencyStudySampleNoTruthmatching(TString name, double q2Low, double q2High); 
    virtual void     createValidationSubsample(TString name); //used for sim09 validation purposes
    virtual void     createSubsampleNoTriggerCuts(TString name); 
@@ -42,7 +46,6 @@ public :
    virtual double   m_pipipipi();
    virtual double   m_Kpipipi();
    virtual double   m_KKpipi();
-
 
    double DTFdm();
    double dm();

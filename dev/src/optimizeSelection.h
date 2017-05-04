@@ -26,6 +26,8 @@ void optimizeSelection(TString cutNtracks);
 void optimizeSelection2D(TString cutNtracks);
 void optimizeSelectionInBins(TString cutNtracks,TString q2Range);
 void optimizeSelectionInBins_pipimumu(TString cutNtracks,TString q2Range);
+// the new Cut optimization doesnt estimate the misID yields from the norm mode, but takes it directly from the blind fit
+// this one is the one to be used in the end
 void newCutOptimization(TString kind, TString polarity, TString q2Range);
 
 
@@ -36,6 +38,9 @@ void Draw_MC_L0Muon_Efficiencies(TString channel, TString variable, int nBins,in
 void Draw_MC_L0Muon_Efficiencies_forVariable(TString normSelection,int nBins,TString SelCut); 
 void Draw_MC_TriggerEfficiencies( TString variable, int nBins, int xLow, int xHigh, TString SelCut) ;
 void Draw_MC_L0Muon_Efficiencies_2D();
+void studypipiMCEfficiency(double BDTCut, double PIDCut, TString fOut);
+void define_binning(TString kind);
+double getDFOMwithToys(double signalEff, double dSignalEff, double nBkg,double dNBkg);
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 //this functions merge all data, add relevant branches for analysis and perform a preselection
@@ -62,6 +67,4 @@ void draw_BDT_crosschecks();
 void check_peakingBackground(TString kind,bool PIDCut);
 void createGeneratorLevelMCTuple(TString kind);
 void studyKKMCEfficiency(double BDTCut, double PIDCut, TString fOut);
-void studypipiMCEfficiency(double BDTCut, double PIDCut, TString fOut);
-void define_binning(TString kind);
 
