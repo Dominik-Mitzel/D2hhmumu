@@ -2117,6 +2117,8 @@ void newCutOptimization(TString kind, TString polarity="", TString q2Range="") {
   
   TFile *fout = new TFile("/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/newFeb17/"+kind+"_PID_BDT_cut_scan_1D_"+q2Range+polarity+".root","recreate");
   TString path="/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/newFeb17/";
+  //try 3/2 instead of 5/2 following RC question
+  //TString path="/work/mitzel/D2hhmumu/dev/img/newSelectionOptimisation/alternativeSignificance/";
 
   /*
   TH2* h2_misIDBkg = new TH2D("h2_misIDBkg","h2_misIDBkg",15,-0.5,1,10,0,1);
@@ -2212,6 +2214,9 @@ void newCutOptimization(TString kind, TString polarity="", TString q2Range="") {
       //h2_combBkg->SetBinContent(i+1,j+1,combBkg);
 
       h2_sigEff->SetBinContent(i+1,j+1,signalEff);     
+
+      //Change now 5/2 to 3/2 !!!!!!!!!!!!!!!!!
+      //!!!!!!!!!!!!!!!
 
       double FOM=signalEff/( 2.5 + TMath::Sqrt( nBkg ) );
       double dFOM = TMath::Sqrt( TMath::Power(dSignalEff/( 2.5 + TMath::Sqrt( nBkg )),2) +  TMath::Power(signalEff*dNBkg/( (2.5 + TMath::Sqrt(nBkg))*(2.5 + TMath::Sqrt(nBkg))*2*TMath::Sqrt(nBkg)),2) ); 

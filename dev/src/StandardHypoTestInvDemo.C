@@ -90,8 +90,8 @@ int randomSeed = -1;                     // random seed (if = -1: use default va
 
 int nAsimovBins = 0;                     // number of bins in observables used for Asimov data sets (0 is the default and it is given by workspace, typically is 100)
 
-bool reuseAltToys = true;//false;                // reuse same toys for alternate hypothesis (if set one gets more stable bands)
-double confidenceLevel = 0.90;            // confidence level value
+bool reuseAltToys = false;                // reuse same toys for alternate hypothesis (if set one gets more stable bands)
+double confidenceLevel = 0.95;            // confidence level value
 
 
 
@@ -508,7 +508,7 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
     
       
       std::ofstream myFile;
-      myFile.open("../limits/tests/LogFiles/"+target+TString::Format("_CL_%.2f",confidenceLevel)+".txt");
+      myFile.open("../limits/LogFiles/"+target+TString::Format("_CL_%.2f",confidenceLevel)+".txt");
       //myFile.open("test.txt");
       myFile <<"Expected upper limits, using the B (alternate) model : "<<std::endl;
       myFile << " expected limit (median) " << r->GetExpectedUpperLimit(0) << std::endl;
@@ -516,13 +516,14 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
       myFile << " expected limit (+1 sig) " << r->GetExpectedUpperLimit(1) << std::endl;
       myFile << " expected limit (-2 sig) " << r->GetExpectedUpperLimit(-2) << std::endl;
       myFile << " expected limit (+2 sig) " << r->GetExpectedUpperLimit(2) << std::endl;
+      myFile << " observed limit " << r->UpperLimit() << " +/- " << ulError << std::endl;
    
       myFile.close();
 
       mResultFileName+=".root";
 
       //set to HD PATH 
-      TFile * fileOut = new TFile("/work/mitzel/D2hhmumu/dev/limits/tests/"+mResultFileName,"RECREATE");
+      TFile * fileOut = new TFile("/work/mitzel/D2hhmumu/dev/limits/"+mResultFileName,"RECREATE");
       r->Write();
       if (ulDist) ulDist->Write();
       Info("StandardHypoTestInvDemo","HypoTestInverterResult has been written in the file %s",mResultFileName.Data());
@@ -553,7 +554,8 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
    c1->SetLogy(false);
 
    
-   plot->Draw("EXP");
+   //plot->Draw("EXP");
+   plot->Draw("");
    
    //plot->Draw("CLb 2CL");  // plot all and Clb
    //if (useCLs)
@@ -563,8 +565,8 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
    //c1->Print("plot_"+mResultFileName+".eps");
 
    
-   c1->SaveAs("/work/mitzel/D2hhmumu/dev/limits/tests/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+".C");
-   c1->Print("/work/mitzel/D2hhmumu/dev/limits/tests/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+".eps"); 
+   c1->SaveAs("/work/mitzel/D2hhmumu/dev/limits/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+".C");
+   c1->Print("/work/mitzel/D2hhmumu/dev/limits/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+".eps"); 
 
    TCanvas * c2 = new TCanvas("c2","c2");
    c2->SetRightMargin(0.15);
@@ -574,12 +576,20 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
    ((TGraph*)gr->GetListOfGraphs()->At(1))->SetFillColor(kRed+2);
    //((TGraph*)gr->GetListOfGraphs()->At(0))->SetFillColor(46);
    //((TGraph*)gr->GetListOfGraphs()->At(1))->SetFillColor(45);
+   TGraphErrors  * gr2 = plot->MakePlot();
 
    gr->Draw("APL");
    //gr->GetXaxis()->SetTitle(xlabel);
    gr->GetYaxis()->SetTitle("CLs");
 
+   gr->GetYaxis()->SetRangeUser(0,1);
+   gr->GetYaxis()->SetTitle("CLs");
+
+   gr->GetXaxis()->SetTitle("BF_{sig}");
+
    gr->Draw("APL");
+   gr2->Draw("SAME");
+
    double min = gr->GetXaxis()->GetXmin();
    double max = gr->GetXaxis()->GetXmax();
    //TLine *line = new TLine(, 0.1, r->GetExpectedUpperLimit(0), 0.1);
@@ -588,8 +598,9 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
    line->SetLineWidth(2);
    line->Draw("SAME");
 
-   c2->Print("/work/mitzel/D2hhmumu/dev/limits/tests/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+"_redColors.pdf");
-   c2->Print("/work/mitzel/D2hhmumu/dev/limits/tests/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+"_redColors.C");
+   c2->Print("/work/mitzel/D2hhmumu/dev/limits/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+"_redColors.eps");
+   c2->Print("/work/mitzel/D2hhmumu/dev/limits/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+"_redColors.C");
+   c2->Print("/work/mitzel/D2hhmumu/dev/limits/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+"_redColors.root");
 
 
 
@@ -598,20 +609,21 @@ RooStats::HypoTestInvTool::AnalyzeResult( HypoTestInverterResult * r,
 
    // plot test statistics distributions for the two hypothesis
    if (mPlotHypoTestResult) {
-      TCanvas * c2 = new TCanvas();
+      TCanvas * c3 = new TCanvas();
       if (nEntries > 1) {
          int ny = TMath::CeilNint(TMath::Sqrt(nEntries));
          int nx = TMath::CeilNint(double(nEntries)/ny);
-         c2->Divide( nx,ny);
+         c3->Divide( nx,ny);
       }
       for (int i=0; i<nEntries; i++) {
-         if (nEntries > 1) c2->cd(i+1);
+         if (nEntries > 1) c3->cd(i+1);
          SamplingDistPlot * pl = plot->MakeTestStatPlot(i);
-         pl->SetLogYaxis(true);
+         //pl->SetLogYaxis(true);
          pl->Draw();
       }
+      c3->Print("/work/mitzel/D2hhmumu/dev/limits/plot_"+mResultFileName+TString::Format("_CL_%.2f",confidenceLevel)+"controlplots.eps");
+
    }
-   c2->Print("controlplots.eps");
 
 }
 

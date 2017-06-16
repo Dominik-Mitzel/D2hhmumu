@@ -122,6 +122,7 @@ void MC_Combined_efficiency_onlyPhaseSpaceModel(double ghostProbCut,double hadro
 void compareDifferentModelsForRecoEfficiency();
 
 void drawTotalEfficiency();
+void drawTotalEfficiencyForCorrelationStudies();
 
 //Old version where the efficienc was tried to be computed with TISTOS methon. No satisfying results
 void MC_L0Trigger_efficiency(double ghostProbCut,double hadronPID,double muonPID, double BDT, bool applyPID,bool applyTrigger, TString cut_Trigger_TIS);

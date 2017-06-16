@@ -2363,7 +2363,7 @@ void chose_FullKinematic_multiple_Data_events(
 
   ///___________________________________________________________________________________                                                                                                                                                                                                                                                                                                                                                                                                           
   TString inputfile_data;
-  TChain* chain = new TChain("BDT_Tree");
+ TChain* chain = new TChain("BDT_Tree");
 
   chain->AddFile(input);
 
@@ -4268,6 +4268,18 @@ void drawBothPolaritiesPIDCalibHadronEfficiency(TString binningScheme="default")
   TH1* relEff_pipimumu_dw=(TH1D*)fDw->Get("relEff_pipimumu");
   TH1* relMCEff_pipimumu_dw=(TH1D*)fDw->Get("relMCEff_pipimumu");
   TH1* MC_PIDCalib_EffRatio_pipimumu_dw=(TH1D*)fDw->Get("MC_PIDCalib_EffRatio_pipimumu");
+
+  TH1* AbsEff_KKmumu_dw =(TH1D*)fDw->Get("AbsEff_KKmumu"); 
+  TH1* AbsEff_pipimumu_dw =(TH1D*)fDw->Get("AbsEff_pipimumu"); 
+  TH1* AbsEff_Kpimumu_dw =(TH1D*)fDw->Get("AbsEff_Kpimumu"); 
+
+  TH1* AbsEff_KKmumu_up =(TH1D*)fUp->Get("AbsEff_KKmumu"); 
+  TH1* AbsEff_pipimumu_up =(TH1D*)fUp->Get("AbsEff_pipimumu"); 
+  TH1* AbsEff_Kpimumu_up =(TH1D*)fUp->Get("AbsEff_Kpimumu"); 
+
+  TH1* AbsEff_KKmumu_average = new TH1D("AbsEff_KKmumu_average","AbsEff_KKmumu in bins of dimuon mass averaged both polarities",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1* AbsEff_pipimumu_average = new TH1D("AbsEff_pipimumu_average","AbsEff_pipimumu in bins of dimuon mass averaged both polarities",sizeof(binspipi)/sizeof(double)-1,binspipi);
+  TH1* AbsEff_Kpimumu_average = new TH1D("AbsEff_Kpimumu_average","AbsEff_Kpimumu in bins of dimuon mass averaged both polarities",sizeof(binsKpi)/sizeof(double)-1,binsKpi);
   
   TH1* relEff_KKmumu_average = new TH1D("relEff_KKmumu_average","relEff_KKmumu in bins of dimuon mass averaged both polarities",sizeof(binsKK)/sizeof(double)-1,binsKK);
   TH1* relEff_pipimumu_average = new TH1D("relEff_pipimumu_average","relEff_pipimumu in bins of dimuon mass averaged both polarities",sizeof(binspipi)/sizeof(double)-1,binspipi);
@@ -4367,6 +4379,50 @@ void drawBothPolaritiesPIDCalibHadronEfficiency(TString binningScheme="default")
     dAverage=0;
 
   }    
+  ///!!!
+  //average over polarities
+  for(int i=0; i<rangesKK_low.size();++i){
+    average+=AbsEff_KKmumu_up->GetBinContent(i+1);
+    dAverage=+AbsEff_KKmumu_up->GetBinError(i+1)*AbsEff_KKmumu_up->GetBinError(i+1)/2;
+    average+=AbsEff_KKmumu_dw->GetBinContent(i+1);
+    dAverage=+AbsEff_KKmumu_dw->GetBinError(i+1)*AbsEff_KKmumu_dw->GetBinError(i+1)/2;
+    average/=2;                                                                                                                                                               
+    dAverage = TMath::Sqrt(dAverage);
+    AbsEff_KKmumu_average->SetBinContent(i+1,average);
+    AbsEff_KKmumu_average->SetBinError(i+1,dAverage);
+    average=0;
+    dAverage=0;
+  }    
+
+  for(int i=0; i<rangespipi_low.size();++i){
+    average+=AbsEff_pipimumu_up->GetBinContent(i+1);
+    dAverage=+AbsEff_pipimumu_up->GetBinError(i+1)*AbsEff_pipimumu_up->GetBinError(i+1)/2;
+    average+=AbsEff_pipimumu_dw->GetBinContent(i+1);
+    dAverage=+AbsEff_pipimumu_dw->GetBinError(i+1)*AbsEff_pipimumu_dw->GetBinError(i+1)/2;
+    average/=2;                                                                                                                                                               
+    dAverage = TMath::Sqrt(dAverage);
+    AbsEff_pipimumu_average->SetBinContent(i+1,average);
+    AbsEff_pipimumu_average->SetBinError(i+1,dAverage);
+    average=0;
+    dAverage=0;
+
+  }    
+
+  
+  for(int i=0; i<rangesKpi_low.size();++i){
+    average+=AbsEff_Kpimumu_up->GetBinContent(i+1);
+    dAverage=+AbsEff_Kpimumu_up->GetBinError(i+1)*AbsEff_Kpimumu_up->GetBinError(i+1)/2;
+    average+=AbsEff_Kpimumu_dw->GetBinContent(i+1);
+    dAverage=+AbsEff_Kpimumu_dw->GetBinError(i+1)*AbsEff_Kpimumu_dw->GetBinError(i+1)/2;
+    average/=2;                                                                                                                                                               
+    dAverage = TMath::Sqrt(dAverage);
+    AbsEff_Kpimumu_average->SetBinContent(i+1,average);
+    AbsEff_Kpimumu_average->SetBinError(i+1,dAverage);
+    average=0;
+    dAverage=0;
+
+  }    
+
 
   TCanvas *c = new TCanvas("c","c");
   c->Divide(1,2);
@@ -4388,6 +4444,10 @@ void drawBothPolaritiesPIDCalibHadronEfficiency(TString binningScheme="default")
   relMCEff_pipimumu_average->Write(); 
   if(binningScheme=="default")
     c->Print("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/finalHadronEfficiency.eps");
+  
+  AbsEff_KKmumu_average->Write();
+  AbsEff_pipimumu_average->Write();
+  AbsEff_Kpimumu_average->Write();
 
   fout->Write();
   fout->Close();
@@ -13331,7 +13391,7 @@ void drawTotalEfficiency(){
     //totalEff *= relEffBDTKKmumu->GetBinContent(i+1);
     //totalEff *= relEffTriggerKKmumu->GetBinContent(i+1);
     totalEff *= relEffHltAndBDTKKmumu->GetBinContent(i+1);
-    myfile<<bins[i]<<std::setprecision(3)<<" &  "<<totalEff;
+    myfile<<bins[i]<<std::setprecision(6)<<" &  "<<totalEff;
 
     dTotalEff = TMath::Power(totalRelMuonPIDEff_KKmumu->GetBinError(i+1)/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(totalRelHadronPIDEff_KKmumu->GetBinError(i+1)/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
@@ -13414,7 +13474,7 @@ void drawTotalEfficiency(){
     //totalEff *= relEffBDTpipimumu->GetBinContent(i+1);
     //totalEff *= relEffTriggerpipimumu->GetBinContent(i+1);
     totalEff *= relEffHltAndBDTpipimumu->GetBinContent(i+1);
-    myfile<<bins[i]<<std::setprecision(3)<<" &  "<<totalEff;
+    myfile<<bins[i]<<std::setprecision(6)<<" &  "<<totalEff;
 
     dTotalEff = TMath::Power(totalRelMuonPIDEff_pipimumu->GetBinError(i+1)/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
     dTotalEff += TMath::Power(totalRelHadronPIDEff_pipimumu->GetBinError(i+1)/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
@@ -13496,6 +13556,376 @@ void drawTotalEfficiency(){
   a->Print("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/totalEfficiency/total.eps");
 
   TFile* fOut_final  = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/totalEfficiency/totalRelativeEfficiency.root","RECREATE");
+  fOut_final->cd();
+  totalRelEff_KKmumu->Write();
+  totalRelEff_pipimumu->Write();
+
+  totalRelEff_pipimumu_onlyStatError->Write();
+  totalRelEff_KKmumu_onlyStatError->Write();
+
+  fOut_final->Write();
+  fOut_final->Close();
+ 
+  
+
+}
+
+
+void drawTotalEfficiencyForCorrelationStudies(){
+
+  TFile* fGenLevel = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/GenLevelCutEfficiency/generatorLevelCutEfficiency.root","OPEN");
+  TFile* fStripping= new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/strippingEfficiency/RecoAndStrippingEfficiency_fitted_(Dst_BKGCAT<11||Dst_BKGCAT==60||Dst_BKGCAT==50).root","OPEN");
+  //TFile* fPID = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/totalPIDEfficiency_default.root","OPEN");
+  TFile *fMuonPID = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/finalMuonPIDEfficiency_default.root","READ");
+  TFile *fHadronPID = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/PIDEfficiency/finalHadronPIDEfficiency_default.root","READ");
+  TFile* fTrigger = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/TriggerEffTagAndProbe/L0TriggerEfficienciesWithToys.root","OPEN");
+  //TFile* fHLT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/HltMCEfficiencies/MCHltTrigger_Efficiencies_Hlt1_and_Hlt2.root","OPEN");
+  //TFile* fBDT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MCBDTEfficiencies_afterPID_andTrigger.root","OPEN");
+  TFile* fHLT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MCBDT_And_Hlt_Efficiencies_afterPIDwithGhosts.root","OPEN");
+  TFile* fBDT = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/BDTEfficiency/MCBDT_And_Hlt_Efficiencies_afterPIDwithGhosts.root","OPEN");
+
+
+  double sysL0 = 0.013;
+  double sysBDT = 0.013;
+  double sysMonPID=0.006 ;
+  double sysHadPID =0.005 ;
+  double sysReco = 0.01;
+  double sysRecoModel = 0.034;
+    
+  TString bins[5]={"<525","525-565","565-950","950-1100",">1100"};
+  
+
+  dcastyle();
+  
+  //TH1* totalRelPIDEff_KKmumu= (TH1D*)fPID->Get("totalRelPIDEff_KKmumu");
+  //TH1* totalRelPIDEff_pipimumu= (TH1D*)fPID->Get("totalRelPIDEff_pipimumu");
+
+  TH1* totalRelMuonPIDEff_KKmumu= (TH1D*)fMuonPID->Get("relEff_KKmumu");
+  TH1* totalRelMuonPIDEff_pipimumu= (TH1D*)fMuonPID->Get("relEff_pipimumu");
+
+  TH1* totalRelHadronPIDEff_KKmumu= (TH1D*)fHadronPID->Get("relEff_KKmumu_average");
+  TH1* totalRelHadronPIDEff_pipimumu= (TH1D*)fHadronPID->Get("relEff_pipimumu_average");
+
+  TH1* genLevelRelativeEff_KK= (TH1D*)fGenLevel->Get("genLevelRelativeEff_KK");
+  TH1* genLevelRelativeEff_pipi= (TH1D*)fGenLevel->Get("genLevelRelativeEff_pipi");
+
+  TH1* strippingRelativeEff_KK= (TH1D*)fStripping->Get("strippingRelativeEff_KK");
+  TH1* strippingRelativeEff_pipi= (TH1D*)fStripping->Get("strippingRelativeEff_pipi");
+
+  TH1* L0Trigger_RelativeEff_KKmumu = (TH1D*)fTrigger->Get("L0Trigger_RelativeEff_KKmumu");
+  TH1* L0Trigger_RelativeEff_pipimumu = (TH1D*)fTrigger->Get("L0Trigger_RelativeEff_pipimumu");
+  
+  TH1* relEffBDTKKmumu =(TH1D*)fBDT->Get("relEffBDTDKKmumu");
+  TH1* relEffBDTpipimumu =(TH1D*)fBDT->Get("relEffBDTDpipimumu");
+ 
+  TH1* relEffTriggerKKmumu=(TH1D*)fHLT->Get("relEffHltDKKmumu");
+  TH1* relEffTriggerpipimumu=(TH1D*)fHLT->Get("relEffHltDpipimumu");
+  
+  TH1* relEffHltAndBDTKKmumu=(TH1D*)fHLT->Get("relEffCombinedHltBDTDKKmumu");
+  TH1* relEffHltAndBDTpipimumu=(TH1D*)fHLT->Get("relEffCombinedHltBDTDpipimumu");
+ 
+  TH1* totalRelEff_KKmumu = new TH1D("totalRelEff_KKmumu","rel PID Eff KKmumu in bins of dimuon mass",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1* totalRelEff_pipimumu = new TH1D("totalRelEff_pipimumu","rel PID Eff pipimumu in bins of dimuon mass",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+  TH1* totalRelEff_KKmumu_onlyStatError = new TH1D("totalRelEff_KKmumu_onlyStatError","rel PID Eff KKmumu in bins of dimuon mass",sizeof(binsKK)/sizeof(double)-1,binsKK);
+  TH1* totalRelEff_pipimumu_onlyStatError = new TH1D("totalRelEff_pipimumu_onlyStatError","rel PID Eff pipimumu in bins of dimuon mass",sizeof(binspipi)/sizeof(double)-1,binspipi);
+
+
+  //absolute effs
+
+  TH1* totalAbsMuonPIDEff_KKmumu= (TH1D*)fMuonPID->Get("absEff_KKmumu");                                                                                                     
+  TH1* totalAbsMuonPIDEff_pipimumu= (TH1D*)fMuonPID->Get("absEff_pipimumu");                                                                                                 
+  TH1* totalAbsMuonPIDEff_Kpimumu= (TH1D*)fMuonPID->Get("absEff_Kpimumu");                                                                                                   
+                                                                                                                                                                             
+  TH1* totalAbsHadronPIDEff_KKmumu= (TH1D*)fHadronPID->Get("AbsEff_KKmumu_average");                                                                                         
+  TH1* totalAbsHadronPIDEff_pipimumu= (TH1D*)fHadronPID->Get("AbsEff_pipimumu_average");                                                                                     
+  TH1* totalAbsHadronPIDEff_Kpimumu= (TH1D*)fHadronPID->Get("AbsEff_Kpimumu_average");                                                                                       
+                                                                                                                                                                             
+  TH1* genLevelAbsoluteEff_KK= (TH1D*)fGenLevel->Get("genLevelEff_KK");                                                                                                      
+  TH1* genLevelAbsoluteEff_pipi= (TH1D*)fGenLevel->Get("genLevelEff_pipi");                                                                                                  
+  TH1* genLevelAbsoluteEff_Kpi= (TH1D*)fGenLevel->Get("genLevelEff_Kpi");                                                                                                    
+                                                                                                                                                                             
+  TH1* strippingAbsoluteEff_KK= (TH1D*)fStripping->Get("strippingEff_KK");                                                                                                   
+  TH1* strippingAbsoluteEff_pipi= (TH1D*)fStripping->Get("strippingEff_pipi");                                                                                               
+  TH1* strippingAbsoluteEff_Kpi= (TH1D*)fStripping->Get("strippingEff_Kpi");                                                                                                 
+                                                                                                                                                                             
+  TH1* L0Trigger_AbsoluteEff_KKmumu = (TH1D*)fTrigger->Get("L0Trigger_Eff_KKmumu");                                                                                          
+  TH1* L0Trigger_AbsoluteEff_pipimumu = (TH1D*)fTrigger->Get("L0Trigger_Eff_pipimumu");                                                                                      
+  TH1* L0Trigger_AbsoluteEff_Kpimumu = (TH1D*)fTrigger->Get("L0Trigger_Eff_Kpimumu");                                                                                        
+                                                                                                                                                                             
+  TH1* EffHltAndBDTKKmumu=(TH1D*)fHLT->Get("effCombinedHltBDTKKmumu_KKmumuTrained");                                                                                        
+  TH1* EffHltAndBDTpipimumu=(TH1D*)fHLT->Get("effCombinedHltBDTKpipimumu_pipimumuTrained");                                                                                  
+  TH1* EffHltAndBDTKpimumu_KK=(TH1D*)fHLT->Get("effCombinedHltBDTKpimumu_KKmumuTrained");                                                                                  
+  TH1* EffHltAndBDTKpimumu_pipi=(TH1D*)fHLT->Get("effCombinedHltBDTKpimumu_pipimumuTrained");
+
+
+  ofstream myfile;
+  TString textFile = "../img/EfficiencyStudies/totalEfficiency/summary_correlationStudies";
+  myfile.open(textFile+".txt");
+
+
+  myfile<<"D->KKmumu"<<endl;
+
+  for(int i=0; i<rangesKK_low.size();++i){
+
+    double totalEff=0;
+    double dTotalEff=0;
+    double dTotalEff_sys=0;
+
+    double dTotalEff_corr=0;
+    double dTotalEff_uncorr=0;
+
+    double dTotalEff_partialcorr=0;
+    double dTotalEff_fullcorr=0;
+
+    double dTotalCorrEff=0;
+
+    totalEff = totalRelMuonPIDEff_KKmumu->GetBinContent(i+1);
+    totalEff *= totalRelHadronPIDEff_KKmumu->GetBinContent(i+1);
+    totalEff *= genLevelRelativeEff_KK->GetBinContent(i+1);
+    totalEff *= strippingRelativeEff_KK->GetBinContent(i+1);
+    totalEff *= L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1);
+    //totalEff *= relEffBDTKKmumu->GetBinContent(i+1);
+    //totalEff *= relEffTriggerKKmumu->GetBinContent(i+1);
+    totalEff *= relEffHltAndBDTKKmumu->GetBinContent(i+1);
+    myfile<<bins[i]<<std::setprecision(6)<<" &  "<<totalEff;
+
+    dTotalEff = TMath::Power(totalRelMuonPIDEff_KKmumu->GetBinError(i+1)/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(totalRelHadronPIDEff_KKmumu->GetBinError(i+1)/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(genLevelRelativeEff_KK->GetBinError(i+1)/genLevelRelativeEff_KK->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(strippingRelativeEff_KK->GetBinError(i+1)/strippingRelativeEff_KK->GetBinContent(i+1),2);
+    //dTotalEff += TMath::Power(relEffBDTKKmumu->GetBinError(i+1)/relEffBDTKKmumu->GetBinContent(i+1),2);
+    //dTotalEff += TMath::Power(relEffTriggerKKmumu->GetBinError(i+1)/relEffTriggerKKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(relEffHltAndBDTKKmumu->GetBinError(i+1)/relEffHltAndBDTKKmumu->GetBinContent(i+1),2);
+ 
+    //dTotalEff_uncorr = TMath::Power(totalAbsMuonPIDEff_KKmumu->GetBinError(i+1)/totalAbsMuonPIDEff_KKmumu->GetBinContent(i+1),2);
+    //cout<<totalAbsMuonPIDEff_KKmumu->GetBinError(i+1)/totalAbsMuonPIDEff_KKmumu->GetBinContent(i+1)<<endl;
+    dTotalEff_uncorr = TMath::Power(totalAbsHadronPIDEff_KKmumu->GetBinError(i+1)/totalAbsHadronPIDEff_KKmumu->GetBinContent(i+1),2);
+    //cout<<totalAbsHadronPIDEff_KKmumu->GetBinError(i+1)/totalAbsHadronPIDEff_KKmumu->GetBinContent(i+1)<<endl;
+    dTotalEff_uncorr += TMath::Power(genLevelAbsoluteEff_KK->GetBinError(i+1)/genLevelAbsoluteEff_KK->GetBinContent(i+1),2);
+    //cout<< genLevelAbsoluteEff_KK->GetBinError(i+1)/genLevelAbsoluteEff_KK->GetBinContent(i+1)<<endl;
+    dTotalEff_uncorr += TMath::Power(strippingAbsoluteEff_KK->GetBinError(i+1)/strippingAbsoluteEff_KK->GetBinContent(i+1),2);
+    //cout<<strippingAbsoluteEff_KK->GetBinError(i+1)/strippingAbsoluteEff_KK->GetBinContent(i+1)<<endl;
+    dTotalEff_uncorr += TMath::Power(EffHltAndBDTKKmumu->GetBinError(i+1)/EffHltAndBDTKKmumu->GetBinContent(i+1),2);
+    //cout<<EffHltAndBDTKKmumu->GetBinError(i+1)/EffHltAndBDTKKmumu->GetBinContent(i+1)<<endl;
+    //dTotalEff_uncorr += TMath::Power(L0Trigger_AbsoluteEff_KKmumu->GetBinError(i+1)/L0Trigger_AbsoluteEff_KKmumu->GetBinContent(i+1),2);
+    //cout<<"6"<<endl;
+
+    //cout<<"7"<<endl;
+    //dTotalEff_corr = TMath::Power(totalAbsMuonPIDEff_Kpimumu->GetBinError(1)/totalAbsMuonPIDEff_Kpimumu->GetBinContent(1),2);
+    //cout<<"8"<<endl;
+    dTotalEff_corr = TMath::Power(totalAbsHadronPIDEff_Kpimumu->GetBinError(1)/totalAbsHadronPIDEff_Kpimumu->GetBinContent(1),2);
+    //cout<<"9"<<endl;
+    dTotalEff_corr += TMath::Power(genLevelAbsoluteEff_Kpi->GetBinError(1)/genLevelAbsoluteEff_Kpi->GetBinContent(1),2);
+    //cout<<"10"<<endl;
+    dTotalEff_corr += TMath::Power(strippingAbsoluteEff_Kpi->GetBinError(1)/strippingAbsoluteEff_Kpi->GetBinContent(1),2);
+    //cout<<"11"<<endl;
+    //moved to partial cor//
+    //dTotalEff_corr += TMath::Power(EffHltAndBDTKpimumu_KK->GetBinError(1)/EffHltAndBDTKpimumu_KK->GetBinContent(1),2);
+    //cout<<"12"<<endl;
+    //dTotalEff_corr += TMath::Power(L0Trigger_AbsoluteEff_Kpimumu->GetBinError(i+1)/L0Trigger_AbsoluteEff_Kpimumu->GetBinContent(i+1),2);
+    //cout<<"13"<<endl;
+    dTotalEff_partialcorr= TMath::Power(EffHltAndBDTKpimumu_KK->GetBinError(1)/EffHltAndBDTKpimumu_KK->GetBinContent(1),2); 
+   
+    myfile<<" fullyCorr(normMode) "<<TMath::Sqrt(dTotalEff_corr)*100 <<" uncorr(sigMode) "<<TMath::Sqrt(dTotalEff_uncorr)*100<<" partialCor "<<TMath::Sqrt(dTotalEff_partialcorr)*100;
+    //myfile<<" & "<<TMath::Sqrt(dTotalEff)*100;
+
+    totalRelEff_KKmumu_onlyStatError->SetBinContent(i+1,totalEff);
+    totalRelEff_KKmumu_onlyStatError->SetBinError(i+1,TMath::Sqrt(dTotalEff)*totalEff);
+
+    //systematics
+
+    //this one is considered as systematic here!!!!Also muon PID
+    
+    dTotalEff += TMath::Power(L0Trigger_RelativeEff_KKmumu->GetBinError(i+1)/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysL0/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysMonPID/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysHadPID/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysBDT/relEffBDTKKmumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysReco/strippingRelativeEff_KK->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysRecoModel,2);
+
+    dTotalEff_sys += TMath::Power(totalRelMuonPIDEff_KKmumu->GetBinError(i+1)/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(L0Trigger_RelativeEff_KKmumu->GetBinError(i+1)/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysL0/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysMonPID/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysHadPID/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysBDT/relEffBDTKKmumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysReco/strippingRelativeEff_KK->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysRecoModel,2);
+
+    //add everything that is fully correlated
+    dTotalCorrEff =  dTotalEff_sys + dTotalEff_corr;
+    myfile<<" syst. "<<TMath::Sqrt(dTotalEff_sys)*100<<" totalCor(norm+sys) "<<TMath::Sqrt(dTotalCorrEff)*100<<" total+patialCor "<< TMath::Sqrt(dTotalCorrEff + dTotalEff_partialcorr)*100<<endl;
+
+    //myfile<<" & "<<TMath::Sqrt(dTotalEff_sys)*100<<endl;
+    //myfile<<" & "<<TMath::Sqrt(dTotalEff)*100<<endl;
+  
+    dTotalEff = TMath::Sqrt(dTotalEff)*totalEff;
+
+    totalRelEff_KKmumu->SetBinContent(i+1,totalEff); 
+    totalRelEff_KKmumu->SetBinError(i+1,dTotalEff);
+ 
+    myfile<<"bin "<<i<<" muon PID "<<totalRelMuonPIDEff_KKmumu->GetBinContent(i+1)<<"+-"<<totalRelMuonPIDEff_KKmumu->GetBinError(i+1)
+	  <<" dR/R stat ="<<totalRelMuonPIDEff_KKmumu->GetBinError(i+1)/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1)
+          <<" dR/R sys ="<<sysMonPID/totalRelMuonPIDEff_KKmumu->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" hadron PID "<<totalRelHadronPIDEff_KKmumu->GetBinContent(i+1)<<"+-"<<totalRelHadronPIDEff_KKmumu->GetBinError(i+1)
+	  <<" dR/R stat ="<<totalRelHadronPIDEff_KKmumu->GetBinError(i+1)/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1)
+	  <<" dR/R sys ="<<sysHadPID/totalRelHadronPIDEff_KKmumu->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" genlevel "<<genLevelRelativeEff_KK->GetBinContent(i+1)<<"+-"<<genLevelRelativeEff_KK->GetBinError(i+1)
+	  <<" dR/R ="<<genLevelRelativeEff_KK->GetBinError(i+1)/genLevelRelativeEff_KK->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" strip "<<strippingRelativeEff_KK->GetBinContent(i+1)<<"+-"<<strippingRelativeEff_KK->GetBinError(i+1)
+	  <<" dR/R ="<<strippingRelativeEff_KK->GetBinError(i+1)/strippingRelativeEff_KK->GetBinContent(i+1)
+	  <<" dR/R sys ="<<sysReco/strippingRelativeEff_KK->GetBinContent(i+1)<<endl;    
+    myfile<<"bin "<<i<<" L0 "<<L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1)<<"+-"<<L0Trigger_RelativeEff_KKmumu->GetBinError(i+1)
+	  <<" dR/R stat="<<L0Trigger_RelativeEff_KKmumu->GetBinError(i+1)/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1)
+	  <<" dR/R sys ="<<sysL0/L0Trigger_RelativeEff_KKmumu->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" BDT "<<relEffBDTKKmumu->GetBinContent(i+1)<<"+-"<<relEffBDTKKmumu->GetBinError(i+1)
+	  <<" dR/R stat="<<relEffBDTKKmumu->GetBinError(i+1)/relEffBDTKKmumu->GetBinContent(i+1)
+	  <<" dR/R sys="<<sysBDT/relEffBDTKKmumu->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" HLT "<<relEffTriggerKKmumu->GetBinContent(i+1)<<"+-"<<relEffTriggerKKmumu->GetBinError(i+1)
+	  <<" dR/R ="<<relEffTriggerKKmumu->GetBinError(i+1)/relEffTriggerKKmumu->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" total "<<totalRelEff_KKmumu->GetBinContent(i+1)<<"+-"<<totalRelEff_KKmumu->GetBinError(i+1)
+	  <<" dR/R ="<<totalRelEff_KKmumu->GetBinError(i+1)/totalRelEff_KKmumu->GetBinContent(i+1)<<std::endl;
+      //<<" dR/R add. sys = "<<0.022/totalRelEff_KKmumu->GetBinContent(i+1)<<endl;
+
+   
+  }
+
+
+
+  myfile<<"D->pipimumu"<<endl;
+
+  for(int i=0; i<rangespipi_low.size();++i){
+
+    double totalEff=0;
+    double dTotalEff=0;
+    double dTotalEff_sys=0;
+
+    double dTotalEff_corr=0;
+    double dTotalEff_uncorr=0;
+    double dTotalEff_partialcorr=0;
+    double dTotalCorrEff=0;
+
+
+    totalEff = totalRelMuonPIDEff_pipimumu->GetBinContent(i+1);
+    totalEff *= totalRelHadronPIDEff_pipimumu->GetBinContent(i+1);
+    totalEff *= genLevelRelativeEff_pipi->GetBinContent(i+1);
+    totalEff *= strippingRelativeEff_pipi->GetBinContent(i+1);
+    totalEff *= L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1);
+    //totalEff *= relEffBDTpipimumu->GetBinContent(i+1);
+    //totalEff *= relEffTriggerpipimumu->GetBinContent(i+1);
+    totalEff *= relEffHltAndBDTpipimumu->GetBinContent(i+1);
+    myfile<<bins[i]<<std::setprecision(6)<<" &  "<<totalEff;
+
+    dTotalEff = TMath::Power(totalRelMuonPIDEff_pipimumu->GetBinError(i+1)/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(totalRelHadronPIDEff_pipimumu->GetBinError(i+1)/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(genLevelRelativeEff_pipi->GetBinError(i+1)/genLevelRelativeEff_pipi->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(strippingRelativeEff_pipi->GetBinError(i+1)/strippingRelativeEff_pipi->GetBinContent(i+1),2);
+    //dTotalEff += TMath::Power(relEffBDTpipimumu->GetBinError(i+1)/relEffBDTpipimumu->GetBinContent(i+1),2);
+    //dTotalEff += TMath::Power(relEffTriggerpipimumu->GetBinError(i+1)/relEffTriggerpipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(relEffHltAndBDTpipimumu->GetBinError(i+1)/relEffHltAndBDTpipimumu->GetBinContent(i+1),2);
+
+
+    //dTotalEff_uncorr = TMath::Power(totalAbsMuonPIDEff_pipimumu->GetBinError(i+1)/totalAbsMuonPIDEff_pipimumu->GetBinContent(i+1),2);
+    //cout<<totalAbsMuonPIDEff_pipimumu->GetBinError(i+1)/totalAbsMuonPIDEff_pipimumu->GetBinContent(i+1)<<endl;
+    dTotalEff_uncorr = TMath::Power(totalAbsHadronPIDEff_pipimumu->GetBinError(i+1)/totalAbsHadronPIDEff_pipimumu->GetBinContent(i+1),2);
+    cout<<totalAbsHadronPIDEff_pipimumu->GetBinError(i+1)/totalAbsHadronPIDEff_pipimumu->GetBinContent(i+1)<<endl;
+    dTotalEff_uncorr += TMath::Power(genLevelAbsoluteEff_pipi->GetBinError(i+1)/genLevelAbsoluteEff_pipi->GetBinContent(i+1),2);
+    cout<< genLevelAbsoluteEff_pipi->GetBinError(i+1)/genLevelAbsoluteEff_pipi->GetBinContent(i+1)<<endl;
+    dTotalEff_uncorr += TMath::Power(strippingAbsoluteEff_pipi->GetBinError(i+1)/strippingAbsoluteEff_pipi->GetBinContent(i+1),2);
+    cout<<strippingAbsoluteEff_pipi->GetBinError(i+1)/strippingAbsoluteEff_pipi->GetBinContent(i+1)<<endl;
+    dTotalEff_uncorr += TMath::Power(EffHltAndBDTpipimumu->GetBinError(i+1)/EffHltAndBDTpipimumu->GetBinContent(i+1),2);
+    cout<<EffHltAndBDTpipimumu->GetBinError(i+1)/EffHltAndBDTpipimumu->GetBinContent(i+1)<<endl;
+    //cout<<"6"<<endl;
+
+    cout<<"7"<<endl;
+    //dTotalEff_corr = TMath::Power(totalAbsMuonPIDEff_Kpimumu->GetBinError(1)/totalAbsMuonPIDEff_Kpimumu->GetBinContent(1),2);
+    //cout<<"8"<<endl;
+    dTotalEff_corr = TMath::Power(totalAbsHadronPIDEff_Kpimumu->GetBinError(1)/totalAbsHadronPIDEff_Kpimumu->GetBinContent(1),2);
+    //cout<<"9"<<endl;
+    dTotalEff_corr += TMath::Power(genLevelAbsoluteEff_Kpi->GetBinError(1)/genLevelAbsoluteEff_Kpi->GetBinContent(1),2);
+    //cout<<"10"<<endl;
+    dTotalEff_corr += TMath::Power(strippingAbsoluteEff_Kpi->GetBinError(1)/strippingAbsoluteEff_Kpi->GetBinContent(1),2);
+    //cout<<"11"<<endl;
+    //moveo to partial cor//
+    //dTotalEff_corr += TMath::Power(EffHltAndBDTKpimumu_KK->GetBinError(1)/EffHltAndBDTKpimumu_KK->GetBinContent(1),2);
+    //cout<<"12"<<endl;
+    //dTotalEff_corr += TMath::Power(L0Trigger_AbsoluteEff_Kpimumu->GetBinError(i+1)/L0Trigger_AbsoluteEff_Kpimumu->GetBinContent(i+1),2);
+    //cout<<"13"<<endl;
+
+    dTotalEff_partialcorr =TMath::Power(EffHltAndBDTKpimumu_pipi->GetBinError(1)/EffHltAndBDTKpimumu_pipi->GetBinContent(1),2); 
+
+    //myfile<<" & "<<TMath::Sqrt(dTotalEff_corr)*100 <<" & "<<TMath::Sqrt(dTotalEff_uncorr)*100<< " & "<<TMath::Sqrt(dTotalEff_partialcorr)*100;
+    myfile<<" fullyCorr(normMode) "<<TMath::Sqrt(dTotalEff_corr)*100 <<" uncorr(sigMode) "<<TMath::Sqrt(dTotalEff_uncorr)*100<<" partialCor "<<TMath::Sqrt(dTotalEff_partialcorr)*100;
+
+    totalRelEff_pipimumu_onlyStatError->SetBinContent(i+1,totalEff);
+    totalRelEff_pipimumu_onlyStatError->SetBinError(i+1,TMath::Sqrt(dTotalEff)*totalEff);
+
+    //systematics
+    //also here!! move to sys
+    dTotalEff += TMath::Power(L0Trigger_RelativeEff_pipimumu->GetBinError(i+1)/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysL0/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysMonPID/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysHadPID/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysBDT/relEffBDTpipimumu->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysReco/strippingRelativeEff_pipi->GetBinContent(i+1),2);
+    dTotalEff += TMath::Power(sysRecoModel,2);
+
+    dTotalEff_sys += TMath::Power(totalRelMuonPIDEff_pipimumu->GetBinError(i+1)/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(L0Trigger_RelativeEff_pipimumu->GetBinError(i+1)/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysL0/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysMonPID/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysHadPID/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysBDT/relEffBDTpipimumu->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysReco/strippingRelativeEff_pipi->GetBinContent(i+1),2);
+    dTotalEff_sys += TMath::Power(sysRecoModel,2);
+    
+    //cout<<"FFFUUUUUUCKKK "<<sysRecoModel<<"       "<<dTotalEff_sys<<"           "<< TMath::Sqrt(dTotalEff_sys)*100<<endl;
+    //summing the parts which are fully correlated 
+    cout<<"."<<dTotalEff_sys<<"  "<<dTotalEff_corr<<endl;
+    dTotalCorrEff =  dTotalEff_sys + dTotalEff_corr; 
+  
+    //myfile<<" & "<<TMath::Sqrt(dTotalEff_sys)*100<<" & "<<TMath::Sqrt(dTotalCorrEff)*100<<" & "<< TMath::Sqrt(dTotalCorrEff + dTotalEff_partialcorr)<<endl;
+    //myfile<<" & "<<TMath::Sqrt(dTotalEff)*100<<endl;
+    myfile<<" syst. "<<TMath::Sqrt(dTotalEff_sys)*100<<" totalCor(norm+sys) "<<TMath::Sqrt(dTotalCorrEff)*100<<" total+patialCor "<< TMath::Sqrt(dTotalCorrEff + dTotalEff_partialcorr)*100<<endl;
+
+    dTotalEff = TMath::Sqrt(dTotalEff)*totalEff;
+
+    totalRelEff_pipimumu->SetBinContent(i+1,totalEff); 
+    totalRelEff_pipimumu->SetBinError(i+1,dTotalEff);
+    
+    myfile<<"bin "<<i<<" muon PID "<<totalRelMuonPIDEff_pipimumu->GetBinContent(i+1)<<"+-"<<totalRelMuonPIDEff_pipimumu->GetBinError(i+1)
+	  <<" dR/R stat ="<<totalRelMuonPIDEff_pipimumu->GetBinError(i+1)/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1)
+          <<" dR/R sys ="<<sysMonPID/totalRelMuonPIDEff_pipimumu->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" hadron PID "<<totalRelHadronPIDEff_pipimumu->GetBinContent(i+1)<<"+-"<<totalRelHadronPIDEff_pipimumu->GetBinError(i+1)
+	  <<" dR/R stat ="<<totalRelHadronPIDEff_pipimumu->GetBinError(i+1)/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1)
+	  <<" dR/R sys ="<<sysHadPID/totalRelHadronPIDEff_pipimumu->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" genlevel "<<genLevelRelativeEff_pipi->GetBinContent(i+1)<<"+-"<<genLevelRelativeEff_pipi->GetBinError(i+1)
+	  <<" dR/R ="<<genLevelRelativeEff_pipi->GetBinError(i+1)/genLevelRelativeEff_pipi->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" strip "<<strippingRelativeEff_pipi->GetBinContent(i+1)<<"+-"<<strippingRelativeEff_pipi->GetBinError(i+1)
+	  <<" dR/R ="<<strippingRelativeEff_pipi->GetBinError(i+1)/strippingRelativeEff_pipi->GetBinContent(i+1)
+	  <<" dR/R sys ="<<sysReco/strippingRelativeEff_pipi->GetBinContent(i+1)<<endl;    
+    myfile<<"bin "<<i<<" L0 "<<L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1)<<"+-"<<L0Trigger_RelativeEff_pipimumu->GetBinError(i+1)
+	  <<" dR/R stat="<<L0Trigger_RelativeEff_pipimumu->GetBinError(i+1)/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1)
+	  <<" dR/R sys ="<<sysL0/L0Trigger_RelativeEff_pipimumu->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" BDT "<<relEffBDTpipimumu->GetBinContent(i+1)<<"+-"<<relEffBDTpipimumu->GetBinError(i+1)
+	  <<" dR/R stat="<<relEffBDTpipimumu->GetBinError(i+1)/relEffBDTpipimumu->GetBinContent(i+1)
+	  <<" dR/R sys="<<sysBDT/relEffBDTpipimumu->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" HLT "<<relEffTriggerpipimumu->GetBinContent(i+1)<<"+-"<<relEffTriggerpipimumu->GetBinError(i+1)
+	  <<" dR/R ="<<relEffTriggerpipimumu->GetBinError(i+1)/relEffTriggerpipimumu->GetBinContent(i+1)<<endl;
+    myfile<<"bin "<<i<<" total "<<totalRelEff_pipimumu->GetBinContent(i+1)<<"+-"<<totalRelEff_pipimumu->GetBinError(i+1)
+	  <<" dR/R ="<<totalRelEff_pipimumu->GetBinError(i+1)/totalRelEff_pipimumu->GetBinContent(i+1)<<std::endl;
+      //<<" dR/R add. sys = "<<0.022/totalRelEff_pipimumu->GetBinContent(i+1)<<endl;
+
+   
+  }
+
+
+  myfile.close();
+  
+
+  TFile* fOut_final  = new TFile("/work/mitzel/D2hhmumu/dev/img/EfficiencyStudies/totalEfficiency/totalRelativeEfficiency_CorrelationStudies.root","RECREATE");
   fOut_final->cd();
   totalRelEff_KKmumu->Write();
   totalRelEff_pipimumu->Write();

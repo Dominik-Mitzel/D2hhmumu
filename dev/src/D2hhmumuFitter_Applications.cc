@@ -377,14 +377,36 @@ void D2hhmumuFitter_Applications::ExtractExpectedLimit(){
   //StandardHypoTestInvDemo("/work/mitzel/D2hhmumu/dev/D2pipimumu/ModelConfigs/D2pipimumu_bin_4.root", "m_ws", "ModelConfig", "B_only_model", "data", 0, 3, true, 40,1e-10,5e-8,500,false);
   //StandardHypoTestInvDemo("testConfig.root", "m_ws", "ModelConfig", "B_only_model", "data", 2, 3, true, 5000,1e-10,1e-7);
   
-  
   for(int q2Bin=0; q2Bin<q2Ranges.size();++q2Bin) {
 
-  fIn = targetFolder+"ModelConfigs/"+ kind + "_" + TString::Format("bin_%i",q2Bin)+".root";
-  //StandardHypoTestInvDemo(fIn, "m_ws", "ModelConfig", "B_only_model", "data", 2, 3, true, 30000,1e-10,1e-7);                                                                   
-  StandardHypoTestInvDemo(fIn, "m_ws", "ModelConfig", "B_only_model", "data", 0, 3, true, 500,1e-10,8e-8,5000,false);                                                                   
+	fIn = targetFolder+"ModelConfigs/"+ kind + "_" + TString::Format("bin_%i",q2Bin)+".root";
+
+	if(kind=="D2KKmumu" ){
+
+	//StandardHypoTestInvDemo(fIn, "m_ws", "ModelConfig", "B_only_model", "data", 2, 3, true, 30000,1e-10,1e-7);                                                                   
+	//StandardHypoTestInvDemo(fIn, "m_ws", "ModelConfig", "B_only_model", "data", 0, 3, true, 500,1e-10,8e-8,5000,false);                                                                
+ 	
+	//eat the moment we agreed on taking the LEP test statistics
+	  
+	  if(q2Bin==0)StandardHypoTestInvDemo(fIn, "m_ws", "ModelConfig", "B_only_model", "data", 0, 0, true, 15,0.8e-8,7e-8,5000,false);                                            
+	  if(q2Bin==1) continue;
+	  if(q2Bin==2)StandardHypoTestInvDemo(fIn, "m_ws", "ModelConfig", "B_only_model", "data", 0, 0, true, 15,5e-8,0.17e-6,5000,false);                                                    
+	}
+
+      if(kind=="D2pipimumu" ){
+
+	  if(q2Bin==0)StandardHypoTestInvDemo(fIn, "m_ws", "ModelConfig", "B_only_model", "data", 0, 0, true, 15,0.8e-8,1.5e-7,5000,false);                                            
+	  if(q2Bin==1)StandardHypoTestInvDemo(fIn, "m_ws", "ModelConfig", "B_only_model", "data", 0, 0, true, 15,0.8e-8,3e-8,5000,false);
+	  if(q2Bin==2) continue;
+          if(q2Bin==3) continue;
+	  if(q2Bin==4)StandardHypoTestInvDemo(fIn, "m_ws", "ModelConfig", "B_only_model", "data", 0, 0, true, 15,0.8e-8,4e-8,5000,false);                                                  	  
+      }
+
+
+
   }
-  
+
+
 }
 
 
@@ -458,7 +480,7 @@ void D2hhmumuFitter_Applications::runFullResonant1DFits(TString dataCut,TString 
       myFitter1D->setPathToSignalData(pathToSignalData);
 
 
-      //if(kind=="D2KKmumu" && (counter!=0 && counter!=1 && counter!=2 ) ){
+      //if(kind=="D2KKmumu" && (counter!=0 && counter!=1 && counter!=2 ) ){ //we're unblinded now!
       if(kind=="D2KKmumu" ){
 
 	myFitter1D->fit_MC(dataCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_KKmumu_bin_%i.eps",counter),"m(K^{+}K^{-}#mu^{+}#mu^{-})",TString::Format("%.0f<m(#mu^{+}#mu^{-})<%.0fMeV/c^{2}",rangesKK_low[counter],rangesKK_high[counter]));
@@ -473,7 +495,7 @@ void D2hhmumuFitter_Applications::runFullResonant1DFits(TString dataCut,TString 
 
       }
  
-      //      if(kind=="D2pipimumu" && (counter!=0 && counter!=1 && counter!=4)){
+      //      if(kind=="D2pipimumu" && (counter!=0 && counter!=1 && counter!=4)){ // we are unblinded!
         if(kind=="D2pipimumu"){
 	
 	myFitter1D->fit_MC(dataCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_pipimumu_bin_%i.eps",counter),"m(#pi^{+}#pi^{-}#mu^{+}#mu^{-})",TString::Format("%.0f<m(#mu^{+}#mu^{-})<%.0fMeV/c^{2}",rangespipi_low[counter],rangespipi_high[counter]));
@@ -493,6 +515,68 @@ void D2hhmumuFitter_Applications::runFullResonant1DFits(TString dataCut,TString 
   std::cout<<"data fits done.."<<std::endl;
 
 }
+
+
+void D2hhmumuFitter_Applications::addAllSignalSweights(TString dataCut,TString misIDCut){
+
+
+  D2hhmumuFitter1D* myFitter1D;
+  int counter=0;
+
+  TString targetFolder = "/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/sWeights/";
+
+  for (std::vector<TString>::iterator it = q2Ranges.begin() ; it != q2Ranges.end(); ++it) {
+
+      myFitter1D= new D2hhmumuFitter1D(kind+"_sWeights_"+*it+".txt");
+
+      myFitter1D->setPathToSignalMC(pathToSignalMC);
+      myFitter1D->setPathToNormMC(pathToNormMC);
+      myFitter1D->setPathToKpipipiData(pathToKpipipiData);
+      myFitter1D->setPathToHHpipiData(pathToKKpipiData);
+      myFitter1D->setPathToNormData(pathToNormData);
+      myFitter1D->setPathToSignalData(pathToSignalData);
+
+
+      //if(kind=="D2KKmumu" && (counter!=0 && counter!=1 && counter!=2 ) ){ //we're unblinded now!
+      if(kind=="D2KKmumu" ){
+
+	myFitter1D->fit_MC(dataCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_KKmumu_bin_%i.eps",counter),"m(K^{+}K^{-}#mu^{+}#mu^{-})",TString::Format("%.0f<m(#mu^{+}#mu^{-})<%.0fMeV/c^{2}",rangesKK_low[counter],rangesKK_high[counter]));
+	myFitter1D->fit_normalization_MC(dataCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_norm_KKTrained.eps");
+	std::cout<<"Monte Carlo fits done.."<<std::endl;
+	myFitter1D->fit_Kpipipi_misID(misIDCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_Kpipipi_KKTrained.eps");
+	myFitter1D->fit_HHpipi_misID(misIDCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_KKmumu_bin_%i.eps",counter),"m_{K^{+}K^{-}#mu^{+}#mu^{-}}(KK#pi#pi)",TString::Format("%.0f<m(#pi#pi)<%.0fMeV/c^{2}",rangesKK_low[counter],rangesKK_high[counter])); 
+	std::cout<<"misID fits done.."<<std::endl;
+	myFitter1D->fit_normalization_Data(dataCut,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_norm_KKTrained.eps");
+	myFitter1D->addSignalSWeights(kind,dataCut,(*it),TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/sWeightFit_KKmumu_bin_%i.eps",counter),"m(K^{+}K^{-}#mu^{+}#mu^{-})",TString::Format("%.0f<m(#mu^{+}#mu^{-})<%.0fMeV/c^{2}",rangesKK_low[counter],rangesKK_high[counter]),true,targetFolder+TString::Format("sWeights_KKmumu_bin_%i.root",counter));
+
+	std::cout<<"data fits done.."<<std::endl;
+
+      }
+ 
+      //      if(kind=="D2pipimumu" && (counter!=0 && counter!=1 && counter!=4)){ // we are unblinded!
+        if(kind=="D2pipimumu"){
+	
+	myFitter1D->fit_MC(dataCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_pipimumu_bin_%i.eps",counter),"m(#pi^{+}#pi^{-}#mu^{+}#mu^{-})",TString::Format("%.0f<m(#mu^{+}#mu^{-})<%.0fMeV/c^{2}",rangespipi_low[counter],rangespipi_high[counter]));
+	myFitter1D->fit_normalization_MC(dataCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/MC_norm_pipiTrained.eps");
+	std::cout<<"Monte Carlo fits done.."<<std::endl;
+	myFitter1D->fit_Kpipipi_misID(misIDCut,true,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_Kpipipi_pipiTrained.eps");
+	myFitter1D->fit_HHpipi_misID(misIDCut+"&&"+(*it),true,TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/misID_pipimumu_bin_%i.eps",counter),"m_{#pi^{+}#pi^{-}#mu^{+}#mu^{-}}(#pi#pi#pi#pi)",TString::Format("%.0f<m(#pi#pi)<%.0fMeV/c^{2}",rangespipi_low[counter],rangespipi_high[counter])); 
+	std::cout<<"misID fits done.."<<std::endl;
+	myFitter1D->fit_normalization_Data(dataCut,"/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/data_norm_pipiTrained.eps");
+
+	myFitter1D->addSignalSWeights(kind,dataCut,(*it),TString::Format("/work/mitzel/D2hhmumu/dev/"+kind+"/img/Fits/full1DFits/sWeightFit_pipimumu_bin_%i.eps",counter),"m(#pi^{+}#pi^{-}#mu^{+}#mu^{-})",TString::Format("%.0f<m(#mu^{+}#mu^{-})<%.0fMeV/c^{2}",rangespipi_low[counter],rangespipi_high[counter]),true,targetFolder+TString::Format("sWeights_pipimumu_bin_%i.root",counter));
+
+	std::cout<<" data fits done.."<<std::endl;
+      
+      }
+      ++counter;
+  }
+  
+  std::cout<<"data fits done.."<<std::endl;
+
+}
+
+
 
 
 void D2hhmumuFitter_Applications::constrainCombBkgShapes(TString dataCut,TString misIDCut){

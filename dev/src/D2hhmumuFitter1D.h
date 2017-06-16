@@ -184,6 +184,8 @@ class D2hhmumuFitter1D {
   double getCombBkg(TString cut,TString namePlot);
   double getCombBkgFromDeltaM(TString cut,TString namePlot);
 
+  double get_Significance(TString kind, TString cut,TString q2Range,TString namePlot,TString xLabel,TString legend,bool bkgShapeFromInvertedBDTCut);
+
   //actually the fits
   void fit_MC(TString cut="",bool fixShape = true,TString namePlot="",TString xLabel="m(hh#mu#mu)",TString legend="");
   void fit_normalization_MC(TString cut, bool fixShape, TString namePlot);

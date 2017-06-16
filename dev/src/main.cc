@@ -255,7 +255,8 @@ int main() {
   //createDataTuplesForEffStudies();
   // Evaluate TOTAL relative efficiency
   //drawTotalEfficiency();
-
+  drawTotalEfficiencyForCorrelationStudies();
+  //drawBothPolaritiesPIDCalibHadronEfficiency("default");
 
   ////////////////////////////////////////////////
   //multiple Candidate MC
@@ -338,60 +339,58 @@ int main() {
   // fitting is done with D2hhmumuFitter//
   ////////////////////////////////////////
 
+  /*
+ 
       
   D2hhmumuFitter1D* myFitter1D = new D2hhmumuFitter1D();
-  myFitter1D->setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2KKmumuBDT.root");
-  myFitter1D->setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2KKmumu_BDT.root");
-  myFitter1D->setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKpipi_D2KKmumuBDT.root");  
-  myFitter1D->setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2KKmumuBDT_Randomized.root");  
-  myFitter1D->setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2KKmumuBDT_noMultCand.root");  
-  myFitter1D->setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2KKmumu_BDT_noMultCand.root");
- 
+  myFitter1D->setPathToNormMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2Kpimumu_D2pipimumuBDT.root");
+  myFitter1D->setPathToSignalMC("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/MC_D2pipimumu_BDT.root");
+  myFitter1D->setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_D2pipimumuBDT_Randomized.root");  
+  //myFitter1D->setPathToHHpipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipipipi_D2pipimumuBDT.root");  
+  myFitter1D->setPathToKpipipiData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpipipi_D2pipimumuBDT_Randomized.root");  
+  myFitter1D->setPathToNormData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2Kpimumu_D2pipimumuBDT_noMultCand.root");  
+  myFitter1D->setPathToSignalData("/auto/data/mitzel/D2hhmumu/new/preselectedSamples/finalPreselected/D2pipimumu_BDT_noMultCand.root");
+  //myFitter1D->fillModelConfig("D2pipimumu","BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5",0,"test.root");
 
-  myFitter1D->fillModelConfig("D2KKmumu","BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5",0,"test.root");
+  myFitter1D->fit_MC("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5&&D_DiMuon_Mass>525&&D_DiMuon_Mass<565",true,"test.eps","m(KK#mu#mu)","950MeV<m(#mu#mu)<1100MeV");
+  myFitter1D->fit_normalization_MC("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5",true,"test1.eps");
+  myFitter1D->fit_Kpipipi_misID("BDT>0.4&&mu1_ProbNNmu>0.5",true,"test2.eps",true);
+  myFitter1D->fit_HHpipi_misID("BDT>0.4&&mu1_ProbNNmu>0.5&&D_DiMuon_Mass>525&&D_DiMuon_Mass<565",true,"test3.eps","m_{#pi#pi#mu#mu}(#pi#pi#pi#pi)","950MeV<m(#pi#pi)<1100MeV",true);
+  myFitter1D->fit_normalization_Data("BDT>0.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5","test4.eps");
+  //myFitter1D->fit_Data("D2pipimumu","BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","D_DiMuon_Mass>525&&D_DiMuon_Mass<565","test5","m(#pi^{+}#pi^{-}#mu^{+}#mu^{-})","950<m(#mu^{+}#mu^{-})<1100 MeV/c^{2}",true);  
+  //myFitter1D->get_Significance("D2pipimumu","BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","D_DiMuon_Mass>525&&D_DiMuon_Mass<565","test5","m(#pi^{+}#pi^{-}#mu^{+}#mu^{-})","950<m(#mu^{+}#m^{-})<1100 MeV/c^{2}",true);  
+  myFitter1D->fit_unblinded_Data("D2pipimumu","BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","D_DiMuon_Mass>525&&D_DiMuon_Mass<565","test5","m(K^{+}K^{-}#mu^{+}#mu^{-})","525<m(#mu^{+}#mu^{-})<565 MeV/c^{2}",false);  
 
-  //myFitter1D->fit_MC("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",true,"test.eps","m(KK#mu#mu)","950MeV<m(#mu#mu)<1100MeV");
-  //myFitter1D->fit_normalization_MC("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5",true,"test1.eps");
- 
-  //myFitter1D->fit_Kpipipi_misID("BDT>0.4&&mu1_ProbNNmu>0.5",true,"test2.eps",true);
- 
-  //myFitter1D->fit_HHpipi_misID("BDT>0.4&&mu1_ProbNNmu>0.5&&D_DiMuon_Mass>950&&D_DiMuon_Mass<1100",true,"test3.eps","m_{#pi#pi#mu#mu}(#pi#pi#pi#pi)","950MeV<m(#pi#pi)<1100MeV",true);
-  //myFitter1D->fit_normalization_Data("BDT>0.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5&&D_Hlt1TrackAllL0Decision_TOS","test4.eps");
-  //myFitter1D->fit_unblinded_Data("D2pipimumu","BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","D_DiMuon_Mass>950&&D_DiMuon_Mass<1100","test5","m(#pi^{+}#pi^{-}#mu^{+}#mu^{-})","950<m(#mu^{+}#mu^{-})<1100 MeV/c^{2}",true);    
-  
-  
- 
-  //myFitter1D->addSignalSWeights("D2KKmumu","BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","D_DiMuon_Mass<1600&&D_DiMuon_Mass>200","test5.eps","m(#pi#pi#mu#mu)","950MeV<m(#mu#mu)<1100MeV",true,"test.root");
-  
   //myFitter1D->fillModelConfig("D2pipimumu","BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5",0,"testConfig.root");
-  
-        
-  //D2hhmumuFitter_Applications myApplication("D2KKmumu","2012");
+  */
+  /*            
+  D2hhmumuFitter_Applications myApplication("D2KKmumu","2012");
   //myApplication.drawMisIDShapes("BDT>0.4&&mu1_ProbNNmu>0.5");
   //myApplication.drawMCSignalShapes("BDT>0.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5");
-  //myApplication.runFullResonant1DFits("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
+  myApplication.runFullResonant1DFits("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
   //myApplication.runFull1DFits("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
+  //myApplication.addAllSignalSweights("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
   //myApplication.saveModelConfig("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5"); 
   //myApplication.ExtractExpectedLimit();
   //myApplication.performAllToyStudies();
  
-  //D2hhmumuFitter_Applications myApplication2("D2pipimumu","2012");
+  D2hhmumuFitter_Applications myApplication2("D2pipimumu","2012");
   //myApplication2.draw_misID_shapes_singlePlot();
   //myApplication2.drawMisIDShapes("BDT>0.4&&mu1_ProbNNmu>0.5");
   //myApplication2.drawMCSignalShapes("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5");
   //myApplication2.performAllToyStudies();
   //myApplication2.runFull1DFits("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
-  //myApplication2.runFullResonant1DFits("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
+  //myApplication2.addAllSignalSweights("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
+  myApplication2.runFullResonant1DFits("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
   //myApplication2.saveModelConfig("BDT>0.4&&mu0_ProbNNmu>0.5&&mu1_ProbNNmu>0.5","BDT>0.4&&mu1_ProbNNmu>0.5");
   //myApplication2.ExtractExpectedLimit();
   //myApplication2.studyCombBkgShape();
   //myApplication2.compare_misID_shapes("BDT>0.4&&mu1_ProbNNmu>0.5&&mu0_ProbNNmu>0.5");
   //myApplication2.studyResolutionScale("");
-  
-  
+  */
+ 
   /*
   /******/ 
-  
 
  
   //////////////////////////////////////
@@ -402,11 +401,10 @@ int main() {
   //                                  //
   //////////////////////////////////////
 
-  
+  /*  
 
   //pipimumu bins
 
-  /*
   newCutOptimization("D2pipimumu","Polarity==-1","D_DiMuon_Mass>565&&D_DiMuon_Mass<950");
   newCutOptimization("D2pipimumu","Polarity==-1","D_DiMuon_Mass>525&&D_DiMuon_Mass<565");
   newCutOptimization("D2pipimumu","Polarity==-1","D_DiMuon_Mass>950&&D_DiMuon_Mass<1100");
@@ -418,6 +416,7 @@ int main() {
   newCutOptimization("D2pipimumu","Polarity==1","D_DiMuon_Mass>525&&D_DiMuon_Mass<565");
   newCutOptimization("D2pipimumu","Polarity==1","D_DiMuon_Mass>950&&D_DiMuon_Mass<1100");
   newCutOptimization("D2pipimumu","Polarity==1","D_DiMuon_Mass>1100");
+
 
   //KKmumu bins
   newCutOptimization("D2KKmumu","Polarity==-1","D_DiMuon_Mass<525");
@@ -434,10 +433,11 @@ int main() {
   newCutOptimization("D2KKmumu","Polarity==-1","D_DiMuon_Mass>0");
   newCutOptimization("D2pipimumu","Polarity==1","D_DiMuon_Mass>0");
   newCutOptimization("D2pipimumu","Polarity==-1","D_DiMuon_Mass>0");
-  
-  //draw_BDT_crosschecks();
-
   */
+  
+//draw_BDT_crosschecks();
+
+ 
 
   
   cout << "==============================================" << endl;

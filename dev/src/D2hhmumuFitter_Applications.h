@@ -43,6 +43,7 @@ class D2hhmumuFitter_Applications {
   void compare_1D_and_2D_fit(TString dataCut,TString nomalizationCut,TString misIDCut);
   void ExtractExpectedLimit();
   void runFull1DFits(TString dataCut,TString misIDCut);
+  void addAllSignalSweights(TString dataCut,TString misIDCut);
   void runFullResonant1DFits(TString dataCut,TString misIDCut);
   void constrainCombBkgShapes(TString dataCut,TString misIDCut);
   void studyNormalizationFits(TString dataCut,TString misIDCut, bool doNSharedCut); 
